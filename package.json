@@ -1,7 +1,7 @@
 {
-  "name": "subql-starter",
+  "name": "spiritnet-attestations-indexer",
   "version": "1.0.0",
-  "description": "This project can be used as a starting point for developing your SubQuery project. It aggregates attestations from the Kilt Spiritnet network",
+  "description": "indexing of attestations and CTypes",
   "main": "dist/index.js",
   "scripts": {
     "build": "subql build",
@@ -11,14 +11,14 @@
     "prepack": "rm -rf dist && npm run build",
     "test": "subql build && subql-node test"
   },
-  "homepage": "https://github.com/subquery/subql-starter",
-  "repository": "github:subquery/subql-starter",
+  "homepage": "https://github.com/KILTprotocol/attestation-indexer",
+  "repository": "github:KILTprotocol/attestation-indexer",
   "files": [
     "dist",
     "schema.graphql",
     "project.yaml"
   ],
-  "author": "SubQuery Team",
+  "author": "Botlabs GmbH",
   "license": "MIT",
   "devDependencies": {
     "@polkadot/api": "^10",

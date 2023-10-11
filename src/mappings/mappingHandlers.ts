@@ -11,24 +11,34 @@ export async function handleAttestationCreated(
   // A new attestation has been created.\[attester ID, claim hash, CType hash, (optional) delegation ID\]
   const {
     event: {
-      data: [attesterID, claimHash, hash, delegationID],
+      data: [attesterID, claimHash, cTypeHash, delegationID],
     },
   } = event;
 
+  // unpack delegation, which has changed between runtimes
+  let delegation: typeof delegationID | undefined = delegationID;
+  delegation = (delegation as any).unwrapOr(undefined);
+  // later delegation ids are wrapped in an enum
+  if (delegation?.toRawType().startsWith('{"_enum":')) {
+    delegation = (delegation as any).value;
+  }
+
+  const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
+
   const attestation = Attestation.create({
-    id: claimHash.toString(),
+    id: claimHash.toHex(),
     createdDate: event.block.timestamp,
     createdBlock: event.block.block.header.number.toBigInt(),
+    createdBlockHash: event.block.block.hash.toHex(),
     creator: event.extrinsic!.extrinsic.signer.toString(),
-    creationClaimHash: claimHash.toString(),
-    hash: hash.toString(),
-    attestationId: attesterID.toString(),
-    delegationID: delegationID.isEmpty ? undefined : delegationID.toString() 
+    cType: cTypeId,
+    attester: "did:kilt:" + attesterID.toString(),
+    delegationID: delegation?.toHex(),
   });
 
   await attestation.save();
 
-  await handleDailyUpdate(event.block.timestamp, "CREATED");
+  await handleCTypeAggregations(cTypeId, "CREATED");
 }
 
 export async function handleAttestationRevoked(
@@ -49,28 +59,28 @@ export async function handleAttestationRevoked(
   assert(attestation, "Can't find an attestation");
   attestation.revokedDate = event.block.timestamp;
   attestation.revokedBlock = event.block.block.header.number.toBigInt();
-  attestation.revokedClaimHash = claimHash.toString();
+  attestation.revoker = accountID.toString();
 
   await attestation.save();
 
-  await handleDailyUpdate(event.block.timestamp, "REVOKED");
+  await handleCTypeAggregations(attestation.cType, "REVOKED");
 }
 
-export async function handleDailyUpdate( date: Date, type: "CREATED" | "REVOKED"): Promise<void>{
-  const id = date.toISOString().slice(0, 10);
-  let aggregation = await Aggregation.get(id);
+export async function handleCTypeAggregations(
+  cType: string,
+  type: "CREATED" | "REVOKED"
+): Promise<void> {
+  let aggregation = await Aggregation.get(cType);
   if (!aggregation) {
     aggregation = Aggregation.create({
-      id,
+      id: cType,
       attestationsCreated: 0,
       attestationsRevoked: 0,
     });
   }
   if (type === "CREATED") {
     aggregation.attestationsCreated++;
-  }
-
-  else if (type === "REVOKED") {
+  } else if (type === "REVOKED") {
     aggregation.attestationsRevoked++;
   }
 

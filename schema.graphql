@@ -3,22 +3,22 @@
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
 type Attestation @entity {
-  id: ID! #id is ClaimHashOf
-  createdDate: Date! #date of creation of the attestation
-  createdBlock: BigInt! #block of creation of the attestation
+  id: ID! # id is ClaimHashOf
+  createdDate: Date! # date of creation of the attestation
+  createdBlock: BigInt! # block of creation of the attestation
+  createdBlockHash: String! # block hash as hex string
   creator: String! # Account address
-  creationClaimHash: String!
-  attestationId: String! #Id of the attester
-  hash: String! #extrensic hash
+  attester: String! # DID of the attester
+  cType: String! # Id of the CType used in this attestation
   delegationID: String
   revokedDate: Date
   revokedBlock: BigInt
-  revokedClaimHash: String
+  revoker: String
 }
 
 type Aggregation @entity {
-  # This is an entity allowing us to calculate all the attesations created and revoked in one day
-  id: ID ! # AAAA-MM-DD
+  # This is an entity allowing us to calculate all the attestations created and revoked per CType
+  id: ID! #id is CType id
   attestationsCreated: Int!
   attestationsRevoked: Int!
 }
