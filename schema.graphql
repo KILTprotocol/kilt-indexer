@@ -3,7 +3,9 @@
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
 type Attestation @entity {
-  id: ID! # id is ClaimHashOf
+  id: ID! # event id, i.e.: block number and event index
+  claimHash: String! # ClaimHashOf, can be duplicated
+  valid: Boolean!
   createdDate: Date! # date of creation of the attestation
   createdBlock: BigInt! # block of creation of the attestation
   createdBlockHash: String! # block hash as hex string
@@ -13,7 +15,8 @@ type Attestation @entity {
   delegationID: String
   revokedDate: Date
   revokedBlock: BigInt
-  revoker: String
+  removedDate: Date
+  removedBlock: BigInt
 }
 
 type Aggregation @entity {

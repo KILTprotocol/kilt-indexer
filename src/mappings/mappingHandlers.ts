@@ -13,7 +13,10 @@ export async function handleAttestationCreated(
     event: {
       data: [attesterID, claimHash, cTypeHash, delegationID],
     },
+    idx,
   } = event;
+
+  const blockNumber = event.block.block.header.number.toBigInt();
 
   // unpack delegation, which has changed between runtimes
   let delegation: typeof delegationID | undefined = delegationID;
@@ -26,9 +29,11 @@ export async function handleAttestationCreated(
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
 
   const attestation = Attestation.create({
-    id: claimHash.toHex(),
+    id: `${blockNumber.toString(10)}-${idx}`,
+    claimHash: claimHash.toHex(),
+    valid: true,
     createdDate: event.block.timestamp,
-    createdBlock: event.block.block.header.number.toBigInt(),
+    createdBlock: blockNumber,
     createdBlockHash: event.block.block.hash.toHex(),
     creator: event.extrinsic!.extrinsic.signer.toString(),
     cType: cTypeId,
@@ -54,12 +59,18 @@ export async function handleAttestationRevoked(
     },
   } = event;
 
-  const attestation = await Attestation.get(claimHash.toString());
+  // There could be two attestations with the same claim hash.
+  // Given that the older ones has been removed
+  const attestations = await Attestation.getByFields([
+    ["id", "=", claimHash.toString()],
+  ]);
+
+  // Get the newest version
+  const [attestation] = attestations.slice(-1);
 
   assert(attestation, "Can't find an attestation");
   attestation.revokedDate = event.block.timestamp;
   attestation.revokedBlock = event.block.block.header.number.toBigInt();
-  attestation.revoker = accountID.toString();
 
   await attestation.save();
 
@@ -68,7 +79,7 @@ export async function handleAttestationRevoked(
 
 export async function handleCTypeAggregations(
   cType: string,
-  type: "CREATED" | "REVOKED"
+  type: "CREATED" | "REVOKED" | "REMOVED"
 ): Promise<void> {
   let aggregation = await Aggregation.get(cType);
   if (!aggregation) {

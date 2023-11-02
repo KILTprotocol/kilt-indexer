@@ -69,15 +69,15 @@ const project: SubstrateProject = {
               method: "AttestationRevoked",
             },
           },
-          // We could not find any events for this module in the blocks explored
-          /*{
+
+          {
             kind: SubstrateHandlerKind.Event,
             handler: "handleAttestationRemoved",
             filter: {
               module: "attestation",
               method: "AttestationRemoved",
             },
-          },*/
+          },
         ],
       },
     },
