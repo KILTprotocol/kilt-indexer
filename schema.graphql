@@ -9,7 +9,7 @@ type Attestation @entity {
   createdBlockHash: String! # block hash as hex string
   creator: String! # Account address
   attester: String! # DID of the attester
-  cType: String! # Id of the CType used in this attestation
+  cType: String! # Id of the CType used in this attestation. A.k.a.: cTypeHash
   delegationID: String
   revokedDate: Date
   revokedBlock: BigInt
