@@ -8,10 +8,10 @@ export async function handleAttestationCreated(
   logger.info(
     `New attestation created at block ${event.block.block.header.number}`
   );
-  // A new attestation has been created.\[attester ID, claim hash, CType hash, (optional) delegation ID\]
+  // A new attestation has been created.\[attester DID, claim hash, CType hash, (optional) delegation ID\]
   const {
     event: {
-      data: [attesterID, claimHash, cTypeHash, delegationID],
+      data: [attesterDID, claimHash, cTypeHash, delegationID],
     },
     idx,
   } = event;
@@ -37,7 +37,7 @@ export async function handleAttestationCreated(
     createdBlockHash: event.block.block.hash.toHex(),
     creator: event.extrinsic!.extrinsic.signer.toString(),
     cType: cTypeId,
-    attester: "did:kilt:" + attesterID.toString(),
+    attester: "did:kilt:" + attesterDID.toString(),
     delegationID: delegation?.toHex(),
   });
 
@@ -50,31 +50,96 @@ export async function handleAttestationRevoked(
   event: SubstrateEvent
 ): Promise<void> {
   logger.info(
-    `New attestation revoked at block ${event.block.block.header.number}`
+    `Attestation revoked at block ${event.block.block.header.number}`
   );
-  // An attestation has been revoked.\[account id, claim hash\]
+  // An attestation has been revoked.\[attester DID, claim hash\]
   const {
     event: {
-      data: [accountID, claimHash],
+      data: [attesterDID, claimHash],
     },
   } = event;
 
-  // There could be two attestations with the same claim hash.
-  // Given that the older ones has been removed
+  logger.info(`The whole event: ${JSON.stringify(event.toJSON(), null, 2)}`);
+
+  // There could be several attestations with the same claim hash.
+  // Given that the older ones has been previously removed from the chain state
   const attestations = await Attestation.getByFields([
-    ["id", "=", claimHash.toString()],
+    ["claimHash", "=", claimHash.toHex()],
   ]);
+  // anther way of doing it:
+  // const attestations = await store.getByField(
+  //   "Attestation",
+  //   "id",
+  //   claimHash.toString()
+  // );
+
+  // Get the newest version of the attestation
+  const [attestation] = attestations.slice(-1);
+
+  // the attestation (creation) could have happened before the querying start block
+  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  attestation.revokedDate = event.block.timestamp;
+  attestation.revokedBlock = event.block.block.header.number.toBigInt();
+  attestation.valid = false;
+
+  await attestation.save();
+
+  // Experiment:
+  logger.info(`printing the attestations array:`);
+
+  attestations.forEach((value, index) => {
+    logger.info(
+      `index: ${index}  value: ${JSON.stringify(
+        {
+          id: value.id,
+          claimHash: value.claimHash,
+          blockNumber: value.createdBlock.toString(),
+          createdAt: value.createdDate,
+        },
+        null,
+        2
+      )}`
+    );
+  });
+
+  await handleCTypeAggregations(attestation.cType, "REVOKED");
+}
+
+export async function handleAttestationRemoved(
+  event: SubstrateEvent
+): Promise<void> {
+  logger.info(
+    `Attestation removed at block ${event.block.block.header.number}`
+  );
+  // An attestation has been removed.\[attester DID, claim hash\]
+  const {
+    event: {
+      data: [attesterDID, claimHash],
+    },
+  } = event;
+
+  logger.info(`The whole event:: ${event.toHuman()}`);
+
+  // There could be several attestations with the same claim hash.
+  // Given that the older ones has been previously removed from the chain state
+  const attestations = await Attestation.getByFields([
+    ["claimHash", "=", claimHash.toHex()],
+  ]);
+
+  logger.info(`printing the attestations array: ${attestations}`);
 
   // Get the newest version
   const [attestation] = attestations.slice(-1);
 
-  assert(attestation, "Can't find an attestation");
-  attestation.revokedDate = event.block.timestamp;
-  attestation.revokedBlock = event.block.block.header.number.toBigInt();
+  // the attestation (creation) could have happened before the querying start block
+  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}`);
+  attestation.removedDate = event.block.timestamp;
+  attestation.removedBlock = event.block.block.header.number.toBigInt();
+  attestation.valid = false;
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cType, "REVOKED");
+  await handleCTypeAggregations(attestation.cType, "REMOVED");
 }
 
 export async function handleCTypeAggregations(
@@ -87,13 +152,23 @@ export async function handleCTypeAggregations(
       id: cType,
       attestationsCreated: 0,
       attestationsRevoked: 0,
+      attestationsRemoved: 0,
     });
   }
-  if (type === "CREATED") {
-    aggregation.attestationsCreated++;
-  } else if (type === "REVOKED") {
-    aggregation.attestationsRevoked++;
-  }
 
+  switch (type) {
+    case "CREATED":
+      aggregation.attestationsCreated++;
+
+      break;
+    case "REVOKED":
+      aggregation.attestationsRevoked++;
+
+      break;
+    case "REMOVED":
+      aggregation.attestationsRemoved++;
+
+      break;
+  }
   await aggregation.save();
 }
