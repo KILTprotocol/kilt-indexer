@@ -5,7 +5,7 @@
 type Block @entity {
   id: ID! # Block Hash as a string of a hexadecimal number
   number: BigInt! @index # Block Ordinal Number from genesis block
-  createdDate: Date! # Date of creation of this block
+  timeStamp: Date! # Date of creation of this block
 }
 
 type Attestation @entity {
@@ -32,7 +32,6 @@ type Aggregation @entity {
   attestationsRevoked: Int!
   attestationsRemoved: Int!
 }
-
 # Work in Progress:
 type NewAttestation @entity {
   id: ID! # event id, i.e.: block number and event index
@@ -45,15 +44,4 @@ type NewAttestation @entity {
   creationBlock: Block!
   revocationBlock: Block
   removalBlock: Block
-}
-
-type NewAggregation @entity {
-  # This is an entity allowing us to calculate all the attestations created and revoked per CType
-  id: ID! #id is CType hash
-  attestationsCreated: [Attestation]! # Array has to at least be define as []
-  attestationsRevoked: [Attestation]!
-  attestationsRemoved: [Attestation]!
-  countOfAttestationsCreated: Int!
-  countOfAttestationsRevoked: Int!
-  countOfAttestationsRemoved: Int!
 }

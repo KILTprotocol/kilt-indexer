@@ -1,5 +1,5 @@
 import { SubstrateEvent } from "@subql/types";
-import { Aggregation, Attestation } from "../types";
+import { Aggregation, Attestation, Block, NewAttestation } from "../types";
 import assert from "assert";
 
 export async function handleAttestationCreated(
@@ -9,6 +9,7 @@ export async function handleAttestationCreated(
     `New attestation created at block ${event.block.block.header.number}`
   );
   // A new attestation has been created.\[attester DID, claim hash, CType hash, (optional) delegation ID\]
+  // on Polkadot.js the delegationID is called authorizationId
   const {
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
@@ -16,7 +17,12 @@ export async function handleAttestationCreated(
     idx,
   } = event;
 
+  logger.info(`The whole event: ${JSON.stringify(event.toJSON(), null, 2)}`);
+  const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
+
   const blockNumber = event.block.block.header.number.toBigInt();
+  const blockHash = event.block.block.hash.toHex();
+  const payer = event.extrinsic!.extrinsic.signer.toString();
 
   // unpack delegation, which has changed between runtimes
   let delegation: typeof delegationID | undefined = delegationID;
@@ -26,16 +32,14 @@ export async function handleAttestationCreated(
     delegation = (delegation as any).value;
   }
 
-  const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
-
   const attestation = Attestation.create({
     id: `${blockNumber.toString(10)}-${idx}`,
     claimHash: claimHash.toHex(),
     valid: true,
     createdDate: event.block.timestamp,
     createdBlock: blockNumber,
-    createdBlockHash: event.block.block.hash.toHex(),
-    creator: event.extrinsic!.extrinsic.signer.toString(),
+    createdBlockHash: blockHash,
+    creator: payer,
     cType: cTypeId,
     attester: "did:kilt:" + attesterDID.toString(),
     delegationID: delegation?.toHex(),
@@ -43,6 +47,35 @@ export async function handleAttestationCreated(
 
   await attestation.save();
 
+  // New version:
+
+  const creationBlock = Block.create({
+    id: blockHash,
+    number: blockNumber,
+    timeStamp: event.block.timestamp,
+  });
+
+  const printableBlock = {
+    id: creationBlock.id,
+    number: creationBlock.number.toString(),
+    timeStamp: creationBlock.timeStamp,
+  };
+  logger.info(`Block being saved: ${JSON.stringify(printableBlock, null, 2)}`);
+
+  await creationBlock.save();
+
+  const newAttestation = NewAttestation.create({
+    id: `${blockNumber.toString(10)}-${idx}`,
+    claimHash: claimHash.toHex(),
+    cType: cTypeId,
+    attester: "did:kilt:" + attesterDID.toString(),
+    payer: payer,
+    valid: true,
+    creationBlockId: blockHash,
+    delegationID: delegation?.toHex(),
+  });
+
+  await newAttestation.save();
   await handleCTypeAggregations(cTypeId, "CREATED");
 }
 
