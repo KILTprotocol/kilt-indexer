@@ -3,7 +3,7 @@
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
 type Block @entity {
-  hash: ID! # Block Hash as a string of a hexadecimal number
+  id: ID! # Block Hash as a string of a hexadecimal number
   number: BigInt! @index # Block Ordinal Number from genesis block
   createdDate: Date! # Date of creation of this block
 }
@@ -33,8 +33,7 @@ type Aggregation @entity {
   attestationsRemoved: Int!
 }
 
-
-// Work in Progress:
+# Work in Progress:
 type NewAttestation @entity {
   id: ID! # event id, i.e.: block number and event index
   claimHash: String! @index # ClaimHashOf, can be duplicated
@@ -43,7 +42,7 @@ type NewAttestation @entity {
   payer: String! # Account address
   delegationID: String
   valid: Boolean!
-  creationBlock: Block! 
+  creationBlock: Block!
   revocationBlock: Block
   removalBlock: Block
 }
