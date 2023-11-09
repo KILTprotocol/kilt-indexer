@@ -64,6 +64,8 @@ export async function handleAttestationCreated(
 
   await creationBlock.save();
 
+  // const counter = await Attestation.getByFields()
+
   const newAttestation = NewAttestation.create({
     id: `${blockNumber.toString(10)}-${idx}`,
     claimHash: claimHash.toHex(),
@@ -106,10 +108,10 @@ export async function handleAttestationRevoked(
   //   claimHash.toString()
   // );
 
-  // Get the newest version of the attestation
-  const [attestation] = attestations.slice(-1);
+  // Get the attestation that is still valid
+  const attestation = attestations.find((atty) => atty.valid);
 
-  // the attestation (creation) could have happened before the querying start block
+  // the attestation (creation) could have happened before the DB start block
   assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
   attestation.revokedDate = event.block.timestamp;
   attestation.revokedBlock = event.block.block.header.number.toBigInt();
