@@ -24,14 +24,13 @@ export async function handleAttestationCreated(
 
   logger.info(`The whole event: ${JSON.stringify(event.toJSON(), null, 2)}`);
 
-  const blockHash = await saveBlock(event);
-  const blockNumber = event.block.block.header.number.toBigInt();
+  const blockNumber = await saveBlock(event);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const payer = event.extrinsic!.extrinsic.signer.toString();
 
   // craft my event ordinal index:
   const attestations = await Attestation.getByFields([
-    ["creationBlockId", "=", blockHash],
+    ["creationBlockId", "=", blockNumber],
   ]);
   /** Only counts the number of attestations created on one block.
    * It will not match with the event index from subscan that count all kinds of events.
@@ -47,13 +46,13 @@ export async function handleAttestationCreated(
   }
 
   const newAttestation = Attestation.create({
-    id: `${blockNumber.toString(10)}#${eventIndex}`,
+    id: `${blockNumber}-${eventIndex}`,
     claimHash: claimHash.toHex(),
     cTypeId: cTypeId,
     attester: "did:kilt:" + attesterDID.toString(),
     payer: payer,
     valid: true,
-    creationBlockId: blockHash,
+    creationBlockId: blockNumber,
     delegationID: delegation?.toHex(),
   });
 
@@ -81,11 +80,11 @@ export async function handleAttestationRevoked(
   const attestations = await Attestation.getByFields([
     ["claimHash", "=", claimHash.toHex()],
   ]);
-  // anther way of doing it:
+  // another way of doing it:
   // const attestations = await store.getByField(
   //   "Attestation",
   //   "id",
-  //   claimHash.toString()
+  //   claimHash.toHex()
   // );
 
   // Get the attestation that is still valid
@@ -140,14 +139,14 @@ export async function handleAttestationRemoved(
 }
 
 export async function handleCTypeAggregations(
-  cType: string,
+  cTypeId: string,
   type: "CREATED" | "REVOKED" | "REMOVED"
 ): Promise<void> {
-  let aggregation = await CType.get(cType);
+  let aggregation = await CType.get(cTypeId);
   if (!aggregation) {
     // this happens when the DB starts later than the creation of the cType
     aggregation = CType.create({
-      id: cType,
+      id: cTypeId,
       attestationsCreated: 0,
       attestationsRevoked: 0,
       attestationsRemoved: 0,
@@ -180,23 +179,23 @@ export async function handleCTypeAggregations(
  * @returns Returns the Block-Hash, also known as Block-ID.
  */
 async function saveBlock(event: SubstrateEvent) {
-  const blockNumber = event.block.block.header.number.toBigInt();
+  const blockNumber = event.block.block.header.number.toString();
   const blockHash = event.block.block.hash.toHex();
   const issuanceDate = event.block.timestamp;
 
-  const exists = await Block.get(blockHash);
+  const exists = await Block.get(blockNumber);
   // Existence check not really necessary if we trust the chain
   // If you create the same block twice, it just get overwritten with the same info
   if (!exists) {
     const block = Block.create({
-      id: blockHash,
-      number: blockNumber,
+      id: blockNumber,
+      hash: blockHash,
       timeStamp: issuanceDate,
     });
 
     const printableBlock = {
-      id: block.id,
-      number: block.number.toString(),
+      number: block.id,
+      hash: block.hash,
       timeStamp: block.timeStamp,
     };
     logger.info(
@@ -207,14 +206,14 @@ async function saveBlock(event: SubstrateEvent) {
   } else {
     // To prove my theory:
     if (
-      blockHash !== exists.id ||
-      blockNumber !== exists.number ||
+      blockHash !== exists.hash ||
+      blockNumber !== exists.id ||
       issuanceDate !== exists.timeStamp
     ) {
-      throw new Error(`Inconsistent Block! ${blockHash}`);
+      throw new Error(`Inconsistent Block! ${blockNumber}`);
     }
 
     // TODO: delete that Existence Check (& the printing) after run it for a while
   }
-  return blockHash;
+  return blockNumber;
 }

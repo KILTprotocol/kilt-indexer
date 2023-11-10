@@ -3,8 +3,8 @@
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
 type Block @entity {
-  id: ID! # Block Hash as a string of a hexadecimal number
-  number: BigInt! @index # Block Ordinal Number from genesis block
+  id: ID! # Block Ordinal Number from genesis block
+  hash: String! @index # Block Hash as a string of a hexadecimal number
   timeStamp: Date! # Date of creation of this block
 }
 
@@ -23,7 +23,7 @@ type Attestation @entity {
 
 type CType @entity {
   # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
-  id: ID! #id is CType hash
+  id: ID! #id is  "kilt:ctype:" + CType hash
   coiningBlock: Block
   author: String # DID of the creator
   attestationsCreated: Int!
