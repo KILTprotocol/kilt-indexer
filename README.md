@@ -96,7 +96,7 @@ Tip: Commas are irrelevant.
 ```
 fragment wholeBlock on Block{
   id,
-  number,
+  hash,
   timeStamp,
 }
 ```
@@ -105,7 +105,7 @@ fragment wholeBlock on Block{
 fragment wholeAttestation on Attestation {
   id,
   claimHash,
-  cType,
+  cTypeId,
   attester,
   payer,
   delegationID,
@@ -169,5 +169,29 @@ query {
         }
       }
     }}
+}
+```
+
+4. ** Find all cTypes that have been used at least once: **
+
+```
+query {
+  cTypes(filter: {attestations: {some: {id: {isNull: false}}}}){
+    totalCount
+    nodes {
+      id,
+      author
+      coiningBlock {  ...wholeBlock }
+      attestationsCreated,
+      attestationsRevoked,
+      attestationsRemoved,
+      attestations(orderBy: ID_ASC) {
+        totalCount
+        nodes{
+          ...wholeAttestation
+        }
+      }
+    }
+  }
 }
 ```
