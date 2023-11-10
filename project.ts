@@ -78,6 +78,14 @@ const project: SubstrateProject = {
               method: "AttestationRemoved",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleCTypeCreated",
+            filter: {
+              module: "ctype",
+              method: "CTypeCreated",
+            },
+          },
         ],
       },
     },

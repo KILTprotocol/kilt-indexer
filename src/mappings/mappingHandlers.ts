@@ -22,7 +22,13 @@ export async function handleAttestationCreated(
 
   // phase.applyExtrinsic is a counter but just for the extrinsic, not the event
 
-  logger.info(`The whole event: ${JSON.stringify(event.toJSON(), null, 2)}`);
+  logger.info(
+    `The whole AttestationCreated event: ${JSON.stringify(
+      event.toJSON(),
+      null,
+      2
+    )}`
+  );
 
   const blockNumber = await saveBlock(event);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
@@ -73,7 +79,13 @@ export async function handleAttestationRevoked(
     },
   } = event;
 
-  logger.info(`The whole event: ${JSON.stringify(event.toJSON(), null, 2)}`);
+  logger.info(
+    `The whole AttestationRevoked event: ${JSON.stringify(
+      event.toJSON(),
+      null,
+      2
+    )}`
+  );
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
@@ -114,7 +126,7 @@ export async function handleAttestationRemoved(
     },
   } = event;
 
-  logger.info(`The whole event:: ${event.toHuman()}`);
+  logger.info(`The whole AttestationRemoved event: ${event.toHuman()}`);
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
@@ -136,6 +148,36 @@ export async function handleAttestationRemoved(
   await attestation.save();
 
   await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
+}
+
+export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
+  logger.info(`New CType coined at block ${event.block.block.header.number}`);
+  // A new CType has been created.\[creator identifier, CType hash\]"
+
+  const {
+    event: {
+      data: [authorDID, cTypeHash],
+    },
+  } = event;
+
+  logger.info(
+    `The whole CTypeCreated event: ${JSON.stringify(event.toJSON(), null, 2)}`
+  );
+
+  const blockNumber = await saveBlock(event);
+  const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
+  const author = "did:kilt:" + authorDID.toString();
+
+  const newCType = CType.create({
+    id: cTypeId,
+    coiningBlockId: blockNumber,
+    author: author,
+    attestationsCreated: 0,
+    attestationsRevoked: 0,
+    attestationsRemoved: 0,
+  });
+
+  await newCType.save();
 }
 
 export async function handleCTypeAggregations(
@@ -193,14 +235,13 @@ async function saveBlock(event: SubstrateEvent) {
       timeStamp: issuanceDate,
     });
 
-    const printableBlock = {
-      number: block.id,
-      hash: block.hash,
-      timeStamp: block.timeStamp,
-    };
-    logger.info(
-      `Block being saved: ${JSON.stringify(printableBlock, null, 2)}`
-    );
+    // need while working with BigInts
+    // const printableBlock = {
+    //   number: block.id,
+    //   hash: block.hash,
+    //   timeStamp: block.timeStamp,
+    // };
+    logger.info(`Block being saved: ${JSON.stringify(block, null, 2)}`);
 
     await block.save();
   } else {
