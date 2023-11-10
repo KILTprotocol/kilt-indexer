@@ -11,7 +11,7 @@ type Block @entity {
 type Attestation @entity {
   id: ID! # event id, i.e.: block number and event index
   claimHash: String! @index # ClaimHashOf, can be duplicated
-  cType: String! # Id of the CType used in this attestation. A.k.a.: cTypeHash
+  cType: CType! # Id of the CType used in this attestation. A.k.a.: cTypeHash
   attester: String! # DID of the attester
   payer: String! # Account address
   delegationID: String
@@ -21,9 +21,11 @@ type Attestation @entity {
   removalBlock: Block
 }
 
-type Aggregation @entity {
-  # This is an entity allowing us to calculate all the attestations created and revoked per CType
+type CType @entity {
+  # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
   id: ID! #id is CType hash
+  coiningBlock: Block
+  author: String # DID of the creator
   attestationsCreated: Int!
   attestationsRevoked: Int!
   attestationsRemoved: Int!

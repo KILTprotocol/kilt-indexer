@@ -1,5 +1,5 @@
 import { SubstrateEvent } from "@subql/types";
-import { Aggregation, Attestation, Block } from "../types";
+import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
 export async function handleAttestationCreated(
@@ -49,7 +49,7 @@ export async function handleAttestationCreated(
   const newAttestation = Attestation.create({
     id: `${blockNumber.toString(10)}#${eventIndex}`,
     claimHash: claimHash.toHex(),
-    cType: cTypeId,
+    cTypeId: cTypeId,
     attester: "did:kilt:" + attesterDID.toString(),
     payer: payer,
     valid: true,
@@ -99,7 +99,7 @@ export async function handleAttestationRevoked(
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cType, "REVOKED");
+  await handleCTypeAggregations(attestation.cTypeId, "REVOKED");
 }
 
 export async function handleAttestationRemoved(
@@ -136,20 +136,23 @@ export async function handleAttestationRemoved(
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cType, "REMOVED");
+  await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
 }
 
 export async function handleCTypeAggregations(
   cType: string,
   type: "CREATED" | "REVOKED" | "REMOVED"
 ): Promise<void> {
-  let aggregation = await Aggregation.get(cType);
+  let aggregation = await CType.get(cType);
   if (!aggregation) {
-    aggregation = Aggregation.create({
+    // this happens when the DB starts later than the creation of the cType
+    aggregation = CType.create({
       id: cType,
       attestationsCreated: 0,
       attestationsRevoked: 0,
       attestationsRemoved: 0,
+      // author: undefined,
+      // coiningBlockId: undefined
     });
   }
 
@@ -172,7 +175,6 @@ export async function handleCTypeAggregations(
 
 /**
  * Saves Block information from the Event into our Data Base.
- *
  *
  * @param event
  * @returns Returns the Block-Hash, also known as Block-ID.
