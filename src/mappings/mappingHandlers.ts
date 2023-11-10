@@ -14,7 +14,6 @@ export async function handleAttestationCreated(
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
     },
-    idx,
   } = event;
 
   // idx describes the type of event, not the count:
@@ -235,7 +234,7 @@ async function saveBlock(event: SubstrateEvent) {
       timeStamp: issuanceDate,
     });
 
-    // need while working with BigInts
+    // need while working with BigInts:
     // const printableBlock = {
     //   number: block.id,
     //   hash: block.hash,
@@ -246,15 +245,14 @@ async function saveBlock(event: SubstrateEvent) {
     await block.save();
   } else {
     // To prove my theory:
-    if (
-      blockHash !== exists.hash ||
-      blockNumber !== exists.id ||
-      issuanceDate !== exists.timeStamp
-    ) {
-      throw new Error(`Inconsistent Block! ${blockNumber}`);
-    }
+    const conditions: boolean =
+      blockHash === exists.hash &&
+      blockNumber === exists.id &&
+      issuanceDate === exists.timeStamp;
 
-    // TODO: delete that Existence Check (& the printing) after run it for a while
+    assert(conditions, `Inconsistent Block! ${blockNumber}`);
+
+    // TODO: delete that Existence Check (& the printing) after running it for a while
   }
   return blockNumber;
 }
