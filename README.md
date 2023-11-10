@@ -34,34 +34,6 @@ The simplest way to run your project is by running `yarn dev` or `npm run-script
 
 You can observe the three services start, and once all are running (it may take a few minutes on your first start), please open your browser and head to [http://localhost:3000](http://localhost:3000) - you should see a GraphQL playground showing with the schemas ready to query. [Read the docs for more information](https://academy.subquery.network/run_publish/run.html) or [explore the possible service configuration for running SubQuery](https://academy.subquery.network/run_publish/references.html).
 
-## Query your project
-
-For this project, you can try to query with the following GraphQL code to get a taste of how it works.
-
-```graphql
-query {
-  attestations(first: 10, orderBy: CREATED_DATE_DESC) {
-    nodes {
-      id
-      createdDate
-      attestationId
-      hash
-      delegationID
-      revokedDate
-    }
-  }
-  aggregations(orderBy: ID_DESC) {
-    nodes {
-      id
-      attestationsCreated
-      attestationsRevoked
-    }
-  }
-}
-```
-
-You can explore the different possible queries and entities to help you with GraphQL using the documentation draw on the right.
-
 ## Publish your project
 
 SubQuery is open-source, meaning you have the freedom to run it in the following three ways:
