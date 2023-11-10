@@ -83,7 +83,46 @@ Take a look at some of our advanced features to take your project to the next le
 
 The fastest way to get support is by [searching our documentation](https://academy.subquery.network), or by [joining our discord](https://discord.com/invite/subquery) and messaging us in the `#technical-support` channel.
 
-## Query Examples:
+## For Queries:
+
+For this project, you can visit http://localhost:3000/ and try to query on of the following GraphQL code to get a taste of how it works.
+
+You can explore the different possible queries and entities to help you with GraphQL using the documentation draw on the right.
+
+Tip: Commas are irrelevant.
+
+### Useful Fragments:
+
+```
+fragment wholeBlock on Block{
+  id,
+  number,
+  timeStamp,
+}
+```
+
+```
+fragment wholeAttestation on Attestation {
+  id,
+  claimHash,
+  cType,
+  attester,
+  payer,
+  delegationID,
+  valid,
+  creationBlock {
+    ...wholeBlock,
+  },
+  revocationBlock  {
+    ...wholeBlock,
+  },
+  removalBlock {
+    ...wholeBlock,
+  },
+}
+```
+
+### Query Examples:
 
 1. ** Find Attestation by ID:**
 
@@ -91,10 +130,44 @@ The fastest way to get support is by [searching our documentation](https://acade
 query {
   attestations (filter: { id: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ){
     nodes{
-      id
-      createdDate
+      ...wholeBlock,
     }
   }
 }
 
+```
+
+2. ** Find all revoked attestations**
+
+```
+query {
+  attestations(filter: {revocationBlockId: {isNull: false}} ) {
+    totalCount,
+    nodes{
+      ...wholeAttestation,
+    }
+	}
+}
+```
+
+3. ** Find how many attestations were made on a block: **
+
+```
+query {
+  blocks(filter: {number: {equalTo: "3396407"}}){
+    nodes {
+    id,
+    timeStamp,
+    number,
+      attestationsByCreationBlockId {
+        totalCount,
+        nodes{
+          id,
+          cType,
+          claimHash,
+          attester,
+        }
+      }
+    }}
+}
 ```

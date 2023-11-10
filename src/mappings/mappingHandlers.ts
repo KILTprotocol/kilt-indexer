@@ -1,5 +1,5 @@
 import { SubstrateEvent } from "@subql/types";
-import { Aggregation, Attestation, Block, NewAttestation } from "../types";
+import { Aggregation, Attestation, Block } from "../types";
 import assert from "assert";
 
 export async function handleAttestationCreated(
@@ -17,12 +17,26 @@ export async function handleAttestationCreated(
     idx,
   } = event;
 
-  logger.info(`The whole event: ${JSON.stringify(event.toJSON(), null, 2)}`);
-  const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
+  // idx describes the type of event, not the count:
+  // Ex.: idx= 0x3e00 = 64:00 = Attestation Pallet: 0th Event (att. created)
 
+  // phase.applyExtrinsic is a counter but just for the extrinsic, not the event
+
+  logger.info(`The whole event: ${JSON.stringify(event.toJSON(), null, 2)}`);
+
+  const blockHash = await saveBlock(event);
   const blockNumber = event.block.block.header.number.toBigInt();
-  const blockHash = event.block.block.hash.toHex();
+  const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const payer = event.extrinsic!.extrinsic.signer.toString();
+
+  // craft my event ordinal index:
+  const attestations = await Attestation.getByFields([
+    ["creationBlockId", "=", blockHash],
+  ]);
+  /** Only counts the number of attestations created on one block.
+   * It will not match with the event index from subscan that count all kinds of events.
+   */
+  const eventIndex = attestations.length;
 
   // unpack delegation, which has changed between runtimes
   let delegation: typeof delegationID | undefined = delegationID;
@@ -32,42 +46,8 @@ export async function handleAttestationCreated(
     delegation = (delegation as any).value;
   }
 
-  const attestation = Attestation.create({
-    id: `${blockNumber.toString(10)}-${idx}`,
-    claimHash: claimHash.toHex(),
-    valid: true,
-    createdDate: event.block.timestamp,
-    createdBlock: blockNumber,
-    createdBlockHash: blockHash,
-    creator: payer,
-    cType: cTypeId,
-    attester: "did:kilt:" + attesterDID.toString(),
-    delegationID: delegation?.toHex(),
-  });
-
-  await attestation.save();
-
-  // New version:
-
-  const creationBlock = Block.create({
-    id: blockHash,
-    number: blockNumber,
-    timeStamp: event.block.timestamp,
-  });
-
-  const printableBlock = {
-    id: creationBlock.id,
-    number: creationBlock.number.toString(),
-    timeStamp: creationBlock.timeStamp,
-  };
-  logger.info(`Block being saved: ${JSON.stringify(printableBlock, null, 2)}`);
-
-  await creationBlock.save();
-
-  // const counter = await Attestation.getByFields()
-
-  const newAttestation = NewAttestation.create({
-    id: `${blockNumber.toString(10)}-${idx}`,
+  const newAttestation = Attestation.create({
+    id: `${blockNumber.toString(10)}#${eventIndex}`,
     claimHash: claimHash.toHex(),
     cType: cTypeId,
     attester: "did:kilt:" + attesterDID.toString(),
@@ -113,29 +93,11 @@ export async function handleAttestationRevoked(
 
   // the attestation (creation) could have happened before the DB start block
   assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
-  attestation.revokedDate = event.block.timestamp;
-  attestation.revokedBlock = event.block.block.header.number.toBigInt();
+
+  attestation.revocationBlockId = await saveBlock(event);
   attestation.valid = false;
 
   await attestation.save();
-
-  // Experiment:
-  logger.info(`printing the attestations array:`);
-
-  attestations.forEach((value, index) => {
-    logger.info(
-      `index: ${index}  value: ${JSON.stringify(
-        {
-          id: value.id,
-          claimHash: value.claimHash,
-          blockNumber: value.createdBlock.toString(),
-          createdAt: value.createdDate,
-        },
-        null,
-        2
-      )}`
-    );
-  });
 
   await handleCTypeAggregations(attestation.cType, "REVOKED");
 }
@@ -163,13 +125,13 @@ export async function handleAttestationRemoved(
 
   logger.info(`printing the attestations array: ${attestations}`);
 
-  // Get the newest version
-  const [attestation] = attestations.slice(-1);
+  // Get the attestation that still has not been removed yet:
+  const attestation = attestations.find((atty) => atty.removalBlockId === null);
 
-  // the attestation (creation) could have happened before the querying start block
+  // the attestation (creation) could have happened before the DB start block
   assert(attestation, `Can't find attestation of Claim hash: ${claimHash}`);
-  attestation.removedDate = event.block.timestamp;
-  attestation.removedBlock = event.block.block.header.number.toBigInt();
+
+  attestation.revocationBlockId = await saveBlock(event);
   attestation.valid = false;
 
   await attestation.save();
@@ -206,4 +168,51 @@ export async function handleCTypeAggregations(
       break;
   }
   await aggregation.save();
+}
+
+/**
+ * Saves Block information from the Event into our Data Base.
+ *
+ *
+ * @param event
+ * @returns Returns the Block-Hash, also known as Block-ID.
+ */
+async function saveBlock(event: SubstrateEvent) {
+  const blockNumber = event.block.block.header.number.toBigInt();
+  const blockHash = event.block.block.hash.toHex();
+  const issuanceDate = event.block.timestamp;
+
+  const exists = await Block.get(blockHash);
+  // Existence check not really necessary if we trust the chain
+  // If you create the same block twice, it just get overwritten with the same info
+  if (!exists) {
+    const block = Block.create({
+      id: blockHash,
+      number: blockNumber,
+      timeStamp: issuanceDate,
+    });
+
+    const printableBlock = {
+      id: block.id,
+      number: block.number.toString(),
+      timeStamp: block.timeStamp,
+    };
+    logger.info(
+      `Block being saved: ${JSON.stringify(printableBlock, null, 2)}`
+    );
+
+    await block.save();
+  } else {
+    // To prove my theory:
+    if (
+      blockHash !== exists.id ||
+      blockNumber !== exists.number ||
+      issuanceDate !== exists.timeStamp
+    ) {
+      throw new Error(`Inconsistent Block! ${blockHash}`);
+    }
+
+    // TODO: delete that Existence Check (& the printing) after run it for a while
+  }
+  return blockHash;
 }
