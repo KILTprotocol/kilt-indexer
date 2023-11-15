@@ -9,7 +9,6 @@ export async function handleAttestationCreated(
     `New attestation created at block ${event.block.block.header.number}`
   );
   // A new attestation has been created.\[attester DID, claim hash, CType hash, (optional) delegation ID\]
-  // on Polkadot.js the delegationID is called authorizationId
   const {
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
@@ -43,6 +42,8 @@ export async function handleAttestationCreated(
   const eventIndex = attestations.length;
 
   // unpack delegation, which has changed between runtimes
+  // old runtime: "type_name":"Option<DelegationNodeIdOf>" --> was never used XD
+  // new runtime: "type_name":"Option<AuthorizationIdOf>" --> value is nested
   let delegation: typeof delegationID | undefined = delegationID;
   delegation = (delegation as any).unwrapOr(undefined);
   // later delegation ids are wrapped in an enum
@@ -234,12 +235,6 @@ async function saveBlock(event: SubstrateEvent) {
       timeStamp: issuanceDate,
     });
 
-    // need while working with BigInts:
-    // const printableBlock = {
-    //   number: block.id,
-    //   hash: block.hash,
-    //   timeStamp: block.timeStamp,
-    // };
     logger.info(`Block being saved: ${JSON.stringify(block, null, 2)}`);
 
     await block.save();
