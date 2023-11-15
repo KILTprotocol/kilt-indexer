@@ -244,7 +244,7 @@ async function saveBlock(event: SubstrateEvent) {
     const conditions: boolean =
       blockHash === exists.hash &&
       blockNumber === exists.id &&
-      issuanceDate === exists.timeStamp;
+      issuanceDate.getTime() === exists.timeStamp.getTime();
 
     assert(conditions, `Inconsistent Block! ${blockNumber}`);
 
