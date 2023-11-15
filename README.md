@@ -63,9 +63,12 @@ The fastest way to get support is by [searching our documentation](https://acade
 
 ## For Queries:
 
-For this project, you can visit http://localhost:3000/ and try to query on of the following GraphQL code to get a taste of how it works.
+For this project, you can visit the playground under http://localhost:3000/ and try to query on of the following GraphQL code to get a taste of how it works.
 
 You can explore the different possible queries and entities to help you with GraphQL using the documentation draw on the right.
+
+Most of the example queries below take advantage of the example fragments.
+You need to add the fragments to the playground as well, if you want to run queries using those fragments.
 
 Tip: Commas are irrelevant.
 
