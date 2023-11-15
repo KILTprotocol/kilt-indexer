@@ -4,7 +4,7 @@
 
 type Block @entity {
   id: ID! # Block Ordinal Number from genesis block
-  hash: String! @index # Block Hash as a string of a hexadecimal number
+  hash: String! @index(unique: true) # Block Hash as hex-string
   timeStamp: Date! # Date of creation of this block
 }
 
