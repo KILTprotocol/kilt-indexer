@@ -1,4 +1,4 @@
-import { SubstrateEvent } from "@subql/types";
+import type { SubstrateEvent } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
