@@ -162,7 +162,7 @@ query {
     nodes {
       id,
       author
-      coiningBlock {  ...wholeBlock }
+      registrationBlock {  ...wholeBlock }
       attestationsCreated,
       attestationsRevoked,
       attestationsRemoved,
