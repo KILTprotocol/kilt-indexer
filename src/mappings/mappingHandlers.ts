@@ -151,9 +151,10 @@ export async function handleAttestationRemoved(
 }
 
 export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
-  logger.info(`New CType coined at block ${event.block.block.header.number}`);
+  logger.info(
+    `New CType registered at block ${event.block.block.header.number}`
+  );
   // A new CType has been created.\[creator identifier, CType hash\]"
-
   const {
     event: {
       data: [authorDID, cTypeHash],
@@ -170,7 +171,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 
   const newCType = CType.create({
     id: cTypeId,
-    coiningBlockId: blockNumber,
+    registrationBlockId: blockNumber,
     author: author,
     attestationsCreated: 0,
     attestationsRevoked: 0,
@@ -193,7 +194,7 @@ export async function handleCTypeAggregations(
       attestationsRevoked: 0,
       attestationsRemoved: 0,
       // author: undefined,
-      // coiningBlockId: undefined
+      // registrationBlockId: undefined
     });
   }
 
