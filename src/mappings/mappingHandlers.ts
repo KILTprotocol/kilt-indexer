@@ -2,6 +2,8 @@ import type { SubstrateEvent } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
+logger.level = "trace";
+
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
@@ -20,7 +22,7 @@ export async function handleAttestationCreated(
 
   // phase.applyExtrinsic is a counter but just for the extrinsic, not the event
 
-  logger.info(
+  logger.trace(
     `The whole AttestationCreated event: ${JSON.stringify(
       event.toJSON(),
       null,
@@ -79,7 +81,7 @@ export async function handleAttestationRevoked(
     },
   } = event;
 
-  logger.info(
+  logger.trace(
     `The whole AttestationRevoked event: ${JSON.stringify(
       event.toJSON(),
       null,
@@ -126,7 +128,7 @@ export async function handleAttestationRemoved(
     },
   } = event;
 
-  logger.info(`The whole AttestationRemoved event: ${event.toHuman()}`);
+  logger.trace(`The whole AttestationRemoved event: ${event.toHuman()}`);
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
@@ -134,7 +136,7 @@ export async function handleAttestationRemoved(
     ["claimHash", "=", claimHash.toHex()],
   ]);
 
-  logger.info(`printing the attestations array: ${attestations}`);
+  logger.trace(`printing the attestations array: ${attestations}`);
 
   // Get the attestation that still has not been removed yet:
   const attestation = attestations.find((atty) => atty.removalBlockId === null);
@@ -161,7 +163,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     },
   } = event;
 
-  logger.info(
+  logger.trace(
     `The whole CTypeCreated event: ${JSON.stringify(event.toJSON(), null, 2)}`
   );
 
