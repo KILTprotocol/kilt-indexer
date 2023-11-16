@@ -34,6 +34,7 @@ services:
     command:
       - ${SUB_COMMAND:-} # set SUB_COMMAND env variable to "test" to run tests
       - -f=/app
+      - --targetHeight=${CUTOFF_HEIGHT} # SUB_COMMAND needs to be set to "reindex" to have an effect
       - --db-schema=app
       - --workers=4
       - --batch-size=30
