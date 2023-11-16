@@ -188,6 +188,8 @@ export async function handleCTypeAggregations(
   type: "CREATED" | "REVOKED" | "REMOVED"
 ): Promise<void> {
   let aggregation = await CType.get(cTypeId);
+
+  // TODO: Remove this if-statement before deployment!
   if (!aggregation) {
     // this happens when the DB starts later than the creation of the cType
     aggregation = CType.create({
