@@ -126,7 +126,13 @@ export async function handleAttestationRemoved(
     },
   } = event;
 
-  logger.trace(`The whole AttestationRemoved event: ${event.toHuman()}`);
+  logger.trace(
+    `The whole AttestationRemoved event: ${JSON.stringify(
+      event.toJSON(),
+      null,
+      2
+    )}`
+  );
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
@@ -134,15 +140,20 @@ export async function handleAttestationRemoved(
     ["claimHash", "=", claimHash.toHex()],
   ]);
 
-  logger.trace(`printing the attestations array: ${attestations}`);
+  logger.trace(`printing the attestations array:`);
+  attestations.forEach((atty, index) => {
+    logger.trace(
+      `Index: ${index}, attestation: ${JSON.stringify(atty, null, 2)}`
+    );
+  });
 
   // Get the attestation that still has not been removed yet:
-  const attestation = attestations.find((atty) => atty.removalBlockId === null);
+  const attestation = attestations.find((atty) => !atty.removalBlockId);
 
   // the attestation (creation) could have happened before the DB start block
   assert(attestation, `Can't find attestation of Claim hash: ${claimHash}`);
 
-  attestation.revocationBlockId = await saveBlock(event);
+  attestation.removalBlockId = await saveBlock(event);
   attestation.valid = false;
 
   await attestation.save();
