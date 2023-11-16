@@ -61,6 +61,8 @@ Take a look at some of our advanced features to take your project to the next le
 
 The fastest way to get support is by [searching our documentation](https://academy.subquery.network), or by [joining our discord](https://discord.com/invite/subquery) and messaging us in the `#technical-support` channel.
 
+To get more logs while debugging go to `docker-compose.yml` and uncomment `- --log-level=trace`.
+
 ## For Queries:
 
 For this project, you can visit the playground under http://localhost:3000/ and try to query on of the following GraphQL code to get a taste of how it works.
