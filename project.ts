@@ -36,9 +36,8 @@ const project: SubstrateProject = {
      * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
     endpoint: [
-      "wss://spiritnet.api.onfinality.io/public-ws",
       "wss://kilt-rpc.dwellir.com",
-      "wss://spiritnet.kilt.io",
+      "wss://spiritnet.api.onfinality.io/public-ws",
     ],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
