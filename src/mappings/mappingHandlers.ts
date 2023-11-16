@@ -2,8 +2,6 @@ import type { SubstrateEvent } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
-logger.level = "trace";
-
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
@@ -178,6 +176,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     attestationsCreated: 0,
     attestationsRevoked: 0,
     attestationsRemoved: 0,
+    invalidAttestations: 0,
   });
 
   await newCType.save();
@@ -185,7 +184,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 
 export async function handleCTypeAggregations(
   cTypeId: string,
-  type: "CREATED" | "REVOKED" | "REMOVED"
+  action: "CREATED" | "REVOKED" | "REMOVED"
 ): Promise<void> {
   let aggregation = await CType.get(cTypeId);
 
@@ -197,12 +196,21 @@ export async function handleCTypeAggregations(
       attestationsCreated: 0,
       attestationsRevoked: 0,
       attestationsRemoved: 0,
+      invalidAttestations: 0,
       // author: undefined,
       // registrationBlockId: undefined
     });
   }
 
-  switch (type) {
+  const attestationsOfThisCType = await Attestation.getByFields([
+    ["cTypeId", "=", cTypeId],
+  ]);
+
+  aggregation.invalidAttestations = attestationsOfThisCType.filter(
+    (atty) => atty.valid
+  ).length;
+
+  switch (action) {
     case "CREATED":
       aggregation.attestationsCreated++;
 
@@ -240,7 +248,7 @@ async function saveBlock(event: SubstrateEvent) {
       timeStamp: issuanceDate,
     });
 
-    logger.info(`Block being saved: ${JSON.stringify(block, null, 2)}`);
+    logger.trace(`Block being saved: ${JSON.stringify(block, null, 2)}`);
 
     await block.save();
   } else {

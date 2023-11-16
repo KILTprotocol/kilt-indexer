@@ -28,5 +28,6 @@ type CType @entity {
   author: String # DID of the creator
   attestationsCreated: Int!
   attestationsRevoked: Int!
-  attestationsRemoved: Int!
+  attestationsRemoved: Int! # either valid or revoked credentials can be removed.
+  invalidAttestations: Int! # number of credentials neither revoked nor removed.
 }
