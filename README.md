@@ -76,6 +76,9 @@ Tip: Commas are irrelevant.
 
 ### Useful Fragments:
 
+GraphQL provides reusable units called _fragments_.
+Fragments let you construct sets of fields, and then include them in queries where you need to.
+
 ```
 fragment wholeBlock on Block{
   id,
@@ -108,6 +111,23 @@ fragment wholeAttestation on Attestation {
 ### Query Examples:
 
 1. ** Find Attestation by ID:**
+
+- without a fragment:
+
+```
+query {
+  attestations (filter: { id: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ){
+    nodes{
+        id,
+      hash,
+      timeStamp,
+    }
+  }
+}
+
+```
+
+- with a fragment:
 
 ```
 query {
