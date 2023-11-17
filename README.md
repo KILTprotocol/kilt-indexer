@@ -72,7 +72,7 @@ You can explore the different possible queries and entities to help you with Gra
 Most of the example queries below take advantage of the example fragments.
 You need to add the fragments to the playground as well, if you want to run queries using those fragments.
 
-Tip: Commas are irrelevant.
+_Tip: Commas are irrelevant._
 
 ### Useful Fragments:
 
@@ -134,8 +134,6 @@ query {
     }
 	}
 }
-
-
 ```
 
 ⋅⋅+_taking advantage of fragments:_
@@ -149,20 +147,18 @@ query {
     }
 	}
 }
-
-
 ```
 
 2. ** Find all revoked attestations**
 
 ```
 query {
-  attestations(filter: {revocationBlockId: {isNull: false}} ) {
-    totalCount,
-    nodes{
-      ...wholeAttestation,
+  attestations(filter: { revocationBlockId: { isNull: false } }) {
+    totalCount
+    nodes {
+      ...wholeAttestation
     }
-	}
+  }
 }
 ```
 
@@ -170,22 +166,23 @@ query {
 
 ```
 query {
-  blocks(filter: {number: {equalTo: "3396407"}}){
+  blocks(filter: { id: { equalTo: "3396407" } }) {
     # Queries can have comments!
     nodes {
-    id,
-    timeStamp,
-    number,
+      id
+      timeStamp
+      hash
       attestationsByCreationBlockId {
-        totalCount,
-        nodes{
-          id,
-          cType,
-          claimHash,
-          attester,
+        totalCount
+        nodes {
+          id
+          cTypeId
+          claimHash
+          attester
         }
       }
-    }}
+    }
+  }
 }
 ```
 
@@ -193,19 +190,21 @@ query {
 
 ```
 query {
-  cTypes(filter: {attestations: {some: {id: {isNull: false}}}}){
+  cTypes(filter: { attestations: { some: { id: { isNull: false } } } }) {
     totalCount
     nodes {
-      id,
+      id
       author
-      registrationBlock {  ...wholeBlock }
-      attestationsCreated,
-      attestationsRevoked,
-      attestationsRemoved,
-      invalidAttestations,
+      registrationBlock {
+        ...wholeBlock
+      }
+      attestationsCreated
+      attestationsRevoked
+      attestationsRemoved
+      invalidAttestations
       attestations(orderBy: ID_ASC) {
         totalCount
-        nodes{
+        nodes {
           ...wholeAttestation
         }
       }
