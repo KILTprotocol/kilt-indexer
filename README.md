@@ -72,9 +72,12 @@ You can explore the different possible queries and entities to help you with Gra
 Most of the example queries below take advantage of the example fragments.
 You need to add the fragments to the playground as well, if you want to run queries using those fragments.
 
-Tip: Commas are irrelevant.
+_Tip: Commas are irrelevant._
 
 ### Useful Fragments:
+
+GraphQL provides reusable units called _fragments_.
+Fragments let you construct sets of fields, and then include them in queries where you need to.
 
 ```
 fragment wholeBlock on Block{
@@ -107,24 +110,37 @@ fragment wholeAttestation on Attestation {
 
 ### Query Examples:
 
-1. ** Find Attestation by ID:**
+1. ** Find Attestation by its claim hash:**
+
+⋅⋅+ _without using fragments:_
 
 ```
 query {
-  attestations (filter: { id: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ){
+  attestations(filter: {claimHash: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ) {
+    totalCount,
     nodes{
-      ...wholeBlock,
+    id,
+    claimHash,
+    cTypeId,
+    attester,
+    payer,
+    delegationID,
+    valid,
+    creationBlock {
+       id,
+      hash,
+      timeStamp,
+      },
     }
-  }
+	}
 }
-
 ```
 
-2. ** Find all revoked attestations**
+⋅⋅+_taking advantage of fragments:_
 
 ```
 query {
-  attestations(filter: {revocationBlockId: {isNull: false}} ) {
+  attestations(filter: {claimHash: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ) {
     totalCount,
     nodes{
       ...wholeAttestation,
@@ -133,25 +149,40 @@ query {
 }
 ```
 
+2. ** Find all revoked attestations**
+
+```
+query {
+  attestations(filter: { revocationBlockId: { isNull: false } }) {
+    totalCount
+    nodes {
+      ...wholeAttestation
+    }
+  }
+}
+```
+
 3. ** Find how many attestations were made on a block: **
 
 ```
 query {
-  blocks(filter: {number: {equalTo: "3396407"}}){
+  blocks(filter: { id: { equalTo: "3396407" } }) {
+    # Queries can have comments!
     nodes {
-    id,
-    timeStamp,
-    number,
+      id
+      timeStamp
+      hash
       attestationsByCreationBlockId {
-        totalCount,
-        nodes{
-          id,
-          cType,
-          claimHash,
-          attester,
+        totalCount
+        nodes {
+          id
+          cTypeId
+          claimHash
+          attester
         }
       }
-    }}
+    }
+  }
 }
 ```
 
@@ -159,18 +190,24 @@ query {
 
 ```
 query {
-  cTypes(filter: {attestations: {some: {id: {isNull: false}}}}){
+  cTypes(
+    filter: { attestations: { some: { id: { isNull: false } } } }
+    orderBy: ATTESTATIONS_COUNT_DESC
+  ) {
     totalCount
     nodes {
-      id,
+      id
       author
-      registrationBlock {  ...wholeBlock }
-      attestationsCreated,
-      attestationsRevoked,
-      attestationsRemoved,
+      registrationBlock {
+        ...wholeBlock
+      }
+      attestationsCreated
+      attestationsRevoked
+      attestationsRemoved
+      invalidAttestations
       attestations(orderBy: ID_ASC) {
         totalCount
-        nodes{
+        nodes {
           ...wholeAttestation
         }
       }
