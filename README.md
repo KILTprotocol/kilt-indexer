@@ -190,7 +190,10 @@ query {
 
 ```
 query {
-  cTypes(filter: { attestations: { some: { id: { isNull: false } } } }) {
+  cTypes(
+    filter: { attestations: { some: { id: { isNull: false } } } }
+    orderBy: ATTESTATIONS_COUNT_DESC
+  ) {
     totalCount
     nodes {
       id
