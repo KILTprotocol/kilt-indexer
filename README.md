@@ -110,33 +110,46 @@ fragment wholeAttestation on Attestation {
 
 ### Query Examples:
 
-1. ** Find Attestation by ID:**
+1. ** Find Attestation by its claim hash:**
 
-- without a fragment:
+⋅⋅+ _without using fragments:_
 
 ```
 query {
-  attestations (filter: { id: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ){
+  attestations(filter: {claimHash: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ) {
+    totalCount,
     nodes{
-        id,
+    id,
+    claimHash,
+    cTypeId,
+    attester,
+    payer,
+    delegationID,
+    valid,
+    creationBlock {
+       id,
       hash,
       timeStamp,
+      },
     }
-  }
+	}
 }
+
 
 ```
 
-- with a fragment:
+⋅⋅+_taking advantage of fragments:_
 
 ```
 query {
-  attestations (filter: { id: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ){
+  attestations(filter: {claimHash: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ) {
+    totalCount,
     nodes{
-      ...wholeBlock,
+      ...wholeAttestation,
     }
-  }
+	}
 }
+
 
 ```
 
@@ -158,6 +171,7 @@ query {
 ```
 query {
   blocks(filter: {number: {equalTo: "3396407"}}){
+    # Queries can have comments!
     nodes {
     id,
     timeStamp,
@@ -188,6 +202,7 @@ query {
       attestationsCreated,
       attestationsRevoked,
       attestationsRemoved,
+      invalidAttestations,
       attestations(orderBy: ID_ASC) {
         totalCount
         nodes{
