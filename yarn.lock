@@ -2693,7 +2693,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kiltprotocol/type-definitions@latest":
+"@kiltprotocol/type-definitions@npm:latest":
   version: 0.34.0
   resolution: "@kiltprotocol/type-definitions@npm:0.34.0"
   checksum: be189e53514d4f26f5ac54f8bcd9672ad0d311a12a01e3f9c43c8cf1c637f953e085ee2ffa2c617c8ca763b8a22dc17af3a099658e08f401654f4ca44bb62af2
@@ -3731,7 +3731,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/cli@latest":
+"@subql/cli@npm:latest":
   version: 4.2.1
   resolution: "@subql/cli@npm:4.2.1"
   dependencies:
@@ -3989,7 +3989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/node@npm:^3.4.2":
+"@subql/node@npm:latest":
   version: 3.4.2
   resolution: "@subql/node@npm:3.4.2"
   dependencies:
@@ -4023,7 +4023,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/testing@latest, @subql/testing@npm:2.1.0":
+"@subql/testing@npm:2.1.0, @subql/testing@npm:latest":
   version: 2.1.0
   resolution: "@subql/testing@npm:2.1.0"
   dependencies:
@@ -4143,7 +4143,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/types@latest, @subql/types@npm:3.3.0":
+"@subql/types@npm:3.3.0, @subql/types@npm:latest":
   version: 3.3.0
   resolution: "@subql/types@npm:3.3.0"
   dependencies:
@@ -11479,7 +11479,7 @@ __metadata:
     "@kiltprotocol/type-definitions": latest
     "@polkadot/api": ^10
     "@subql/cli": latest
-    "@subql/node": ^3.4.2
+    "@subql/node": latest
     "@subql/testing": latest
     "@subql/types": latest
     node-fetch: 2.6.7
