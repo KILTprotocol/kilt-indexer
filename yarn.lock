@@ -3989,7 +3989,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/node@latest":
+"@subql/node@npm:^3.4.2":
   version: 3.4.2
   resolution: "@subql/node@npm:3.4.2"
   dependencies:
@@ -11479,7 +11479,7 @@ __metadata:
     "@kiltprotocol/type-definitions": latest
     "@polkadot/api": ^10
     "@subql/cli": latest
-    "@subql/node": latest
+    "@subql/node": ^3.4.2
     "@subql/testing": latest
     "@subql/types": latest
     node-fetch: 2.6.7
