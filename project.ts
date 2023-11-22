@@ -4,6 +4,8 @@ import {
   SubstrateProject,
 } from "@subql/types";
 
+import { DWELLIR_KEY, ONFINALITY_KEY } from "./configuration";
+
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
   specVersion: "1.0.0",
@@ -36,10 +38,8 @@ const project: SubstrateProject = {
      * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
     endpoint: [
-      // API-key Dwellir gave us over the Slack channel #kilt-dwellir
-      "wss://kilt-rpc.dwellir.com/edbb5d13-d13a-4cb0-843b-ed23f28dd670",
-      // API-key for OnFinality for devs@kilt.io account.
-      "wss://spiritnet.api.onfinality.io/ws?apikey=6939ddf6-80e6-4b91-b56a-de9e88fa0ec5",
+      `wss://kilt-rpc.dwellir.com/${DWELLIR_KEY}`,
+      `wss://spiritnet.api.onfinality.io/ws?apikey=${ONFINALITY_KEY}`,
     ],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
