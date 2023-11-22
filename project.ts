@@ -36,8 +36,9 @@ const project: SubstrateProject = {
      * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
     endpoint: [
-      "wss://kilt-rpc.dwellir.com",
-      // Api-key for OnFinality for devs@kilt.io account.
+      // API-key Dwellir gave us over the Slack channel #kilt-dwellir
+      "wss://kilt-rpc.dwellir.com/edbb5d13-d13a-4cb0-843b-ed23f28dd670",
+      // API-key for OnFinality for devs@kilt.io account.
       "wss://spiritnet.api.onfinality.io/ws?apikey=6939ddf6-80e6-4b91-b56a-de9e88fa0ec5",
     ],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
