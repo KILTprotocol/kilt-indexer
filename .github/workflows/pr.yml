@@ -8,17 +8,17 @@ jobs:
     name: pr
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - run: yarn
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+      - name: Install dependencies
+        run: yarn install
       - name: Codegen
         run: yarn codegen
       - name: Build
         run: yarn build
-      - name: Install subql-node
-        run: yarn global add @subql/node
       - name: Run tests with Subquery Node
-        run: subql-node test -f ${{ github.workspace }}
+        run: yarn subql-node test -f ${{ github.workspace }}

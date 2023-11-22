@@ -9,7 +9,8 @@
     "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
     "dev": "subql codegen && subql build && docker-compose pull && docker-compose up --build --remove-orphans",
     "prepack": "rm -rf dist && npm run build",
-    "test": "subql build && subql-node test"
+    "test": "subql build && subql-node test",
+    "slash": "yarn ts-node src/slash.ts"
   },
   "homepage": "https://github.com/KILTprotocol/attestation-indexer",
   "repository": "github:KILTprotocol/attestation-indexer",
@@ -21,19 +22,21 @@
   "author": "Botlabs GmbH",
   "license": "MIT",
   "devDependencies": {
+    "@kiltprotocol/type-definitions": "latest",
     "@polkadot/api": "^10",
     "@subql/cli": "latest",
+    "@subql/node": "latest",
+    "@subql/testing": "latest",
     "@subql/types": "latest",
     "node-fetch": "2.6.7",
-    "typescript": "^5.2.2",
-    "@kiltprotocol/type-definitions": "latest",
-    "@subql/testing": "latest",
-    "@subql/node": "latest"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   },
   "resolutions": {
     "ipfs-unixfs": "6.0.6"
   },
   "exports": {
-    "chaintypes": "src/chaintypes.ts"
-  }
+    "chaintypes": "./src/chaintypes.ts"
+  },
+  "packageManager": "yarn@3.6.0"
 }
