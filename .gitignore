@@ -56,3 +56,7 @@ Thumbs.db
 
 .data
 .eslintcache
+
+# Yarn
+.yarn/cache
+.yarn/install-state.gz

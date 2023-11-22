@@ -100,10 +100,16 @@ export async function handleAttestationRevoked(
   // );
 
   // Get the attestation that is still valid
-  const attestation = attestations.find((atty) => atty.valid);
+  let attestation = attestations.find((atty) => atty.valid);
 
   // the attestation (creation) could have happened before the DB start block
-  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'attestation' a constant.
+    assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  } catch (error) {
+    logger.info(error);
+    attestation = await createPrehistoricAttestation(event);
+  }
 
   attestation.revocationBlockId = await saveBlock(event);
   attestation.valid = false;
@@ -148,10 +154,16 @@ export async function handleAttestationRemoved(
   });
 
   // Get the attestation that still has not been removed yet:
-  const attestation = attestations.find((atty) => !atty.removalBlockId);
+  let attestation = attestations.find((atty) => !atty.removalBlockId);
 
   // the attestation (creation) could have happened before the DB start block
-  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}`);
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'attestation' a constant.
+    assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  } catch (error) {
+    logger.info(error);
+    attestation = await createPrehistoricAttestation(event);
+  }
 
   attestation.removalBlockId = await saveBlock(event);
   attestation.valid = false;
@@ -274,4 +286,69 @@ async function saveBlock(event: SubstrateEvent) {
     // TODO: delete that Existence Check (& the printing) after running it for a while
   }
   return blockNumber;
+}
+
+/**
+ * TODO: This function should deleted before deployment.
+ *
+ * @param event a revocation or a removal of an attestation
+ */
+export async function createPrehistoricAttestation(
+  event: SubstrateEvent
+): Promise<Attestation> {
+  logger.info(
+    `An attestation from before the Database's startBlock is being added with default values.`
+  );
+
+  const UNKNOWN = "UNKNOWN_BECAUSE_ATTESTATION_IS_PREHISTORIC!";
+
+  // The event is of one of this two types:
+  // An attestation has been revoked.\[attester DID, claim hash\]
+  // An attestation has been removed.\[attester DID, claim hash\]
+  const {
+    event: {
+      data: [attesterDID, claimHash],
+    },
+  } = event;
+
+  logger.trace(
+    `The whole event involving a prehistoric attestation: ${JSON.stringify(
+      event.toJSON(),
+      null,
+      2
+    )}`
+  );
+
+  const blockNumber = await saveBlock(event);
+  const cTypeId = "kilt:ctype:" + UNKNOWN;
+  const payer = UNKNOWN;
+
+  // craft my event ordinal index:
+  const attestations = await Attestation.getByFields([
+    ["creationBlockId", "=", blockNumber],
+  ]);
+  /** Only counts the number of attestations created on one block.
+   * It will not match with the event index from subscan that count all kinds of events.
+   */
+  const eventIndex = attestations.length;
+
+  const prehistoricAttestation = Attestation.create({
+    id: `${blockNumber}-${eventIndex}`,
+    claimHash: claimHash.toHex(),
+    cTypeId: cTypeId,
+    attester: "did:kilt:" + attesterDID.toString(),
+    payer: payer,
+    valid: true,
+    creationBlockId: blockNumber,
+  });
+
+  await prehistoricAttestation.save();
+
+  const unknownCType = await CType.get(cTypeId);
+  if (!unknownCType) {
+    // Would happen only once per data base:
+    await handleCTypeAggregations(cTypeId, "CREATED");
+  }
+
+  return prehistoricAttestation;
 }

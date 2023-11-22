@@ -110,7 +110,7 @@ fragment wholeAttestation on Attestation {
 
 ### Query Examples:
 
-1. ** Find Attestation by its claim hash:**
+1. **Find Attestation by its claim hash:**
 
 ⋅⋅+ _without using fragments:_
 
@@ -149,7 +149,7 @@ query {
 }
 ```
 
-2. ** Find all revoked attestations**
+2. **Find all revoked attestations:**
 
 ```
 query {
@@ -162,7 +162,7 @@ query {
 }
 ```
 
-3. ** Find how many attestations were made on a block: **
+3. **Find how many attestations were made on a block: **
 
 ```
 query {
@@ -186,7 +186,7 @@ query {
 }
 ```
 
-4. ** Find all cTypes that have been used at least once: **
+4. **Find all cTypes that have been used at least once:**
 
 ```
 query {
