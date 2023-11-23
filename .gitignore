@@ -61,5 +61,6 @@ Thumbs.db
 .yarn/cache
 .yarn/install-state.gz
 
-# Envioronment Constants
+# Environment Constants
 .env
+
