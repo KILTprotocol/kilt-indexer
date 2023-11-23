@@ -28,7 +28,6 @@
     "@subql/node": "latest",
     "@subql/testing": "latest",
     "@subql/types": "latest",
-    "dotenv": "^16.3.1",
     "node-fetch": "2.6.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
