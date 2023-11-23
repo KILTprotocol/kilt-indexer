@@ -65,9 +65,9 @@ To get more logs while debugging go to `docker-compose.yml` and uncomment `- --l
 
 ## For Queries:
 
-For this project, you can visit the playground under http://localhost:3000/ and try to query on of the following GraphQL code to get a taste of how it works.
+For this project, you can visit the playground under http://localhost:3000/ and try to query one of the following GraphQL codes to get a taste of how it works.
 
-You can explore the different possible queries and entities to help you with GraphQL using the documentation draw on the right.
+To help you explore the different possible queries and entities, you can draw the documentation on the right of the GraphQL playground.
 
 Most of the example queries below take advantage of the example fragments.
 You need to add the fragments to the playground as well, if you want to run queries using those fragments.
@@ -112,106 +112,165 @@ fragment wholeAttestation on Attestation {
 
 1. **Find Attestation by its claim hash:**
 
-⋅⋅+ _without using fragments:_
+   - _without using fragments:_
 
-```
-query {
-  attestations(filter: {claimHash: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ) {
-    totalCount,
-    nodes{
-    id,
-    claimHash,
-    cTypeId,
-    attester,
-    payer,
-    delegationID,
-    valid,
-    creationBlock {
-       id,
-      hash,
-      timeStamp,
-      },
-    }
-	}
-}
-```
+   ```
+   query {
+     attestations(
+       filter: {
+         claimHash: {
+           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+         }
+       }
+     ) {
+       totalCount
+       nodes {
+         id
+         claimHash
+         cTypeId
+         attester
+         payer
+         delegationID
+         valid
+         creationBlock {
+           id
+           hash
+           timeStamp
+         }
+       }
+     }
+   }
 
-⋅⋅+_taking advantage of fragments:_
+   ```
 
-```
-query {
-  attestations(filter: {claimHash: {equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"}} ) {
-    totalCount,
-    nodes{
-      ...wholeAttestation,
-    }
-	}
-}
-```
+   - _taking advantage of fragments:_
+
+   ```
+   query {
+     attestations(
+       filter: {
+         claimHash: {
+           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+         }
+       }
+     ) {
+       totalCount
+       nodes {
+         ...wholeAttestation
+       }
+     }
+   }
+   ```
 
 2. **Find all revoked attestations:**
 
-```
-query {
-  attestations(filter: { revocationBlockId: { isNull: false } }) {
-    totalCount
-    nodes {
-      ...wholeAttestation
-    }
-  }
-}
-```
+   ```
+   query {
+     attestations(filter: { revocationBlockId: { isNull: false } }) {
+       totalCount
+       nodes {
+         ...wholeAttestation
+       }
+     }
+   }
+   ```
 
-3. **Find how many attestations were made on a block: **
+3. **Find how many attestations were made on a block:**
 
-```
-query {
-  blocks(filter: { id: { equalTo: "3396407" } }) {
-    # Queries can have comments!
-    nodes {
-      id
-      timeStamp
-      hash
-      attestationsByCreationBlockId {
-        totalCount
-        nodes {
-          id
-          cTypeId
-          claimHash
-          attester
-        }
-      }
-    }
-  }
-}
-```
+   ```
+   query {
+     blocks(filter: { id: { equalTo: "3396407" } }) {
+       # Queries can have comments!
+       nodes {
+         id
+         timeStamp
+         hash
+         attestationsByCreationBlockId {
+           totalCount
+           nodes {
+             id
+             cTypeId
+             claimHash
+             attester
+           }
+         }
+       }
+     }
+   }
+   ```
 
 4. **Find all cTypes that have been used at least once:**
 
-```
-query {
-  cTypes(
-    filter: { attestations: { some: { id: { isNull: false } } } }
-    orderBy: ATTESTATIONS_COUNT_DESC
-  ) {
-    totalCount
-    nodes {
-      id
-      author
-      registrationBlock {
-        ...wholeBlock
-      }
-      attestationsCreated
-      attestationsRevoked
-      attestationsRemoved
-      invalidAttestations
-      attestations(orderBy: ID_ASC) {
-        totalCount
-        nodes {
-          ...wholeAttestation
-        }
-      }
-    }
-  }
-}
-```
+   ```
+   query {
+     cTypes(
+       filter: { attestations: { some: { id: { isNull: false } } } }
+       orderBy: ATTESTATIONS_COUNT_DESC
+     ) {
+       totalCount
+       nodes {
+         id
+         author
+         registrationBlock {
+           ...wholeBlock
+         }
+         attestationsCreated
+         attestationsRevoked
+         attestationsRemoved
+         invalidAttestations
+         attestations(orderBy: ID_ASC) {
+           totalCount
+           nodes {
+             ...wholeAttestation
+           }
+         }
+       }
+     }
+   }
+   ```
+
+5. **Find all cTypes created during the second million blocks:**
+
+   ```
+   query {
+     cTypes(
+       filter: {
+         registrationBlockId: {
+           greaterThanOrEqualTo: "1000000"
+           lessThanOrEqualTo: "2000000"
+         }
+       }
+     ) {
+       totalCount
+       nodes {
+         id
+         author
+         registrationBlock {
+           ...wholeBlock
+         }
+         attestationsCreated
+         invalidAttestations
+       }
+     }
+   }
+   ```
+
+6. **Find all attestation revoked during October 2023:**
+
+   ```
+   query {
+     attestations(
+       filter: {
+         revocationBlock: {
+           timeStamp: { greaterThan: "2023-9-30", lessThan: "2023-11-1" }
+         }
+       }
+       orderBy: ID_ASC
+     ) {
+       totalCount
+       nodes {
+         ...wholeAttestation
+       }
+     }
+   }
+   ```
