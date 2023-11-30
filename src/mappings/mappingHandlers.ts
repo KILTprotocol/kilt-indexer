@@ -211,29 +211,64 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 }
 
 export async function handleCTypeDefined(
-  extrinsic: SubstrateExtrinsic
+  metaExtrinsic: SubstrateExtrinsic
 ): Promise<void> {
   logger.info(
-    `The whole cType Add extrinsic: ${JSON.stringify(extrinsic, null, 2)}`
+    `The whole cType Add extrinsic: ${JSON.stringify(metaExtrinsic, null, 2)}`
   );
 
-  const blockNumber = extrinsic.block.block.header.hash.toString();
+  // Destructure!
+  const {
+    block,
+    extrinsic: {
+      data: [blockNB, call, submitter, txCounter],
+    },
+    events,
+  } = metaExtrinsic;
+
+  const blockNumber = block.block.header.hash.toString();
+  const decodedExtrinsic = metaExtrinsic.extrinsic.toHuman();
+  logger.info(
+    "\n Extrinsic as toHuman " + JSON.stringify(decodedExtrinsic, null, 2)
+  );
+  // const definition = decodedExtrinsic.method.args.did_call.args.ctype;
+
+  logger.info("printing the extrinsic data values: ");
+  logger.info(`blockNB: ${blockNB}`);
+  logger.info(`call: ${call}`);
+  logger.info(`submitter: ${submitter}`);
+  logger.info(`txCounter: ${txCounter}`);
+
+  // Check if there is a cType Created emitted by this extrinsic
+  const cTypeAddEventIndex = "0x3d00";
+  const addCTypesEvents = events.filter((eventEntry) => {
+    const index = eventEntry.event.index.toHex();
+    logger.info(`The index of this event is:  ${index}`);
+    return index === cTypeAddEventIndex;
+  });
+
+  if (addCTypesEvents.length) {
+    logger.info("Found some Add-CType-Events on this extrinsic");
+  }
+
+  // Find cType entity to assign it to
   const cTypeEntities = await CType.getByRegistrationBlockId(blockNumber);
+  logger.info(`printing the cTypes entities array:`);
+  logger.info(`Length of the cTypeEntities array ${cTypeEntities?.length}`);
 
   assert(
     cTypeEntities,
     `Can't find any CType created on block  ${blockNumber}.`
   );
+  cTypeEntities.forEach((claimType, index) => {
+    logger.info(
+      `Index: ${index}, cType: ${JSON.stringify(claimType, null, 2)}`
+    );
+  });
   const cTypeEntity = cTypeEntities[0];
 
-  const {
-    extrinsic: {
-      data: [blockNB, call, submitter, txCounter],
-    },
-  } = extrinsic;
-
-  logger.info("\n Extrinsic  ERA: " + extrinsic.extrinsic.era);
-  logger.info("\n Extrinsic DATA: " + extrinsic.extrinsic.data);
+  logger.info("\n Extrinsic  ERA: " + metaExtrinsic.extrinsic.era);
+  logger.info("\n Extrinsic DATA: " + metaExtrinsic.extrinsic.data);
 
   if (cTypeEntity) {
     cTypeEntity.definition = call.toString();
