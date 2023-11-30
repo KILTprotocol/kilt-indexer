@@ -88,6 +88,14 @@ const project: SubstrateProject = {
               method: "CTypeCreated",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Call,
+            handler: "handleCTypeDefined",
+            filter: {
+              module: "Ctype",
+              method: "add",
+            },
+          },
         ],
       },
     },

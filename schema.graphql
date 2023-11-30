@@ -26,6 +26,7 @@ type CType @entity {
   id: ID! #id is  "kilt:ctype:" + CType hash
   registrationBlock: Block
   author: String # DID of the creator
+  definition: String! # cType Schema
   attestationsCreated: Int!
   attestationsRevoked: Int!
   attestationsRemoved: Int! # either valid or revoked credentials can be removed.
