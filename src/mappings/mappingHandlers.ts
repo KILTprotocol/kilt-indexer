@@ -289,7 +289,7 @@ async function saveBlock(event: SubstrateEvent) {
 }
 
 /**
- * TODO: This function should deleted before deployment.
+ * TODO: This function should be deleted before deployment.
  *
  * @param event a revocation or a removal of an attestation
  */
