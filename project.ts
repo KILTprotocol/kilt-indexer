@@ -92,8 +92,8 @@ const project: SubstrateProject = {
             kind: SubstrateHandlerKind.Call,
             handler: "handleCTypeDefined",
             filter: {
-              module: "Ctype",
-              method: "add",
+              module: "did",
+              method: "submitDidCall",
             },
           },
         ],

@@ -1,4 +1,4 @@
-import type { SubstrateEvent } from "@subql/types";
+import type { SubstrateEvent, SubstrateExtrinsic } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
@@ -200,6 +200,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     id: cTypeId,
     registrationBlockId: blockNumber,
     author: author,
+    definition: UNKNOWN,
     attestationsCreated: 0,
     attestationsRevoked: 0,
     attestationsRemoved: 0,
@@ -207,6 +208,52 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   });
 
   await newCType.save();
+}
+
+export async function handleCTypeDefined(
+  extrinsic: SubstrateExtrinsic
+): Promise<void> {
+  logger.info(
+    `The whole cType Add extrinsic: ${JSON.stringify(extrinsic, null, 2)}`
+  );
+
+  const blockNumber = extrinsic.block.block.header.hash.toString();
+  const cTypeEntities = await CType.getByRegistrationBlockId(blockNumber);
+
+  assert(
+    cTypeEntities,
+    `Can't find any CType created on block  ${blockNumber}.`
+  );
+  const cTypeEntity = cTypeEntities[0];
+
+  const {
+    extrinsic: {
+      data: [blockNB, call, submitter, txCounter],
+    },
+  } = extrinsic;
+
+  logger.info("\n Extrinsic  ERA: " + extrinsic.extrinsic.era);
+  logger.info("\n Extrinsic DATA: " + extrinsic.extrinsic.data);
+
+  if (cTypeEntity) {
+    cTypeEntity.definition = call.toString();
+    await cTypeEntity.save();
+  }
+
+  // TODO: extract ctype-add event from the extrinsic that look like this:
+  //   {
+  //     attestation-indexer-subquery-node-1   |       "phase": {
+  //     attestation-indexer-subquery-node-1   |         "applyExtrinsic": 2
+  //     attestation-indexer-subquery-node-1   |       },
+  //     attestation-indexer-subquery-node-1   |       "event": {
+  //     attestation-indexer-subquery-node-1   |         "index": "0x3d00",  ## most important
+  //     attestation-indexer-subquery-node-1   |         "data": [
+  //     attestation-indexer-subquery-node-1   |           "4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+  //     attestation-indexer-subquery-node-1   |           "0x47d04c42bdf7fdd3fc5a194bcaa367b2f4766a6b16ae3df628927656d818f420"
+  //     attestation-indexer-subquery-node-1   |         ]
+  //     attestation-indexer-subquery-node-1   |       },
+  //     attestation-indexer-subquery-node-1   |       "topics": []
+  //     attestation-indexer-subquery-node-1   |     },
 }
 
 export async function handleCTypeAggregations(
@@ -226,6 +273,7 @@ export async function handleCTypeAggregations(
       invalidAttestations: 0,
       author: UNKNOWN,
       registrationBlockId: UNKNOWN,
+      definition: UNKNOWN,
     });
   }
 
