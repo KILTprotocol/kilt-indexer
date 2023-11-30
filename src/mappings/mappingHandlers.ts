@@ -214,17 +214,22 @@ export async function handleCTypeDefined(
   metaExtrinsic: SubstrateExtrinsic
 ): Promise<void> {
   logger.info(
-    `The whole cType Add extrinsic: ${JSON.stringify(metaExtrinsic, null, 2)}`
+    `The whole meta SubstrateExtrinsic: ${JSON.stringify(
+      metaExtrinsic,
+      null,
+      2
+    )}`
   );
 
-  // Destructure!
-  const {
-    block,
-    extrinsic: {
-      data: [blockNB, call, submitter, txCounter],
-    },
-    events,
-  } = metaExtrinsic;
+  const { block, extrinsic, events } = metaExtrinsic;
+
+  // Could extract the extrinsic from directly from the block
+  // Maybe after detecting the CtypeCreated event
+  // const decodedFromBlock = block.block.extrinsics[2].toHuman();
+  // logger.info(
+  //   "\n Extrinsic as toHuman from Block" +
+  //     JSON.stringify(decodedFromBlock, null, 2)
+  // );
 
   const blockNumber = block.block.header.hash.toString();
   const decodedExtrinsic = metaExtrinsic.extrinsic.toHuman();
@@ -232,12 +237,6 @@ export async function handleCTypeDefined(
     "\n Extrinsic as toHuman " + JSON.stringify(decodedExtrinsic, null, 2)
   );
   // const definition = decodedExtrinsic.method.args.did_call.args.ctype;
-
-  logger.info("printing the extrinsic data values: ");
-  logger.info(`blockNB: ${blockNB}`);
-  logger.info(`call: ${call}`);
-  logger.info(`submitter: ${submitter}`);
-  logger.info(`txCounter: ${txCounter}`);
 
   // Check if there is a cType Created emitted by this extrinsic
   const cTypeAddEventIndex = "0x3d00";
@@ -248,16 +247,18 @@ export async function handleCTypeDefined(
   });
 
   if (addCTypesEvents.length) {
-    logger.info("Found some Add-CType-Events on this extrinsic");
+    logger.info(
+      `Found ${addCTypesEvents.length} Add-CType-Event(s) on this extrinsic`
+    );
   }
 
   // Find cType entity to assign it to
   const cTypeEntities = await CType.getByRegistrationBlockId(blockNumber);
   logger.info(`printing the cTypes entities array:`);
   logger.info(`Length of the cTypeEntities array ${cTypeEntities?.length}`);
-
+  // the array cTypeEntities is always empty because, apparently, the events are processed after the extrinsics
   assert(
-    cTypeEntities,
+    cTypeEntities?.length,
     `Can't find any CType created on block  ${blockNumber}.`
   );
   cTypeEntities.forEach((claimType, index) => {
@@ -271,11 +272,11 @@ export async function handleCTypeDefined(
   logger.info("\n Extrinsic DATA: " + metaExtrinsic.extrinsic.data);
 
   if (cTypeEntity) {
-    cTypeEntity.definition = call.toString();
+    cTypeEntity.definition = decodedExtrinsic!.toString();
     await cTypeEntity.save();
   }
 
-  // TODO: extract ctype-add event from the extrinsic that look like this:
+  // Done with the "events.filter": extract ctype-add event from the extrinsic that look like this:
   //   {
   //     attestation-indexer-subquery-node-1   |       "phase": {
   //     attestation-indexer-subquery-node-1   |         "applyExtrinsic": 2
