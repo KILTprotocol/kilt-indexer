@@ -18,7 +18,7 @@ services:
       retries: 5
 
   subquery-node:
-    image: subquerynetwork/subql-node-substrate:latest
+    image: subquerynetwork/subql-node-substrate:v3.4.2 # versions v3.4.3 and v.3.4.4 are buggy
     depends_on:
       "postgres":
         condition: service_healthy
@@ -39,7 +39,7 @@ services:
       - --workers=4
       - --batch-size=30
       - --unfinalized-blocks=true
-     # - --log-level=trace # uncomment for debugging
+      #- --log-level=trace # uncomment for debugging
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subquery-node:3000/ready"]
       interval: 3s
