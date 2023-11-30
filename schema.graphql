@@ -24,8 +24,8 @@ type Attestation @entity {
 type CType @entity {
   # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
   id: ID! #id is  "kilt:ctype:" + CType hash
-  registrationBlock: Block
-  author: String # DID of the creator
+  registrationBlock: Block!
+  author: String! @index # DID of the creator
   definition: String! # cType Schema
   attestationsCreated: Int!
   attestationsRevoked: Int!

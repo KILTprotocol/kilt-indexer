@@ -74,7 +74,7 @@ You need to add the fragments to the playground as well, if you want to run quer
 
 _Tip: Commas are irrelevant._
 
-### Useful Fragments:
+### Useful example Fragments:
 
 GraphQL provides reusable units called _fragments_.
 Fragments let you construct sets of fields, and then include them in queries where you need to.
