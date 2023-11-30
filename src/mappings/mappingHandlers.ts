@@ -1,4 +1,8 @@
-import type { SubstrateEvent, SubstrateExtrinsic } from "@subql/types";
+import type {
+  SubstrateBlock,
+  SubstrateEvent,
+  SubstrateExtrinsic,
+} from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
@@ -183,6 +187,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   );
   // A new CType has been created.\[creator identifier, CType hash\]"
   const {
+    block,
     event: {
       data: [authorDID, cTypeHash],
     },
@@ -196,11 +201,13 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const author = "did:kilt:" + authorDID.toString();
 
+  const definition = extractCTypeDefinition(block);
+
   const newCType = CType.create({
     id: cTypeId,
     registrationBlockId: blockNumber,
     author: author,
-    definition: UNKNOWN,
+    definition: definition,
     attestationsCreated: 0,
     attestationsRevoked: 0,
     attestationsRemoved: 0,
@@ -210,6 +217,94 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   await newCType.save();
 }
 
+/** Extracts the cType definition (schema) from the extrinsic inside of the block.
+ *
+ * @param block
+ */
+function extractCTypeDefinition(block: SubstrateBlock): string {
+  // mostly is the cType Add the third extrinsic on the block
+  // but is better to find a way to iterate over the array and be sure
+  // const extrinsicDecodedFromBlock = block.block.extrinsics[2].toHuman();
+  // logger.info(
+  //   "\n Extrinsic as toHuman from Block" +
+  //     JSON.stringify(extrinsicDecodedFromBlock, null, 2)
+  // );
+
+  // DID-Pallet: 64, submit_did_call: #[pallet::call_index(12)]
+  const submitDidCallIndex = "64,12";
+
+  const submitDidCallExtrinsics = block.block.extrinsics.filter((extrinsic) => {
+    const callIndex = extrinsic.callIndex.toString();
+    logger.info("The call index of this extrinsic: " + callIndex);
+
+    return callIndex === submitDidCallIndex;
+  });
+
+  logger.info(
+    `Length of the submitDidCallExtrinsics array is ${submitDidCallExtrinsics?.length}`
+  );
+
+  // Print all submitDidCallExtrinsics
+  submitDidCallExtrinsics.forEach((extrinsic, index) => {
+    const decodedExtry = extrinsic.toHuman();
+    logger.info(
+      `Extrinsic #${index} as "toHuman" from Block` +
+        JSON.stringify(decodedExtry, null, 2)
+    );
+  });
+
+  // TODO: manage case with several submitDidCallExtrinsics on the block, possibly from same DID ;(
+
+  const chosenExtrinsic = submitDidCallExtrinsics[0];
+
+  // Print what I can from the extrinsic:
+  logger.info("Information that I can get from this extrinsic: ");
+  logger.info(
+    `chosenExtrinsic.argsDef: ${JSON.stringify(
+      chosenExtrinsic.argsDef,
+      null,
+      2
+    )}`
+  );
+  logger.info(`chosenExtrinsic.args: ${chosenExtrinsic.args}`);
+  logger.info(`chosenExtrinsic.data: ${chosenExtrinsic.data}`);
+  logger.info(`chosenExtrinsic.era: ${chosenExtrinsic.era}`);
+  logger.info(
+    `chosenExtrinsic.inner: ${JSON.stringify(
+      chosenExtrinsic.inner.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  let definition = "Definitely a definition";
+  if ("call" in chosenExtrinsic.args[0]) {
+    logger.info("call is in chosenExtrinsic.args[0]");
+    const didCall: any = chosenExtrinsic.args[0].call;
+
+    if ("args" in didCall) {
+      logger.info("args is in didCall");
+      const callArgs = didCall.args;
+      definition = typeof callArgs;
+      // if ("ctype" in callArgs) {
+      //   logger.info("ctype is in callArgs");
+      //   definition = callArgs.ctype;
+      // } else {
+      //   logger.info("ctype is NOT in callArgs");
+      // }
+    } else {
+      logger.info("args is NOT in didCall");
+    }
+  } else {
+    logger.info("call is NOT in chosenExtrinsic.args");
+  }
+  // Print the definition
+  logger.info(`cType definition: ${definition}`);
+
+  return definition;
+}
+
+/**
 export async function handleCTypeDefined(
   metaExtrinsic: SubstrateExtrinsic
 ): Promise<void> {
@@ -291,6 +386,7 @@ export async function handleCTypeDefined(
   //     attestation-indexer-subquery-node-1   |       "topics": []
   //     attestation-indexer-subquery-node-1   |     },
 }
+ */
 
 export async function handleCTypeAggregations(
   cTypeId: string,
