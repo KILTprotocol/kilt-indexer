@@ -1,8 +1,4 @@
-import type {
-  SubstrateBlock,
-  SubstrateEvent,
-  SubstrateExtrinsic,
-} from "@subql/types";
+import type { SubstrateBlock, SubstrateEvent } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
@@ -224,23 +220,26 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 function extractCTypeDefinition(block: SubstrateBlock): string {
   const blockNumber = block.block.header.number.toString();
 
-  /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
-  const submitDidCallIndex = "64,12";
-  const submitDidCallExtrinsics = block.block.extrinsics.filter(
-    (extrinsic, index) => {
-      const callIndex = extrinsic.callIndex.toString();
-      logger.info(`Extrinsic #${index} has the call index: ${callIndex}`);
+  const relevantCallIndices = {
+    /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
+    submitDidCallIndex: "64,12",
+    /** Utility-Pallet: 40, batch-all: [pallet::call_index(2)]  <-- could not find this on github repo */
+    utilityBatchAllCallIndex: "40,2",
+  };
 
-      return callIndex === submitDidCallIndex;
-    }
-  );
+  const relevantExtrinsics = block.block.extrinsics.filter((extrinsic, i) => {
+    const callIndex = extrinsic.callIndex.toString();
+    logger.info(`Extrinsic #${i} has the call index: ${callIndex}`);
+
+    return Object.values(relevantCallIndices).includes(callIndex);
+  });
 
   logger.info(
-    `Length of the submitDidCallExtrinsics array is ${submitDidCallExtrinsics?.length}`
+    `Length of the relevantExtrinsics array is ${relevantExtrinsics?.length}`
   );
 
-  // Print all submitDidCallExtrinsics
-  submitDidCallExtrinsics.forEach((extrinsic, index) => {
+  // Print all relevantExtrinsics
+  relevantExtrinsics.forEach((extrinsic, index) => {
     const decodedExtry = extrinsic.toHuman();
     logger.info(
       `Extrinsic #${index} as "toHuman" from Block` +
@@ -249,26 +248,49 @@ function extractCTypeDefinition(block: SubstrateBlock): string {
   });
 
   assert(
-    submitDidCallExtrinsics.length > 0,
+    relevantExtrinsics.length > 0,
     `No submit_did_call extrinsic on block #${blockNumber}`
   );
 
-  // TODO: manage case with several submitDidCallExtrinsics on the block, possibly from same DID ;(
+  // TODO: manage case with several relevantExtrinsics on the block, possibly from same DID ;(
 
   // To find a block where this happens:
 
   assert(
-    submitDidCallExtrinsics.length <= 1,
+    relevantExtrinsics.length <= 1,
     `More than one submit_did_call extrinsic on block #${blockNumber}`
   );
 
-  const chosenExtrinsic = submitDidCallExtrinsics[0];
+  const chosenExtrinsic = relevantExtrinsics[0];
 
   const decodedExtrinsic = chosenExtrinsic.toHuman() as any;
 
-  logger.info("decodedExtrinsic: " + JSON.stringify(decodedExtrinsic, null, 2));
+  let definition = "Definitely a Definition";
 
-  const definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
+  // Depending on the type of call, the extraction of the ctype definition is different
+  const callIndex = chosenExtrinsic.callIndex.toString();
+
+  switch (callIndex) {
+    case relevantCallIndices.submitDidCallIndex:
+      definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
+
+      break;
+
+    case relevantCallIndices.utilityBatchAllCallIndex:
+      const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
+      const addCtypeCalls = batchInternalCalls.filter(
+        (call) =>
+          call.args.did_call.call.section === "ctype" &&
+          call.args.did_call.call.method === "add"
+      );
+      assert(
+        addCtypeCalls.length === 1,
+        "Not (only) one ctype add extrinsic in this utility batch"
+      );
+      definition = addCtypeCalls[0].args.did_call.call.args.ctype;
+
+      break;
+  }
 
   assert(
     definition,
