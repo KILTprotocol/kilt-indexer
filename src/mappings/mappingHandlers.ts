@@ -285,7 +285,7 @@ function extractCTypeDefinition(block: SubstrateBlock): string {
       );
       assert(
         addCtypeCalls.length === 1,
-        "Not (only) one ctype add extrinsic in this utility batch"
+        "Not (only) one add-ctype extrinsic in this utility batch"
       );
       definition = addCtypeCalls[0].args.did_call.call.args.ctype;
 
