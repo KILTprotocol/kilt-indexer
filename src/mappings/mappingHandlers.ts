@@ -249,86 +249,19 @@ function extractCTypeDefinition(block: SubstrateBlock): string {
 
   const chosenExtrinsic = submitDidCallExtrinsics[0];
 
-  // Print what I can from the extrinsic:
-  logger.info("Information that I can get from this extrinsic: ");
-  logger.info(
-    `chosenExtrinsic.argsDef: ${JSON.stringify(
-      chosenExtrinsic.argsDef,
-      null,
-      2
-    )}`
-  );
-  logger.info(`chosenExtrinsic.args: ${chosenExtrinsic.args}`);
-  logger.info(`chosenExtrinsic.data: ${chosenExtrinsic.data}`);
-  logger.info(`chosenExtrinsic.era: ${chosenExtrinsic.era}`);
-  logger.info(
-    `chosenExtrinsic.inner: ${JSON.stringify(
-      chosenExtrinsic.inner.toHuman(),
-      null,
-      2
-    )}`
-  );
-
-  assert(
-    chosenExtrinsic,
-    `Could not extract extrinsic from block #${block.block.header.number.toString()}`
-  );
-
   const decodedExtrinsic = chosenExtrinsic.toHuman() as any;
-
-  // const definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
 
   logger.info("decodedExtrinsic: " + JSON.stringify(decodedExtrinsic, null, 2));
 
-  let definition = "Definitely a definition";
-  if ("method" in decodedExtrinsic) {
-    logger.info(`"method" is in decodedExtrinsic`);
+  const definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
 
-    if ("args" in decodedExtrinsic.method) {
-      logger.info(`"args" is in decodedExtrinsic.method`);
-
-      if ("did_call" in decodedExtrinsic.method.args) {
-        logger.info(`"did_call" is in decodedExtrinsic.method.args`);
-
-        if ("call" in decodedExtrinsic.method.args.did_call) {
-          logger.info(`"call" is in decodedExtrinsic.method.args.did_call`);
-
-          if ("args" in decodedExtrinsic.method.args.did_call.call) {
-            logger.info(
-              `"args" is in decodedExtrinsic.method.args.did_call.call`
-            );
-
-            if ("ctype" in decodedExtrinsic.method.args.did_call.call.args) {
-              logger.info(
-                `"ctype" is in decodedExtrinsic.method.args.did_call.call.args`
-              );
-              // Assignation!
-              definition =
-                decodedExtrinsic.method.args.did_call.call.args.ctype;
-            } else {
-              logger.info(
-                `"ctype" is NOT in decodedExtrinsic.method.args.did_call.call.args`
-              );
-            }
-          } else {
-            logger.info(
-              `"args" is NOT in decodedExtrinsic.method.args.did_call.call`
-            );
-          }
-        } else {
-          logger.info(`"call" is NOT in decodedExtrinsic.method.args.did_call`);
-        }
-      } else {
-        logger.info(`"did_call" is NOT in decodedExtrinsic.method.args`);
-      }
-    } else {
-      logger.info(`"args" is NOT in decodedExtrinsic.method`);
-    }
-  } else {
-    logger.info(`"method" is NOT in decodedExtrinsic`);
-  }
+  assert(
+    definition,
+    `Could not extract ctype definition from extrinsic in block #${block.block.header.number.toString()}`
+  );
 
   // Print the definition
+  logger.info(`typeof definition: ${typeof definition}`);
   logger.info(`cType definition: ${definition}`);
 
   return definition;
