@@ -222,15 +222,18 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
  * @param block
  */
 function extractCTypeDefinition(block: SubstrateBlock): string {
-  // DID-Pallet: 64, submit_did_call: #[pallet::call_index(12)]
+  const blockNumber = block.block.header.number.toString();
+
+  /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
   const submitDidCallIndex = "64,12";
+  const submitDidCallExtrinsics = block.block.extrinsics.filter(
+    (extrinsic, index) => {
+      const callIndex = extrinsic.callIndex.toString();
+      logger.info(`Extrinsic #${index} has the call index: ${callIndex}`);
 
-  const submitDidCallExtrinsics = block.block.extrinsics.filter((extrinsic) => {
-    const callIndex = extrinsic.callIndex.toString();
-    logger.info("The call index of this extrinsic: " + callIndex);
-
-    return callIndex === submitDidCallIndex;
-  });
+      return callIndex === submitDidCallIndex;
+    }
+  );
 
   logger.info(
     `Length of the submitDidCallExtrinsics array is ${submitDidCallExtrinsics?.length}`
@@ -245,7 +248,19 @@ function extractCTypeDefinition(block: SubstrateBlock): string {
     );
   });
 
+  assert(
+    submitDidCallExtrinsics.length > 0,
+    `No submit_did_call extrinsic on block #${blockNumber}`
+  );
+
   // TODO: manage case with several submitDidCallExtrinsics on the block, possibly from same DID ;(
+
+  // To find a block where this happens:
+
+  assert(
+    submitDidCallExtrinsics.length <= 1,
+    `More than one submit_did_call extrinsic on block #${blockNumber}`
+  );
 
   const chosenExtrinsic = submitDidCallExtrinsics[0];
 
@@ -257,7 +272,7 @@ function extractCTypeDefinition(block: SubstrateBlock): string {
 
   assert(
     definition,
-    `Could not extract ctype definition from extrinsic in block #${block.block.header.number.toString()}`
+    `Could not extract ctype definition from extrinsic in block #${blockNumber}`
   );
 
   // Print the definition
