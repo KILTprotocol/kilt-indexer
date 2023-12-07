@@ -202,7 +202,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const author = "did:kilt:" + authorDID.toString();
 
-  const definition = pluckCTypeDefinition(extrinsic);
+  const definition = extractCTypeDefinition(extrinsic);
 
   const newCType = CType.create({
     id: cTypeId,
@@ -222,7 +222,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
  *
  * @param extrinsic
  */
-function pluckCTypeDefinition(
+function extractCTypeDefinition(
   extrinsic: SubstrateExtrinsic | undefined
 ): string {
   assert(extrinsic, "Extrinsic not defined");
