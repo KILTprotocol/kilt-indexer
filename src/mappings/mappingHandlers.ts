@@ -194,7 +194,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     extrinsic,
   } = event;
 
-  logger.info(
+  logger.trace(
     `The whole CTypeCreated event: ${JSON.stringify(event.toHuman(), null, 2)}`
   );
 
@@ -202,7 +202,6 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const author = "did:kilt:" + authorDID.toString();
 
-  // const definition = extractCTypeDefinition(block);
   const definition = pluckCTypeDefinition(extrinsic);
 
   const newCType = CType.create({
@@ -226,16 +225,6 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 function pluckCTypeDefinition(
   extrinsic: SubstrateExtrinsic | undefined
 ): string {
-  const relevantCallIndices = {
-    /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
-    submitDidCallIndex: "64,12",
-    /** Utility-Pallet: 40, batch-all: [pallet::call_index(2)]  <-- comes directly von substrate
-     *
-     * https://github.com/paritytech/polkadot-sdk/blob/f3073d8b33dc645da646962983f887505e1aef6e/substrate/frame/utility/src/lib.rs#L304C27-L304C27
-     */
-    utilityBatchAllCallIndex: "40,2",
-  };
-
   assert(extrinsic, "Extrinsic not defined");
 
   const blockNumber = extrinsic.block.block.header.number.toString();
@@ -245,50 +234,6 @@ function pluckCTypeDefinition(
   // Depending on the type of call, the extraction of the ctype definition is different
   const callIndex = extrinsic.extrinsic.callIndex.toString();
 
-  let definition = "Definitely a Definition";
-
-  switch (callIndex) {
-    case relevantCallIndices.submitDidCallIndex:
-      definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
-
-      break;
-
-    case relevantCallIndices.utilityBatchAllCallIndex:
-      const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
-      const addCtypeCalls = batchInternalCalls.filter(
-        (call) =>
-          call.args.did_call.call.section === "ctype" &&
-          call.args.did_call.call.method === "add"
-      );
-      assert(
-        addCtypeCalls.length === 1,
-        "Not (only) one add-ctype extrinsic in this utility batch"
-      );
-      definition = addCtypeCalls[0].args.did_call.call.args.ctype;
-
-      break;
-  }
-
-  assert(
-    definition,
-    `Could not extract ctype definition from extrinsic in block #${blockNumber}`
-  );
-
-  // Print the definition
-  logger.info(`typeof definition: ${typeof definition}`);
-  logger.info(`cType definition: ${definition}`);
-
-  return definition;
-}
-
-/** Extracts the cType definition (schema) from the extrinsic inside of the block.
- *
- * @param block
- */
-function extractCTypeDefinition(block: SubstrateBlock): string {
-  // TODO: use event.extrinsic instead
-  const blockNumber = block.block.header.number.toString();
-
   const relevantCallIndices = {
     /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
     submitDidCallIndex: "64,12",
@@ -299,48 +244,7 @@ function extractCTypeDefinition(block: SubstrateBlock): string {
     utilityBatchAllCallIndex: "40,2",
   };
 
-  const relevantExtrinsics = block.block.extrinsics.filter((extrinsic, i) => {
-    const callIndex = extrinsic.callIndex.toString();
-    logger.info(`Extrinsic #${i} has the call index: ${callIndex}`);
-
-    return Object.values(relevantCallIndices).includes(callIndex);
-  });
-
-  logger.info(
-    `Length of the relevantExtrinsics array is ${relevantExtrinsics?.length}`
-  );
-
-  // Print all relevantExtrinsics
-  relevantExtrinsics.forEach((extrinsic, index) => {
-    const decodedExtry = extrinsic.toHuman();
-    logger.info(
-      `Extrinsic #${index} as "toHuman" from Block` +
-        JSON.stringify(decodedExtry, null, 2)
-    );
-  });
-
-  assert(
-    relevantExtrinsics.length > 0,
-    `No submit_did_call extrinsic on block #${blockNumber}`
-  );
-
-  // TODO: manage case with several relevantExtrinsics on the block, possibly from same DID ;(
-
-  // To find a block where this happens:
-
-  assert(
-    relevantExtrinsics.length <= 1,
-    `More than one submit_did_call extrinsic on block #${blockNumber}`
-  );
-
-  const chosenExtrinsic = relevantExtrinsics[0];
-
-  const decodedExtrinsic = chosenExtrinsic.toHuman() as any;
-
   let definition = "Definitely a Definition";
-
-  // Depending on the type of call, the extraction of the ctype definition is different
-  const callIndex = chosenExtrinsic.callIndex.toString();
 
   switch (callIndex) {
     case relevantCallIndices.submitDidCallIndex:
