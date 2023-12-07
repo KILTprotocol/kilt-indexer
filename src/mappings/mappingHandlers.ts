@@ -1,4 +1,8 @@
-import type { SubstrateBlock, SubstrateEvent } from "@subql/types";
+import type {
+  SubstrateBlock,
+  SubstrateEvent,
+  SubstrateExtrinsic,
+} from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
@@ -26,7 +30,7 @@ export async function handleAttestationCreated(
 
   logger.trace(
     `The whole AttestationCreated event: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
@@ -85,7 +89,7 @@ export async function handleAttestationRevoked(
 
   logger.trace(
     `The whole AttestationRevoked event: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
@@ -138,7 +142,7 @@ export async function handleAttestationRemoved(
 
   logger.trace(
     `The whole AttestationRemoved event: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
@@ -187,17 +191,19 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     event: {
       data: [authorDID, cTypeHash],
     },
+    extrinsic,
   } = event;
 
-  logger.trace(
-    `The whole CTypeCreated event: ${JSON.stringify(event.toJSON(), null, 2)}`
+  logger.info(
+    `The whole CTypeCreated event: ${JSON.stringify(event.toHuman(), null, 2)}`
   );
 
   const blockNumber = await saveBlock(event);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const author = "did:kilt:" + authorDID.toString();
 
-  const definition = extractCTypeDefinition(block);
+  // const definition = extractCTypeDefinition(block);
+  const definition = pluckCTypeDefinition(extrinsic);
 
   const newCType = CType.create({
     id: cTypeId,
@@ -213,11 +219,74 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   await newCType.save();
 }
 
+/** Extracts the cType definition (schema) from the extrinsic, coming from the event.
+ *
+ * @param extrinsic
+ */
+function pluckCTypeDefinition(
+  extrinsic: SubstrateExtrinsic | undefined
+): string {
+  const relevantCallIndices = {
+    /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
+    submitDidCallIndex: "64,12",
+    /** Utility-Pallet: 40, batch-all: [pallet::call_index(2)]  <-- comes directly von substrate
+     *
+     * https://github.com/paritytech/polkadot-sdk/blob/f3073d8b33dc645da646962983f887505e1aef6e/substrate/frame/utility/src/lib.rs#L304C27-L304C27
+     */
+    utilityBatchAllCallIndex: "40,2",
+  };
+
+  assert(extrinsic, "Extrinsic not defined");
+
+  const blockNumber = extrinsic.block.block.header.number.toString();
+
+  const decodedExtrinsic = extrinsic.extrinsic.toHuman() as any;
+
+  // Depending on the type of call, the extraction of the ctype definition is different
+  const callIndex = extrinsic.extrinsic.callIndex.toString();
+
+  let definition = "Definitely a Definition";
+
+  switch (callIndex) {
+    case relevantCallIndices.submitDidCallIndex:
+      definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
+
+      break;
+
+    case relevantCallIndices.utilityBatchAllCallIndex:
+      const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
+      const addCtypeCalls = batchInternalCalls.filter(
+        (call) =>
+          call.args.did_call.call.section === "ctype" &&
+          call.args.did_call.call.method === "add"
+      );
+      assert(
+        addCtypeCalls.length === 1,
+        "Not (only) one add-ctype extrinsic in this utility batch"
+      );
+      definition = addCtypeCalls[0].args.did_call.call.args.ctype;
+
+      break;
+  }
+
+  assert(
+    definition,
+    `Could not extract ctype definition from extrinsic in block #${blockNumber}`
+  );
+
+  // Print the definition
+  logger.info(`typeof definition: ${typeof definition}`);
+  logger.info(`cType definition: ${definition}`);
+
+  return definition;
+}
+
 /** Extracts the cType definition (schema) from the extrinsic inside of the block.
  *
  * @param block
  */
 function extractCTypeDefinition(block: SubstrateBlock): string {
+  // TODO: use event.extrinsic instead
   const blockNumber = block.block.header.number.toString();
 
   const relevantCallIndices = {
@@ -414,7 +483,7 @@ export async function createPrehistoricAttestation(
 
   logger.trace(
     `The whole event involving a prehistoric attestation: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
