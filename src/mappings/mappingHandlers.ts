@@ -258,6 +258,8 @@ function extractCTypeDefinition(
           call.args.did_call.call.section === "ctype" &&
           call.args.did_call.call.method === "add"
       );
+
+      // TODO: hash the definition and compare with ctype-id
       assert(
         addCtypeCalls.length === 1,
         "Not (only) one add-ctype extrinsic in this utility batch"
