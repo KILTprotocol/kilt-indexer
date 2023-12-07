@@ -223,7 +223,10 @@ function extractCTypeDefinition(block: SubstrateBlock): string {
   const relevantCallIndices = {
     /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
     submitDidCallIndex: "64,12",
-    /** Utility-Pallet: 40, batch-all: [pallet::call_index(2)]  <-- could not find this on github repo */
+    /** Utility-Pallet: 40, batch-all: [pallet::call_index(2)]  <-- comes directly von substrate
+     *
+     * https://github.com/paritytech/polkadot-sdk/blob/f3073d8b33dc645da646962983f887505e1aef6e/substrate/frame/utility/src/lib.rs#L304C27-L304C27
+     */
     utilityBatchAllCallIndex: "40,2",
   };
 
