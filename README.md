@@ -217,7 +217,7 @@ fragment wholeAttestation on Attestation {
          attestationsCreated
          attestationsRevoked
          attestationsRemoved
-         invalidAttestations
+         validAttestations
          attestations(orderBy: ID_ASC) {
            totalCount
            nodes {
@@ -249,7 +249,7 @@ fragment wholeAttestation on Attestation {
            ...wholeBlock
          }
          attestationsCreated
-         invalidAttestations
+         validAttestations
        }
      }
    }
