@@ -2,6 +2,10 @@ import type { SubstrateEvent } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 
+// TODO: Remove the UNKNOWN constant before deployment.
+/** Solves problems while trying to start Data Base from higher block. */
+const UNKNOWN = "UNKNOWN_BECAUSE_IT_IS_PREHISTORIC";
+
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
@@ -199,7 +203,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     attestationsCreated: 0,
     attestationsRevoked: 0,
     attestationsRemoved: 0,
-    invalidAttestations: 0,
+    validAttestations: 0,
   });
 
   await newCType.save();
@@ -219,9 +223,9 @@ export async function handleCTypeAggregations(
       attestationsCreated: 0,
       attestationsRevoked: 0,
       attestationsRemoved: 0,
-      invalidAttestations: 0,
-      // author: undefined,
-      // registrationBlockId: undefined
+      validAttestations: 0,
+      author: UNKNOWN,
+      registrationBlockId: UNKNOWN,
     });
   }
 
@@ -229,7 +233,7 @@ export async function handleCTypeAggregations(
     ["cTypeId", "=", cTypeId],
   ]);
 
-  aggregation.invalidAttestations = attestationsOfThisCType.filter(
+  aggregation.validAttestations = attestationsOfThisCType.filter(
     (atty) => atty.valid
   ).length;
 
@@ -299,8 +303,6 @@ export async function createPrehistoricAttestation(
   logger.info(
     `An attestation from before the Database's startBlock is being added with default values.`
   );
-
-  const UNKNOWN = "UNKNOWN_BECAUSE_ATTESTATION_IS_PREHISTORIC!";
 
   // The event is of one of this two types:
   // An attestation has been revoked.\[attester DID, claim hash\]
