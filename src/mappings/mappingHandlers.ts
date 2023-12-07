@@ -36,7 +36,7 @@ export async function handleAttestationCreated(
     )}`
   );
 
-  const blockNumber = await saveBlock(event);
+  const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const payer = event.extrinsic!.extrinsic.signer.toString();
 
@@ -119,7 +119,7 @@ export async function handleAttestationRevoked(
     attestation = await createPrehistoricAttestation(event);
   }
 
-  attestation.revocationBlockId = await saveBlock(event);
+  attestation.revocationBlockId = await saveBlock(block);
   attestation.valid = false;
 
   await attestation.save();
@@ -173,7 +173,7 @@ export async function handleAttestationRemoved(
     attestation = await createPrehistoricAttestation(event);
   }
 
-  attestation.removalBlockId = await saveBlock(event);
+  attestation.removalBlockId = await saveBlock(block);
   attestation.valid = false;
 
   await attestation.save();
@@ -197,7 +197,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     `The whole CTypeCreated event: ${JSON.stringify(event.toHuman(), null, 2)}`
   );
 
-  const blockNumber = await saveBlock(event);
+  const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const author = "did:kilt:" + authorDID.toString();
 
@@ -326,15 +326,15 @@ export async function handleCTypeAggregations(
 }
 
 /**
- * Saves Block information from the Event into our Data Base.
+ * Saves Block information into our Data Base.
  *
- * @param event
+ * @param block
  * @returns Returns the Block-Hash, also known as Block-ID.
  */
-async function saveBlock(event: SubstrateEvent) {
-  const blockNumber = event.block.block.header.number.toString();
-  const blockHash = event.block.block.hash.toHex();
-  const issuanceDate = event.block.timestamp;
+async function saveBlock(block: SubstrateBlock) {
+  const blockNumber = block.block.header.number.toString();
+  const blockHash = block.block.hash.toHex();
+  const issuanceDate = block.timestamp;
 
   const exists = await Block.get(blockNumber);
   // Existence check not really necessary if we trust the chain
@@ -379,6 +379,7 @@ export async function createPrehistoricAttestation(
   // An attestation has been revoked.\[attester DID, claim hash\]
   // An attestation has been removed.\[attester DID, claim hash\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash],
     },
@@ -392,7 +393,7 @@ export async function createPrehistoricAttestation(
     )}`
   );
 
-  const blockNumber = await saveBlock(event);
+  const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + UNKNOWN;
   const payer = UNKNOWN;
 
