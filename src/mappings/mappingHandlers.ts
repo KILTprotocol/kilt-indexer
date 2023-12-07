@@ -207,7 +207,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     attestationsCreated: 0,
     attestationsRevoked: 0,
     attestationsRemoved: 0,
-    invalidAttestations: 0,
+    validAttestations: 0,
   });
 
   await newCType.save();
@@ -321,7 +321,7 @@ export async function handleCTypeAggregations(
       attestationsCreated: 0,
       attestationsRevoked: 0,
       attestationsRemoved: 0,
-      invalidAttestations: 0,
+      validAttestations: 0,
       author: UNKNOWN,
       registrationBlockId: UNKNOWN,
       definition: UNKNOWN,
@@ -332,7 +332,7 @@ export async function handleCTypeAggregations(
     ["cTypeId", "=", cTypeId],
   ]);
 
-  aggregation.invalidAttestations = attestationsOfThisCType.filter(
+  aggregation.validAttestations = attestationsOfThisCType.filter(
     (atty) => atty.valid
   ).length;
 
