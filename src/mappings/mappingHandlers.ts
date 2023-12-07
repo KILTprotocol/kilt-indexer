@@ -13,15 +13,15 @@ const UNKNOWN = "UNKNOWN_BECAUSE_IT_IS_PREHISTORIC";
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
-  logger.info(
-    `New attestation created at block ${event.block.block.header.number}`
-  );
   // A new attestation has been created.\[attester DID, claim hash, CType hash, (optional) delegation ID\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
     },
   } = event;
+
+  logger.info(`New attestation created at block ${block.block.header.number}`);
 
   // idx describes the type of event, not the count:
   // Ex.: idx= 0x3e00 = 64:00 = Attestation Pallet: 0th Event (att. created)
@@ -77,15 +77,15 @@ export async function handleAttestationCreated(
 export async function handleAttestationRevoked(
   event: SubstrateEvent
 ): Promise<void> {
-  logger.info(
-    `Attestation revoked at block ${event.block.block.header.number}`
-  );
   // An attestation has been revoked.\[attester DID, claim hash\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash],
     },
   } = event;
+
+  logger.info(`Attestation revoked at block ${block.block.header.number}`);
 
   logger.trace(
     `The whole AttestationRevoked event: ${JSON.stringify(
@@ -130,15 +130,15 @@ export async function handleAttestationRevoked(
 export async function handleAttestationRemoved(
   event: SubstrateEvent
 ): Promise<void> {
-  logger.info(
-    `Attestation removed at block ${event.block.block.header.number}`
-  );
   // An attestation has been removed.\[attester DID, claim hash\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash],
     },
   } = event;
+
+  logger.info(`Attestation removed at block ${block.block.header.number}`);
 
   logger.trace(
     `The whole AttestationRemoved event: ${JSON.stringify(
@@ -182,9 +182,6 @@ export async function handleAttestationRemoved(
 }
 
 export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
-  logger.info(
-    `New CType registered at block ${event.block.block.header.number}`
-  );
   // A new CType has been created.\[creator identifier, CType hash\]"
   const {
     block,
@@ -193,6 +190,8 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
     },
     extrinsic,
   } = event;
+
+  logger.info(`New CType registered at block ${block.block.header.number}`);
 
   logger.trace(
     `The whole CTypeCreated event: ${JSON.stringify(event.toHuman(), null, 2)}`
