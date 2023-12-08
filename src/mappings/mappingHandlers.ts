@@ -260,6 +260,31 @@ function extractCTypeDefinition(
       );
 
       // TODO: hash the definition and compare with ctype-id
+
+      // How the big boys do it:
+
+      // /**
+      //  * Encodes the provided CType for use in `api.tx.ctype.add()`.
+      //  *
+      //  * @param ctype The CType to write on the blockchain.
+      //  * @returns Encoded CType.
+      //  */
+      // function toChain(ctype) {
+      //   return (0, CType_js_1.serializeForHash)(ctype);
+      // }
+      // /**
+      //  * Utility for (re)creating CType hashes. Sorts the schema and strips the $id property (which contains the CType hash) before stringifying.
+      //  *
+      //  * @param cType The CType (with or without $id).
+      //  * @returns A deterministic JSON serialization of a CType, omitting the $id property.
+      //  */
+      // function serializeForHash(cType) {
+      //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      //   const { $id, ...schemaWithoutId } = cType;
+      //   return utils_1.Crypto.encodeObjectAsStr(schemaWithoutId);
+      // }
+      // const utils_1 = require("@kiltprotocol/utils");
+
       assert(
         addCtypeCalls.length === 1,
         "Not (only) one add-ctype extrinsic in this utility batch"
