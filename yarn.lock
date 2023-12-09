@@ -2700,6 +2700,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kiltprotocol/types@npm:^0.34.0":
+  version: 0.34.0
+  resolution: "@kiltprotocol/types@npm:0.34.0"
+  dependencies:
+    "@polkadot/api": ^10.4.0
+    "@polkadot/keyring": ^12.0.0
+    "@polkadot/types": ^10.4.0
+    "@polkadot/util": ^12.0.0
+    "@polkadot/util-crypto": ^12.0.0
+  checksum: e6ea69749c71f405eb20c20783b230c7a335f20346730601fe00bea0cc0c55b6c229de02cb76bdd536df645a4f4dd4e2d03f3cb43c7be8a10127148ca08570a7
+  languageName: node
+  linkType: hard
+
 "@kwsites/file-exists@npm:^1.1.1":
   version: 1.1.1
   resolution: "@kwsites/file-exists@npm:1.1.1"
@@ -3150,7 +3163,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/api@npm:10.11.1, @polkadot/api@npm:^10":
+"@polkadot/api@npm:10.11.1, @polkadot/api@npm:^10, @polkadot/api@npm:^10.4.0":
   version: 10.11.1
   resolution: "@polkadot/api@npm:10.11.1"
   dependencies:
@@ -3175,7 +3188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/keyring@npm:^12.5.1, @polkadot/keyring@npm:^12.6.1":
+"@polkadot/keyring@npm:^12.0.0, @polkadot/keyring@npm:^12.5.1, @polkadot/keyring@npm:^12.6.1":
   version: 12.6.1
   resolution: "@polkadot/keyring@npm:12.6.1"
   dependencies:
@@ -3434,7 +3447,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/types@npm:10.11.1":
+"@polkadot/types@npm:10.11.1, @polkadot/types@npm:^10.4.0":
   version: 10.11.1
   resolution: "@polkadot/types@npm:10.11.1"
   dependencies:
@@ -3450,7 +3463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util-crypto@npm:12.6.1, @polkadot/util-crypto@npm:^12.5.1, @polkadot/util-crypto@npm:^12.6.1":
+"@polkadot/util-crypto@npm:12.6.1, @polkadot/util-crypto@npm:^12.0.0, @polkadot/util-crypto@npm:^12.5.1, @polkadot/util-crypto@npm:^12.6.1":
   version: 12.6.1
   resolution: "@polkadot/util-crypto@npm:12.6.1"
   dependencies:
@@ -3470,7 +3483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/util@npm:12.6.1, @polkadot/util@npm:^12.5.1, @polkadot/util@npm:^12.6.1":
+"@polkadot/util@npm:12.6.1, @polkadot/util@npm:^12.0.0, @polkadot/util@npm:^12.5.1, @polkadot/util@npm:^12.6.1":
   version: 12.6.1
   resolution: "@polkadot/util@npm:12.6.1"
   dependencies:
@@ -4611,6 +4624,13 @@ __metadata:
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 97ed0cb44d4070aecea772b7b2e2ed971e10c81ec87dd4ecc160322ffa55ff330dace1793489540e3e318d90942064bb697cc0f8989391797792d919737b3b98
+  languageName: node
+  linkType: hard
+
+"@types/jsonabc@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "@types/jsonabc@npm:2.3.3"
+  checksum: 19b622c49dcfc0dc1ed894d5fda31169458b8705e407433a63be57560422c186b670dcfbcd35ea0f0c6b955600b046904be94a6093aaf1706888905e85bc6194
   languageName: node
   linkType: hard
 
@@ -9248,6 +9268,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsonabc@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "jsonabc@npm:2.3.1"
+  checksum: 2db5f12fbe3949f854fa4709fd9259630ced9f1d6e8394be8e03cbb3aac419fe2f1fced5ba18850b6af9942eaa07f1be29338047ccecd9028eebe93885a4ae3a
+  languageName: node
+  linkType: hard
+
 "jsonfile@npm:^4.0.0":
   version: 4.0.0
   resolution: "jsonfile@npm:4.0.0"
@@ -11681,12 +11708,15 @@ __metadata:
   resolution: "spiritnet-attestations-indexer@workspace:."
   dependencies:
     "@kiltprotocol/type-definitions": latest
+    "@kiltprotocol/types": ^0.34.0
     "@polkadot/api": ^10
     "@subql/cli": latest
     "@subql/node": latest
     "@subql/testing": latest
     "@subql/types": latest
+    "@types/jsonabc": ^2.3.3
     dotenv: ^16.3.1
+    jsonabc: ^2.3.1
     node-fetch: ^3.3.2
     ts-node: ^10.9.1
     typescript: ^5.2.2

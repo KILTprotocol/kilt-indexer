@@ -5,6 +5,8 @@ import type {
 } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
+import type { CTypeHash, DidUri, ICType } from "@kiltprotocol/types";
+import * as alphabetic from "jsonabc";
 
 // TODO: Remove the UNKNOWN constant before deployment.
 /** Solves problems while trying to start Data Base from higher block. */
@@ -201,7 +203,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const author = "did:kilt:" + authorDID.toString();
 
-  const definition = extractCTypeDefinition(extrinsic);
+  const definition = extractCTypeDefinition(extrinsic, cTypeHash.toHex());
 
   const newCType = CType.create({
     id: cTypeId,
@@ -219,10 +221,14 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 
 /** Extracts the cType definition (schema) from the extrinsic, coming from the event.
  *
+ * In case that there are several cType creations in one extrinsic batch, it would hash the definitions and compare with `cTypeHash`.
+ *
  * @param extrinsic
+ * @param cTypeHash Hex-string from Event. Without "kilt:ctype:"
  */
 function extractCTypeDefinition(
-  extrinsic: SubstrateExtrinsic | undefined
+  extrinsic: SubstrateExtrinsic | undefined,
+  cTypeHash: string
 ): string {
   assert(extrinsic, "Extrinsic not defined");
 
@@ -261,29 +267,50 @@ function extractCTypeDefinition(
 
       // TODO: hash the definition and compare with ctype-id
 
-      // How the big boys do it:
+      /**
+       * Utility for (re)creating CType hashes.
+       * Sorts the schema and strips the $id property (which contains the CType hash) before stringifying.
+       *
+       * Encodes the provided CType for use in `api.tx.ctype.add()`.
+       *
+       * @param cType The CType (with or without $id).
+       * @returns A deterministic JSON serialization of a CType, omitting the $id property.
+       */
+      function serializeForHash(cTypeSchema: ICType) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { $id, ...schemaWithoutId } = cTypeSchema;
+        return encodeObjectAsStr(schemaWithoutId);
+      }
 
-      // /**
-      //  * Encodes the provided CType for use in `api.tx.ctype.add()`.
-      //  *
-      //  * @param ctype The CType to write on the blockchain.
-      //  * @returns Encoded CType.
-      //  */
-      // function toChain(ctype) {
-      //   return (0, CType_js_1.serializeForHash)(ctype);
-      // }
-      // /**
-      //  * Utility for (re)creating CType hashes. Sorts the schema and strips the $id property (which contains the CType hash) before stringifying.
-      //  *
-      //  * @param cType The CType (with or without $id).
-      //  * @returns A deterministic JSON serialization of a CType, omitting the $id property.
-      //  */
-      // function serializeForHash(cType) {
-      //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      //   const { $id, ...schemaWithoutId } = cType;
-      //   return utils_1.Crypto.encodeObjectAsStr(schemaWithoutId);
-      // }
-      // const utils_1 = require("@kiltprotocol/utils");
+      /**
+       * Stringifies numbers, booleans, and objects. Object keys are sorted to yield consistent hashing.
+       *
+       * @param value Object or value to be hashed.
+       * @returns Stringified representation of the given object.
+       */
+      function encodeObjectAsStr(
+        value: Record<string, any> | string | number | boolean
+      ): string {
+        const input =
+          // eslint-disable-next-line no-nested-ternary
+          typeof value === "object" && value !== null
+            ? JSON.stringify(alphabetic.sortObj(value))
+            : // eslint-disable-next-line no-nested-ternary
+            typeof value === "number" && value !== null
+            ? value.toString()
+            : typeof value === "boolean" && value !== null
+            ? JSON.stringify(value)
+            : value;
+        return input.normalize("NFC");
+      }
+
+      addCtypeCalls.map((call) => {
+        const cTypeString: string = call.args.did_call.call.args.ctype;
+        const cTypeSchema: ICType = JSON.parse(cTypeString);
+        const cTypeHashed = serializeForHash(cTypeSchema);
+
+        return cTypeHash === cTypeHashed;
+      });
 
       assert(
         addCtypeCalls.length === 1,

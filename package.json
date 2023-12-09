@@ -23,11 +23,13 @@
   "license": "MIT",
   "devDependencies": {
     "@kiltprotocol/type-definitions": "latest",
+    "@kiltprotocol/types": "^0.34.0",
     "@polkadot/api": "^10",
     "@subql/cli": "latest",
     "@subql/node": "latest",
     "@subql/testing": "latest",
     "@subql/types": "latest",
+    "@types/jsonabc": "^2.3.3",
     "dotenv": "^16.3.1",
     "node-fetch": "^3.3.2",
     "ts-node": "^10.9.1",
@@ -39,5 +41,8 @@
   "exports": {
     "chaintypes": "./src/chaintypes.ts"
   },
-  "packageManager": "yarn@3.6.0"
+  "packageManager": "yarn@3.6.0",
+  "dependencies": {
+    "jsonabc": "^2.3.1"
+  }
 }
