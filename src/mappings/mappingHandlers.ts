@@ -5,8 +5,8 @@ import type {
 } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
+import { serializeForHash } from "../utilities/cTypeHasher";
 import type { CTypeHash, DidUri, ICType } from "@kiltprotocol/types";
-import * as alphabetic from "jsonabc";
 
 // TODO: Remove the UNKNOWN constant before deployment.
 /** Solves problems while trying to start Data Base from higher block. */
@@ -228,7 +228,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
  */
 function extractCTypeDefinition(
   extrinsic: SubstrateExtrinsic | undefined,
-  cTypeHash: string
+  cTypeHash: CTypeHash
 ): string {
   assert(extrinsic, "Extrinsic not defined");
 
@@ -265,58 +265,34 @@ function extractCTypeDefinition(
           call.args.did_call.call.method === "add"
       );
 
-      // TODO: hash the definition and compare with ctype-id
+      logger.info("The target CTypeHash from the event: " + cTypeHash);
 
-      /**
-       * Utility for (re)creating CType hashes.
-       * Sorts the schema and strips the $id property (which contains the CType hash) before stringifying.
-       *
-       * Encodes the provided CType for use in `api.tx.ctype.add()`.
-       *
-       * @param cType The CType (with or without $id).
-       * @returns A deterministic JSON serialization of a CType, omitting the $id property.
-       */
-      function serializeForHash(cTypeSchema: ICType) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { $id, ...schemaWithoutId } = cTypeSchema;
-        return encodeObjectAsStr(schemaWithoutId);
-      }
+      logger.info(
+        `There are ${addCtypeCalls.length} many addCtypeCalls to choose from.`
+      );
 
-      /**
-       * Stringifies numbers, booleans, and objects. Object keys are sorted to yield consistent hashing.
-       *
-       * @param value Object or value to be hashed.
-       * @returns Stringified representation of the given object.
-       */
-      function encodeObjectAsStr(
-        value: Record<string, any> | string | number | boolean
-      ): string {
-        const input =
-          // eslint-disable-next-line no-nested-ternary
-          typeof value === "object" && value !== null
-            ? JSON.stringify(alphabetic.sortObj(value))
-            : // eslint-disable-next-line no-nested-ternary
-            typeof value === "number" && value !== null
-            ? value.toString()
-            : typeof value === "boolean" && value !== null
-            ? JSON.stringify(value)
-            : value;
-        return input.normalize("NFC");
-      }
-
-      addCtypeCalls.map((call) => {
-        const cTypeString: string = call.args.did_call.call.args.ctype;
-        const cTypeSchema: ICType = JSON.parse(cTypeString);
+      const matchedDefinitions: string[] = addCtypeCalls.filter((call) => {
+        const definition: string = call.args.did_call.call.args.ctype;
+        const cTypeSchema: ICType = JSON.parse(definition);
         const cTypeHashed = serializeForHash(cTypeSchema);
 
-        return cTypeHash === cTypeHashed;
+        logger.info("From this definition: " + definition);
+        logger.info("The from it resulting cTypeHash: " + cTypeHashed);
+
+        if (cTypeHash === cTypeHashed) {
+          return definition;
+        }
       });
 
       assert(
-        addCtypeCalls.length === 1,
+        matchedDefinitions.length === 1,
         "Not (only) one add-ctype extrinsic in this utility batch"
       );
-      definition = addCtypeCalls[0].args.did_call.call.args.ctype;
+      definition = matchedDefinitions[0];
+
+      // Other option
+      // Assumes that there are not two equal definitions
+      // definition = addCtypeCalls.find((call) => {
 
       break;
   }
