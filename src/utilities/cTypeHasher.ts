@@ -28,7 +28,7 @@ export function getHashForSchema(cType: ICType): CTypeHash {
  * @param value Value to be hashed.
  * @returns Blake2b hash as hex string.
  */
-function hashStr(value: CryptoInput): HexString {
+export function hashStr(value: CryptoInput): HexString {
   return u8aToHex(hash(value));
 }
 
