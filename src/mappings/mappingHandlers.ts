@@ -5,7 +5,7 @@ import type {
 } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
-import { getHashForSchema } from "../utilities/cTypeHasher";
+import { getHashForSchema, hashStr } from "../utilities/cTypeHasher";
 import type { CTypeHash, ICType } from "@kiltprotocol/types";
 
 // TODO: Remove the UNKNOWN constant before deployment.
@@ -293,11 +293,18 @@ function extractCTypeDefinition(
           const definition: string = call.args.did_call.call.args.ctype;
           logger.info("From this definition: " + definition);
 
-          const cTypeSchema: ICType = JSON.parse(definition);
-          const hashedCType = getHashForSchema(cTypeSchema);
-          logger.info("The resulting cTypeHash is: " + hashedCType);
+          let cTypeHash: CTypeHash;
+          try {
+            const cTypeSchema: ICType = JSON.parse(definition);
+            cTypeHash = getHashForSchema(cTypeSchema);
+          } catch (error) {
+            logger.info("CType does not have a valid schema!");
+            cTypeHash = hashStr(definition);
+          }
 
-          if (targetCTypeHash === hashedCType) {
+          logger.info("The resulting cTypeHash is: " + cTypeHash);
+
+          if (targetCTypeHash === cTypeHash) {
             return definition;
           }
         })
