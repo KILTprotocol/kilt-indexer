@@ -219,7 +219,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   await newCType.save();
 }
 
-/** Extracts the cType definition (schema) from the extrinsic, coming from the event.
+/** Extracts the cType definition (schema) from the extrinsic, coming from the CTypeCreated event.
  *
  * In case that there are several cType creations in one extrinsic batch, it would hash the definitions and compare with `targetCTypeHash`.
  *
@@ -239,14 +239,23 @@ function extractCTypeDefinition(
   // Depending on the type of call, the extraction of the ctype definition is different
   const callIndex = extrinsic.extrinsic.callIndex.toString();
 
+  /** The pallet indices come from the `kilt-node` runtime.
+   * See:
+   * https://github.com/KILTprotocol/kilt-node/blob/b4158f9f5cb0beaace32c8761d7cb65d3db481cc/runtimes/spiritnet/src/lib.rs#L935
+   *
+   * The call indices from the utility pallet come directly from polkadot.
+   * See:
+   * https://github.com/paritytech/polkadot-sdk/blob/f3073d8b33dc645da646962983f887505e1aef6e/substrate/frame/utility/src/lib.rs#L304C27
+   */
   const relevantCallIndices = {
     /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
     submitDidCallIndex: "64,12",
-    /** Utility-Pallet: 40, batch-all: [pallet::call_index(2)]  <-- comes directly von substrate
-     *
-     * https://github.com/paritytech/polkadot-sdk/blob/f3073d8b33dc645da646962983f887505e1aef6e/substrate/frame/utility/src/lib.rs#L304C27-L304C27
-     */
+    /** Utility-Pallet: 40, batch: [pallet::call_index(0)]  <-- comes directly von substrate */
+    utilityBatchCallIndex: "40,0",
+    /** Utility-Pallet: 40, batch: [pallet::call_index(2)]  <-- comes directly von substrate */
     utilityBatchAllCallIndex: "40,2",
+    /** Utility-Pallet: 40, batch: [pallet::call_index(4)]  <-- comes directly von substrate */
+    utilityForceBatchCallIndex: "40,4",
   };
 
   assert(
@@ -262,7 +271,10 @@ function extractCTypeDefinition(
 
       break;
 
+    // Assuming all batch-types nest calls the same way:
+    case relevantCallIndices.utilityBatchCallIndex:
     case relevantCallIndices.utilityBatchAllCallIndex:
+    case relevantCallIndices.utilityForceBatchCallIndex:
       const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
       const addCtypeCalls = batchInternalCalls.filter(
         (call) =>
@@ -295,6 +307,7 @@ function extractCTypeDefinition(
         matchedDefinitions.length === 1,
         "Not (only) one add-ctype extrinsic in this utility batch has a cType-definition that matches cType-id from event."
       );
+
       definition = matchedDefinitions[0];
 
       break;
