@@ -14,7 +14,7 @@ export declare type BitLength = 64 | 128 | 256 | 384 | 512;
 /**
  * Calculates the CType hash from a schema.
  *
- * @param cType The ICType  without $id.
+ * @param cType The ICType with $id.
  * @returns Hash as hex string.
  */
 export function getHashForSchema(cType: ICType): CTypeHash {
