@@ -5,8 +5,8 @@ import type {
 } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
-import { serializeForHash } from "../utilities/cTypeHasher";
-import type { CTypeHash, DidUri, ICType } from "@kiltprotocol/types";
+import { getHashForSchema } from "../utilities/cTypeHasher";
+import type { CTypeHash, ICType } from "@kiltprotocol/types";
 
 // TODO: Remove the UNKNOWN constant before deployment.
 /** Solves problems while trying to start Data Base from higher block. */
@@ -221,14 +221,14 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 
 /** Extracts the cType definition (schema) from the extrinsic, coming from the event.
  *
- * In case that there are several cType creations in one extrinsic batch, it would hash the definitions and compare with `cTypeHash`.
+ * In case that there are several cType creations in one extrinsic batch, it would hash the definitions and compare with `targetCTypeHash`.
  *
  * @param extrinsic
- * @param cTypeHash Hex-string from Event. Without "kilt:ctype:"
+ * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
  */
 function extractCTypeDefinition(
   extrinsic: SubstrateExtrinsic | undefined,
-  cTypeHash: CTypeHash
+  targetCTypeHash: CTypeHash
 ): string {
   assert(extrinsic, "Extrinsic not defined");
 
@@ -249,6 +249,11 @@ function extractCTypeDefinition(
     utilityBatchAllCallIndex: "40,2",
   };
 
+  assert(
+    Object.values(relevantCallIndices).includes(callIndex),
+    "A CType was created using an unexpected extrinsic call."
+  );
+
   let definition = "Definitely a Definition";
 
   switch (callIndex) {
@@ -265,34 +270,32 @@ function extractCTypeDefinition(
           call.args.did_call.call.method === "add"
       );
 
-      logger.info("The target CTypeHash from the event: " + cTypeHash);
+      logger.info("The target CTypeHash from the event: " + targetCTypeHash);
 
       logger.info(
-        `There are ${addCtypeCalls.length} many addCtypeCalls to choose from.`
+        `There are (is) ${addCtypeCalls.length} addCtypeCall(s) to choose from.`
       );
 
-      const matchedDefinitions: string[] = addCtypeCalls.filter((call) => {
-        const definition: string = call.args.did_call.call.args.ctype;
-        const cTypeSchema: ICType = JSON.parse(definition);
-        const cTypeHashed = serializeForHash(cTypeSchema);
+      const matchedDefinitions = addCtypeCalls
+        .map((call) => {
+          const definition: string = call.args.did_call.call.args.ctype;
+          logger.info("From this definition: " + definition);
 
-        logger.info("From this definition: " + definition);
-        logger.info("The from it resulting cTypeHash: " + cTypeHashed);
+          const cTypeSchema: ICType = JSON.parse(definition);
+          const hashedCType = getHashForSchema(cTypeSchema);
+          logger.info("The resulting cTypeHash is: " + hashedCType);
 
-        if (cTypeHash === cTypeHashed) {
-          return definition;
-        }
-      });
+          if (targetCTypeHash === hashedCType) {
+            return definition;
+          }
+        })
+        .filter((element): element is string => element !== undefined);
 
       assert(
         matchedDefinitions.length === 1,
-        "Not (only) one add-ctype extrinsic in this utility batch"
+        "Not (only) one add-ctype extrinsic in this utility batch has a cType-definition that matches cType-id from event."
       );
       definition = matchedDefinitions[0];
-
-      // Other option
-      // Assumes that there are not two equal definitions
-      // definition = addCtypeCalls.find((call) => {
 
       break;
   }
