@@ -276,7 +276,7 @@ function extractCTypeDefinition(
     case relevantCallIndices.utilityBatchAllCallIndex:
     case relevantCallIndices.utilityForceBatchCallIndex:
       const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
-      const addCtypeCalls = batchInternalCalls.filter(
+      const addCTypeCalls = batchInternalCalls.filter(
         (call) =>
           call.args.did_call.call.section === "ctype" &&
           call.args.did_call.call.method === "add"
@@ -285,10 +285,10 @@ function extractCTypeDefinition(
       logger.info("The target CTypeHash from the event: " + targetCTypeHash);
 
       logger.info(
-        `There are (is) ${addCtypeCalls.length} addCtypeCall(s) to choose from.`
+        `There are (is) ${addCTypeCalls.length} addCtypeCall(s) to choose from.`
       );
 
-      const matchedDefinitions = addCtypeCalls
+      const matchedDefinitions = addCTypeCalls
         .map((call) => {
           const definition: string = call.args.did_call.call.args.ctype;
           logger.info("From this definition: " + definition);
