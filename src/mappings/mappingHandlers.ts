@@ -5,11 +5,7 @@ import type {
 } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
-import {
-  cTypeHasher,
-  getHashForSchema,
-  hashStr,
-} from "../utilities/cTypeHasher";
+import { cTypeHasher } from "../utilities/cTypeHasher";
 import type { CTypeHash, ICType } from "@kiltprotocol/types";
 
 // TODO: Remove the UNKNOWN constant before deployment.
