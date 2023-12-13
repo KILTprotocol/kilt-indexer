@@ -1,6 +1,6 @@
 import type { CTypeHash, DidUri, HexString, ICType } from "@kiltprotocol/types";
 import { u8aToHex } from "@polkadot/util";
-import { blake2AsU8a } from "@polkadot/util-crypto";
+import { blake2AsU8a, blake2AsHex } from "@polkadot/util-crypto";
 import * as alphabetic from "jsonabc";
 
 // Copy some functions from the KILT-SDK
@@ -78,4 +78,18 @@ function encodeObjectAsStr(
       ? JSON.stringify(value)
       : value;
   return input.normalize("NFC");
+}
+
+/**
+ * Calculates the CType hash from a schema.
+ *
+ * @param cType The ICType with $id.
+ * @returns Hash as hex string.
+ */
+export function cTypeHasher(cTypeSchema: ICType): CTypeHash {
+  const { $id, ...schemaWithoutId } = cTypeSchema;
+  const stringified = JSON.stringify(alphabetic.sortObj(schemaWithoutId));
+  const hash = blake2AsHex(stringified.normalize("NFC"));
+
+  return hash;
 }
