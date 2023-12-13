@@ -5,7 +5,11 @@ import type {
 } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
-import { getHashForSchema, hashStr } from "../utilities/cTypeHasher";
+import {
+  cTypeHasher,
+  getHashForSchema,
+  hashStr,
+} from "../utilities/cTypeHasher";
 import type { CTypeHash, ICType } from "@kiltprotocol/types";
 
 // TODO: Remove the UNKNOWN constant before deployment.
@@ -303,7 +307,7 @@ function extractCTypeDefinition(
           }
 
           const cTypeSchema: ICType = JSON.parse(definition);
-          const cTypeHash = getHashForSchema(cTypeSchema);
+          const cTypeHash = cTypeHasher(cTypeSchema);
 
           logger.info("The resulting cTypeHash is: " + cTypeHash);
 
