@@ -290,17 +290,20 @@ function extractCTypeDefinition(
 
       const matchedDefinitions = addCTypeCalls
         .map((call) => {
-          const definition: string = call.args.did_call.call.args.ctype;
+          let definition: string = call.args.did_call.call.args.ctype;
           logger.info("From this definition: " + definition);
 
-          let cTypeHash: CTypeHash;
-          try {
-            const cTypeSchema: ICType = JSON.parse(definition);
-            cTypeHash = getHashForSchema(cTypeSchema);
-          } catch (error) {
-            logger.info("CType does not have a valid schema!");
-            cTypeHash = hashStr(definition);
+          // Sometimes the ctype-definition has unusual characters
+          // this leads to getting a hex-string instead of a stringify-object.
+          if (definition.startsWith("0x")) {
+            logger.info("CType with unusual characters");
+            const raw = Buffer.from(definition.slice(2), "hex");
+            definition = raw.toString("utf8");
+            logger.info("The redecoded cType-schema: " + definition);
           }
+
+          const cTypeSchema: ICType = JSON.parse(definition);
+          const cTypeHash = getHashForSchema(cTypeSchema);
 
           logger.info("The resulting cTypeHash is: " + cTypeHash);
 
