@@ -258,6 +258,22 @@ function extractCTypeDefinition(
     utilityForceBatchCallIndex: "40,4",
   };
 
+  const { method, section } = extrinsic.extrinsic.method;
+
+  logger.info("The Method for this call: " + method);
+  logger.info("The Section for this call: " + section);
+
+  // 'section' is the pallet
+  const relevantPallets = ["did", "utility"];
+  const relevantMethods = ["submitDidCall", "batch", "batchAll", "forceBatch"];
+
+  const relevantCalls = {
+    submitDidCall: { pallet: "did", method: "submitDidCall" },
+    batch: { pallet: "utility", method: "batch" },
+    batchAll: { pallet: "utility", method: "batchAll" },
+    forceBatch: { pallet: "utility", method: "forceBatch" },
+  };
+
   assert(
     Object.values(relevantCallIndices).includes(callIndex),
     "A CType was created using an unexpected extrinsic call."
