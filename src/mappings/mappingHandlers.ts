@@ -278,8 +278,8 @@ function extractCTypeDefinition(
       const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
       const addCTypeCalls = batchInternalCalls.filter(
         (call) =>
-          call.args.did_call.call.section === "ctype" &&
-          call.args.did_call.call.method === "add"
+          call.args.did_call?.call?.section === "ctype" &&
+          call.args.did_call?.call?.method === "add"
       );
 
       logger.info("The target CTypeHash from the event: " + targetCTypeHash);
