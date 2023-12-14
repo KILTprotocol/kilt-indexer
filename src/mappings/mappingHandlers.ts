@@ -236,36 +236,13 @@ function extractCTypeDefinition(
 
   const decodedExtrinsic = extrinsic.extrinsic.toHuman() as any;
 
-  // Depending on the type of call, the extraction of the ctype definition is different
-  const callIndex = extrinsic.extrinsic.callIndex.toString();
+  const { section: usedPallet, method: usedMethod } =
+    extrinsic.extrinsic.method;
 
-  /** The pallet indices come from the `kilt-node` runtime.
-   * See:
-   * https://github.com/KILTprotocol/kilt-node/blob/b4158f9f5cb0beaace32c8761d7cb65d3db481cc/runtimes/spiritnet/src/lib.rs#L935
-   *
-   * The call indices from the utility pallet come directly from polkadot.
-   * See:
-   * https://github.com/paritytech/polkadot-sdk/blob/f3073d8b33dc645da646962983f887505e1aef6e/substrate/frame/utility/src/lib.rs#L304C27
-   */
-  const relevantCallIndices = {
-    /** DID-Pallet: 64, submit_did_call: [pallet::call_index(12)] */
-    submitDidCallIndex: "64,12",
-    /** Utility-Pallet: 40, batch: [pallet::call_index(0)]  <-- comes directly von substrate */
-    utilityBatchCallIndex: "40,0",
-    /** Utility-Pallet: 40, batch: [pallet::call_index(2)]  <-- comes directly von substrate */
-    utilityBatchAllCallIndex: "40,2",
-    /** Utility-Pallet: 40, batch: [pallet::call_index(4)]  <-- comes directly von substrate */
-    utilityForceBatchCallIndex: "40,4",
-  };
+  const usedCall = { pallet: usedPallet, method: usedMethod };
 
-  const { method, section } = extrinsic.extrinsic.method;
-
-  logger.info("The Method for this call: " + method);
-  logger.info("The Section for this call: " + section);
-
-  // 'section' is the pallet
-  const relevantPallets = ["did", "utility"];
-  const relevantMethods = ["submitDidCall", "batch", "batchAll", "forceBatch"];
+  logger.info("The Method for this call: " + usedMethod);
+  logger.info("The Section for this call: " + usedPallet);
 
   const relevantCalls = {
     submitDidCall: { pallet: "did", method: "submitDidCall" },
@@ -274,23 +251,18 @@ function extractCTypeDefinition(
     forceBatch: { pallet: "utility", method: "forceBatch" },
   };
 
-  assert(
-    Object.values(relevantCallIndices).includes(callIndex),
-    "A CType was created using an unexpected extrinsic call."
-  );
-
   let definition = "Definitely a Definition";
 
-  switch (callIndex) {
-    case relevantCallIndices.submitDidCallIndex:
+  switch (usedCall.method) {
+    case relevantCalls.submitDidCall.method:
       definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
 
       break;
 
     // Assuming all batch-types nest calls the same way:
-    case relevantCallIndices.utilityBatchCallIndex:
-    case relevantCallIndices.utilityBatchAllCallIndex:
-    case relevantCallIndices.utilityForceBatchCallIndex:
+    case relevantCalls.batch.method:
+    case relevantCalls.batchAll.method:
+    case relevantCalls.forceBatch.method:
       const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
       const addCTypeCalls = batchInternalCalls.filter(
         (call) =>
@@ -336,6 +308,14 @@ function extractCTypeDefinition(
 
       definition = matchedDefinitions[0];
 
+      break;
+    default:
+      assert(
+        false,
+        "A CType was created using an unexpected extrinsic call.\n" +
+          "The used call is:  " +
+          JSON.stringify(usedCall, null, 2)
+      );
       break;
   }
 
