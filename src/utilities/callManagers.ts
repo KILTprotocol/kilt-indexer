@@ -17,13 +17,6 @@ const relevantCalls = {
   addCType: { pallet: "ctype", method: "add" },
 };
 
-const relevantPallets = Object.values(relevantCalls).map(
-  (rellyCall) => rellyCall.pallet
-);
-const relevantMethods = Object.values(relevantCalls).map(
-  (rellyCall) => rellyCall.method
-);
-
 /** Extracts the cType definition (schema) from the extrinsic, coming from the CTypeCreated event.
  *
  * In case that there are several cType creations in one extrinsic batch, it would hash the definitions and compare with `targetCTypeHash`.
@@ -54,19 +47,13 @@ export function extractCTypeDefinition(
 
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
-      //debugger:
-      logger.info("entered the submitDidCall case");
       definition = manageSubmitDidCall(usedCall, targetCTypeHash);
       break;
     case relevantCalls.batchAll.pallet:
-      //debugger:
-      logger.info("entered the batchAll case");
-      definition = manageBatchAllCall(usedCall, targetCTypeHash);
+      definition = manageBatchCalls(usedCall, targetCTypeHash);
       break;
-    // This case does not leads to successful cType creation:
+    // This case does not leads to successful cType creation
     case relevantCalls.addCType.pallet:
-      //debugger:
-      logger.info("entered the addCtype case");
       definition = manageAddCTypeCall(usedCall, targetCTypeHash);
       break;
     default:
@@ -88,13 +75,13 @@ export function extractCTypeDefinition(
 
 /** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
  *
- * @param call Call of this type:
+ * @param call Calls of this type:
  *  Pallet: Utility;
- *  Method: batch_all;
+ *  Method: batch | batch_all | force_batch ;
  * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
  *
  */
-function manageBatchAllCall(
+function manageBatchCalls(
   call: GenericExtrinsic["method"],
   targetCTypeHash: CTypeHash
 ): string | false {
@@ -103,21 +90,10 @@ function manageBatchAllCall(
     parentPallet === relevantCalls.batchAll.pallet,
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
   );
-  // assert(
-  //   parentMethod === relevantCalls.batchAll.method,
-  //   "Erroneous extrinsic passed to this function. Wrong Method!"
-  // );
 
   const childrenCalls: GenericExtrinsic["method"][] = (call as any).args.calls;
 
-  // Could spare this by adding `return false` at the end of the next `.map`
-  const favoriteChildrenCalls = childrenCalls.filter(
-    (call) =>
-      relevantPallets.includes(call.section) &&
-      relevantMethods.includes(call.method)
-  );
-
-  const matchedDefinitions = favoriteChildrenCalls
+  const matchedDefinitions = childrenCalls
     .map((childCall) => {
       const { section: childPallet, method: childMethod } = childCall;
 
@@ -128,16 +104,9 @@ function manageBatchAllCall(
         return manageSubmitDidCall(childCall, targetCTypeHash);
       }
       if (childPallet === relevantCalls.batchAll.pallet) {
-        return manageBatchAllCall(childCall, targetCTypeHash);
+        return manageBatchCalls(childCall, targetCTypeHash);
       }
-      assert(
-        false,
-        `Logic to process this call is missing: ${JSON.stringify(
-          childCall,
-          null,
-          2
-        )}`
-      );
+      return false;
     })
     .filter((element): element is string => !!element);
 
@@ -170,23 +139,14 @@ function manageSubmitDidCall(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
-  // debugger
-  logger.info("Call passed to manageSubmitDidCall: " + JSON.stringify(call));
-  logger.info("Its Args: " + JSON.stringify(call.args, null, 2));
-  logger.info("Its ArgsDef: " + JSON.stringify(call.argsDef, null, 2));
-  //   logger.info("Call as to Human: " + JSON.stringify(call.toHuman(), null, 2));
-
-  // `args[0]` is `args.did_call` before stringifying it
-  //   const childCall = (call as any).args[0].call;
   const childCall = (call as any).args.did_call.call;
-
   const { section: childPallet, method: childMethod } = childCall;
 
   if (childPallet === relevantCalls.addCType.pallet) {
     return manageAddCTypeCall(childCall, targetCTypeHash);
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return manageBatchAllCall(childCall, targetCTypeHash);
+    return manageBatchCalls(childCall, targetCTypeHash);
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
