@@ -7,6 +7,8 @@ import { CType, Attestation, Block } from "../types";
 import assert from "assert";
 import { cTypeHasher } from "../utilities/cTypeHasher";
 import type { CTypeHash, ICType } from "@kiltprotocol/types";
+import { GenericExtrinsic } from "@polkadot/types/extrinsic";
+import { extractCTypeDefinition } from "../utilities/callManagers";
 
 // TODO: Remove the UNKNOWN constant before deployment.
 /** Solves problems while trying to start Data Base from higher block. */
@@ -195,7 +197,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 
   logger.info(`New CType registered at block ${block.block.header.number}`);
 
-  logger.trace(
+  logger.info(
     `The whole CTypeCreated event: ${JSON.stringify(event.toHuman(), null, 2)}`
   );
 
@@ -219,6 +221,14 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   await newCType.save();
 }
 
+// const relevantCalls = {
+//   submitDidCall: { pallet: "did", method: "submitDidCall" },
+//   batch: { pallet: "utility", method: "batch" },
+//   batchAll: { pallet: "utility", method: "batchAll" },
+//   forceBatch: { pallet: "utility", method: "forceBatch" },
+//   addCType: { pallet: "ctype", method: "add" },
+// };
+
 /** Extracts the cType definition (schema) from the extrinsic, coming from the CTypeCreated event.
  *
  * In case that there are several cType creations in one extrinsic batch, it would hash the definitions and compare with `targetCTypeHash`.
@@ -226,110 +236,109 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
  * @param extrinsic
  * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
  */
-function extractCTypeDefinition(
-  extrinsic: SubstrateExtrinsic | undefined,
-  targetCTypeHash: CTypeHash
-): string {
-  assert(extrinsic, "Extrinsic not defined");
+// function extractCTypeDefinition(
+//   extrinsic: SubstrateExtrinsic | undefined,
+//   targetCTypeHash: CTypeHash
+// ): string {
+//   assert(extrinsic, "Extrinsic not defined");
 
-  const blockNumber = extrinsic.block.block.header.number.toString();
+//   const blockNumber = extrinsic.block.block.header.number.toString();
 
-  const decodedExtrinsic = extrinsic.extrinsic.toHuman() as any;
+//   const decodedExtrinsic = extrinsic.extrinsic.toHuman() as any;
 
-  const { section: usedPallet, method: usedMethod } =
-    extrinsic.extrinsic.method;
+//   const { section: usedPallet, method: usedMethod } =
+//     extrinsic.extrinsic.method;
 
-  const usedCall = { pallet: usedPallet, method: usedMethod };
+//   const usedCall = { pallet: usedPallet, method: usedMethod };
 
-  logger.info("The Method for this call: " + usedMethod);
-  logger.info("The Section for this call: " + usedPallet);
+//   logger.info("The Method for this call: " + usedMethod);
+//   logger.info("The Section for this call: " + usedPallet);
 
-  const relevantCalls = {
-    submitDidCall: { pallet: "did", method: "submitDidCall" },
-    batch: { pallet: "utility", method: "batch" },
-    batchAll: { pallet: "utility", method: "batchAll" },
-    forceBatch: { pallet: "utility", method: "forceBatch" },
-  };
+//   logger.info(
+//     "The whole extrinsic: " + JSON.stringify(decodedExtrinsic, null, 2)
+//   );
 
-  let definition = "Definitely a Definition";
+//   extrinsic.extrinsic.method;
 
-  switch (usedCall.method) {
-    case relevantCalls.submitDidCall.method:
-      definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
+//   let definition = "Definitely a Definition";
 
-      break;
+//   switch (usedCall.method) {
+//     case relevantCalls.submitDidCall.method:
+//       definition = decodedExtrinsic.method.args.did_call.call.args.ctype;
 
-    // Assuming all batch-types nest calls the same way:
-    case relevantCalls.batch.method:
-    case relevantCalls.batchAll.method:
-    case relevantCalls.forceBatch.method:
-      const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
-      const addCTypeCalls = batchInternalCalls.filter(
-        (call) =>
-          call.args.did_call?.call?.section === "ctype" &&
-          call.args.did_call?.call?.method === "add"
-      );
+//       break;
 
-      logger.info("The target CTypeHash from the event: " + targetCTypeHash);
+//     // Assuming all batch-types nest calls the same way:
+//     case relevantCalls.batch.method:
+//     case relevantCalls.batchAll.method:
+//     case relevantCalls.forceBatch.method:
+//       const batchInternalCalls: any[] = decodedExtrinsic.method.args.calls;
+//       const addCTypeCalls = batchInternalCalls.filter(
+//         (call) =>
+//           call.args.did_call?.call?.section === "ctype" &&
+//           call.args.did_call?.call?.method === "add"
+//       );
 
-      logger.info(
-        `There are (is) ${addCTypeCalls.length} addCtypeCall(s) to choose from.`
-      );
+//       logger.info("The target CTypeHash from the event: " + targetCTypeHash);
 
-      const matchedDefinitions = addCTypeCalls
-        .map((call) => {
-          let definition: string = call.args.did_call.call.args.ctype;
-          logger.info("From this definition: " + definition);
+//       logger.info(
+//         `There are (is) ${addCTypeCalls.length} addCtypeCall(s) to choose from.`
+//       );
 
-          // Sometimes the ctype-definition has unusual characters
-          // this leads to getting a hex-string instead of a stringify-object.
-          if (definition.startsWith("0x")) {
-            logger.info("CType with unusual characters");
-            const raw = Buffer.from(definition.slice(2), "hex");
-            definition = raw.toString("utf8");
-            logger.info("The redecoded cType-schema: " + definition);
-          }
+//       const matchedDefinitions = addCTypeCalls
+//         .map((call) => {
+//           let definition: string = call.args.did_call.call.args.ctype;
+//           logger.info("From this definition: " + definition);
 
-          const cTypeSchema: ICType = JSON.parse(definition);
-          const cTypeHash = cTypeHasher(cTypeSchema);
+//           // Sometimes the ctype-definition has unusual characters
+//           // this leads to getting a hex-string instead of a stringify-object.
+//           if (definition.startsWith("0x")) {
+//             logger.info("CType with unusual characters");
+//             const raw = Buffer.from(definition.slice(2), "hex");
+//             definition = raw.toString("utf8");
+//             logger.info("The redecoded cType-schema: " + definition);
+//           }
 
-          logger.info("The resulting cTypeHash is: " + cTypeHash);
+//           const cTypeSchema: ICType = JSON.parse(definition);
+//           const cTypeHash = cTypeHasher(cTypeSchema);
 
-          if (targetCTypeHash === cTypeHash) {
-            return definition;
-          }
-        })
-        .filter((element): element is string => element !== undefined);
+//           logger.info("The resulting cTypeHash is: " + cTypeHash);
 
-      assert(
-        matchedDefinitions.length === 1,
-        "Not (only) one add-ctype extrinsic in this utility batch has a cType-definition that matches cType-id from event."
-      );
+//           if (targetCTypeHash === cTypeHash) {
+//             return definition;
+//           }
+//         })
+//         .filter((element): element is string => element !== undefined);
 
-      definition = matchedDefinitions[0];
+//       assert(
+//         matchedDefinitions.length === 1,
+//         "Not (only) one add-ctype extrinsic in this utility batch has a cType-definition that matches cType-id from event."
+//       );
 
-      break;
-    default:
-      assert(
-        false,
-        "A CType was created using an unexpected extrinsic call.\n" +
-          "The used call is:  " +
-          JSON.stringify(usedCall, null, 2)
-      );
-      break;
-  }
+//       definition = matchedDefinitions[0];
 
-  assert(
-    definition,
-    `Could not extract ctype definition from extrinsic in block #${blockNumber}`
-  );
+//       break;
+//     default:
+//       assert(
+//         false,
+//         "A CType was created using an unexpected extrinsic call.\n" +
+//           "The used call is:  " +
+//           JSON.stringify(usedCall, null, 2)
+//       );
+//       break;
+//   }
 
-  // Print the definition
-  logger.info(`typeof definition: ${typeof definition}`);
-  logger.info(`cType definition: ${definition}`);
+//   assert(
+//     definition,
+//     `Could not extract ctype definition from extrinsic in block #${blockNumber}`
+//   );
 
-  return definition;
-}
+//   // Print the definition
+//   logger.info(`typeof definition: ${typeof definition}`);
+//   logger.info(`cType definition: ${definition}`);
+
+//   return definition;
+// }
 
 export async function handleCTypeAggregations(
   cTypeId: string,
