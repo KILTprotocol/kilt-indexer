@@ -52,10 +52,6 @@ export function extractCTypeDefinition(
     case relevantCalls.batchAll.pallet:
       definition = manageBatchCalls(usedCall, targetCTypeHash);
       break;
-    // This case does not leads to successful cType creation
-    case relevantCalls.addCType.pallet:
-      definition = manageAddCTypeCall(usedCall, targetCTypeHash);
-      break;
     default:
       definition = false;
       break;
