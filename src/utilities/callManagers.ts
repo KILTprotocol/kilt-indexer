@@ -31,10 +31,7 @@ export function extractCTypeDefinition(
 
   const usedCall = decodedExtrinsic.method;
 
-  logger.info("The Section, a.k.a. Pallet, for this call: " + usedCall.section);
-  logger.info("The Method for this call: " + usedCall.method);
-
-  logger.info(
+  logger.trace(
     "The whole extrinsic: " + JSON.stringify(decodedExtrinsic, null, 2)
   );
 
@@ -184,9 +181,9 @@ function doDefinitionMatchHash(
   cTypeDefinition: string,
   targetCTypeHash: CTypeHash
 ): string | false {
-  logger.info("The target CTypeHash from the event: " + targetCTypeHash);
+  logger.trace("The target CTypeHash from the event: " + targetCTypeHash);
 
-  logger.info("The definition being evaluated: " + cTypeDefinition);
+  logger.trace("The definition being evaluated: " + cTypeDefinition);
 
   // Sometimes the ctype-definition has unusual characters
   // this leads to getting a hex-string instead of a stringify-object.
@@ -194,13 +191,13 @@ function doDefinitionMatchHash(
     logger.info("CType with unusual characters");
     const raw = Buffer.from(cTypeDefinition.slice(2), "hex");
     cTypeDefinition = raw.toString("utf8");
-    logger.info("The redecoded cType-schema: " + cTypeDefinition);
+    logger.trace("The redecoded cType-schema: " + cTypeDefinition);
   }
 
   const cTypeSchema: ICType = JSON.parse(cTypeDefinition);
   const cTypeHash = cTypeHasher(cTypeSchema);
 
-  logger.info("The resulting cTypeHash is: " + cTypeHash);
+  logger.trace("The resulting cTypeHash is: " + cTypeHash);
 
   if (targetCTypeHash === cTypeHash) {
     return cTypeDefinition;
