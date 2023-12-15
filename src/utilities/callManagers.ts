@@ -1,12 +1,7 @@
-import type {
-  SubstrateBlock,
-  SubstrateEvent,
-  SubstrateExtrinsic,
-} from "@subql/types";
-import { CType, Attestation, Block } from "../types";
+import type { SubstrateExtrinsic } from "@subql/types";
 import assert from "assert";
 import { cTypeHasher } from "./cTypeHasher";
-import type { CTypeHash, HexString, ICType } from "@kiltprotocol/types";
+import type { CTypeHash, ICType } from "@kiltprotocol/types";
 import { GenericExtrinsic } from "@polkadot/types/extrinsic";
 
 const relevantCalls = {
