@@ -1,5 +1,5 @@
 {
-  "name": "spiritnet-attestations-indexer",
+  "name": "peregrine-indexer",
   "version": "1.0.0",
   "description": "indexing of attestations and CTypes",
   "main": "dist/index.js",
