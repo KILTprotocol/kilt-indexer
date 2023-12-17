@@ -2,14 +2,19 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const DWELLIR_KEY = loadEnv("DWELLIR_KEY");
-export const ONFINALITY_KEY = loadEnv("ONFINALITY_KEY");
+export const DWELLIR_KEY = loadEnv("DWELLIR_KEY", false);
+export const ONFINALITY_KEY = loadEnv("ONFINALITY_KEY", false);
 
-function loadEnv(name: string) {
+function loadEnv(name: string, compulsory: boolean = true) {
   const envValue = process.env[name];
-  if (!envValue) {
+  if (!envValue && compulsory) {
     throw new Error(
       `Environment constant '${name}' is missing. Define it on the project's root directory '.env'-file. \n`
+    );
+  }
+  if (!envValue) {
+    console.log(
+      `Environment constant '${name}' is missing from '.env'-file. Working with default fallback.  \n`
     );
   }
   return envValue;
