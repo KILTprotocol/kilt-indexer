@@ -197,7 +197,7 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 
   logger.info(`New CType registered at block ${block.block.header.number}`);
 
-  logger.info(
+  logger.trace(
     `The whole CTypeCreated event: ${JSON.stringify(event.toHuman(), null, 2)}`
   );
 
