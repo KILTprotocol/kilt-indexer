@@ -4,7 +4,7 @@ import {
   SubstrateProject,
 } from "@subql/types";
 
-import { DWELLIR_KEY, ONFINALITY_KEY } from "./configuration";
+import { CRAWL_PEREGRINE, DWELLIR_KEY, ONFINALITY_KEY } from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
@@ -27,9 +27,10 @@ const project: SubstrateProject = {
     file: "./schema.graphql",
   },
   network: {
-    /* The genesis hash of the network (hash of block 0) */
-    chainId:
-      "0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21",
+    /* The hash of the network genesis block. Block 0 identifier. */
+    chainId: CRAWL_PEREGRINE
+      ? "0xa0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21" // Falcon Egg
+      : "0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21", // Partially germinated barley
     /**
      * This endpoint must be a public non-pruned archive node
      * Public nodes may be rate limited, which can affect indexing speed
@@ -37,14 +38,16 @@ const project: SubstrateProject = {
      * You can get them from OnFinality for free https://app.onfinality.io
      * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
-    endpoint: [
-      DWELLIR_KEY
-        ? `wss://kilt-rpc.dwellir.com/${DWELLIR_KEY}`
-        : "wss://kilt-rpc.dwellir.com",
-      ONFINALITY_KEY
-        ? `wss://spiritnet.api.onfinality.io/ws?apikey=${ONFINALITY_KEY}`
-        : "wss://spiritnet.api.onfinality.io/public-ws",
-    ],
+    endpoint: CRAWL_PEREGRINE
+      ? ["wss://peregrine.kilt.io"]
+      : [
+          DWELLIR_KEY
+            ? `wss://kilt-rpc.dwellir.com/${DWELLIR_KEY}`
+            : "wss://kilt-rpc.dwellir.com",
+          ONFINALITY_KEY
+            ? `wss://spiritnet.api.onfinality.io/ws?apikey=${ONFINALITY_KEY}`
+            : "wss://spiritnet.api.onfinality.io/public-ws",
+        ],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
       "https://api.subquery.network/sq/subquery/kilt-spiritnet-dictionary",
