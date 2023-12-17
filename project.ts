@@ -10,7 +10,7 @@ import { CRAWL_PEREGRINE, DWELLIR_KEY, ONFINALITY_KEY } from "./configuration";
 const project: SubstrateProject = {
   specVersion: "1.0.0",
   version: "0.0.1",
-  name: "kilt-spiritnet-attestation-indexer",
+  name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
   description:
     "This project can be used as a starting point for developing your SubQuery project. It aggregates attestations from the Kilt Spiritnet network",
   runner: {
