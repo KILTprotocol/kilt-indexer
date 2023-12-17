@@ -64,8 +64,8 @@ export function extractCTypeDefinition(
 /** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
  *
  * @param call Calls of this type:
- *  Pallet: Utility;
- *  Method: batch | batch_all | force_batch ;
+ *  Pallet: Utility.
+ *  Method: batch | batch_all | force_batch.
  * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
  *
  */
@@ -108,8 +108,8 @@ function manageBatchCalls(
 /** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
  *
  * @param call Call of this type:
- *  Pallet: DID;
- *  Method: submit_did_call;
+ *  Pallet: DID.
+ *  Method: submit_did_call.
  * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
  *
  */
@@ -148,8 +148,8 @@ function manageSubmitDidCall(
 /** Process extrinsic call and extracts cType definition, if it matches `targetCTypeHash`.
  *
  * @param call Calls of this type:
- *  Pallet: cType;
- *  Method: add_ctype;
+ *  Pallet: cType.
+ *  Method: add_ctype.
  * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
  *
  */
