@@ -12,7 +12,7 @@ const project: SubstrateProject = {
   version: "0.0.1",
   name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
   description:
-    "This project crawls the KILT network and registers all claim types and credential attestations; with custom aggregations.",
+    "This projects registers (with custom aggregations) all claim types and credential attestations from the KILT network.",
   runner: {
     node: {
       name: "@subql/node",
