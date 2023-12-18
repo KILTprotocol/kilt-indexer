@@ -10,6 +10,7 @@ const relevantCalls = {
   batchAll: { pallet: "utility", method: "batchAll" },
   forceBatch: { pallet: "utility", method: "forceBatch" },
   addCType: { pallet: "ctype", method: "add" },
+  proxy: { pallet: "proxy", method: "proxy" },
 };
 
 /** Extracts the cType definition (schema) from the extrinsic, coming from the CTypeCreated event.
@@ -44,6 +45,9 @@ export function extractCTypeDefinition(
     case relevantCalls.batchAll.pallet:
       definition = manageBatchCalls(usedCall, targetCTypeHash);
       break;
+    case relevantCalls.proxy.pallet:
+      definition = manageProxyCall(usedCall, targetCTypeHash);
+      break;
     default:
       definition = false;
       break;
@@ -59,6 +63,49 @@ export function extractCTypeDefinition(
   logger.info(`cType definition: ${definition}`);
 
   return definition;
+}
+
+/** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
+ *
+ * @param call Call of this type:
+ *  Pallet: Proxy.
+ *  Method: proxy.
+ * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
+ *
+ */
+function manageProxyCall(
+  call: GenericExtrinsic["method"],
+  targetCTypeHash: CTypeHash
+): string | false {
+  const { section: parentPallet, method: parentMethod } = call;
+  assert(
+    parentPallet === relevantCalls.proxy.pallet,
+    "Erroneous extrinsic passed to this function. Wrong Pallet!"
+  );
+  assert(
+    parentMethod === relevantCalls.proxy.method,
+    "Erroneous extrinsic passed to this function. Wrong Method!"
+  );
+
+  const childCall = (call as any).args.call;
+  const { section: childPallet, method: childMethod } = childCall;
+
+  if (childPallet === relevantCalls.addCType.pallet) {
+    return manageAddCTypeCall(childCall, targetCTypeHash);
+  }
+  if (childPallet === relevantCalls.batchAll.pallet) {
+    return manageBatchCalls(childCall, targetCTypeHash);
+  }
+  if (childMethod === relevantCalls.submitDidCall.method) {
+    return manageSubmitDidCall(childCall, targetCTypeHash);
+  }
+
+  if (childMethod === relevantCalls.proxy.method) {
+    // Is this possible?
+    return manageProxyCall(childCall, targetCTypeHash);
+  }
+
+  return false;
 }
 
 /** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
@@ -93,6 +140,9 @@ function manageBatchCalls(
       }
       if (childPallet === relevantCalls.batchAll.pallet) {
         return manageBatchCalls(childCall, targetCTypeHash);
+      }
+      if (childMethod === relevantCalls.proxy.method) {
+        return manageProxyCall(childCall, targetCTypeHash);
       }
       return false;
     })
@@ -135,6 +185,9 @@ function manageSubmitDidCall(
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
     return manageBatchCalls(childCall, targetCTypeHash);
+  }
+  if (childMethod === relevantCalls.proxy.method) {
+    return manageProxyCall(childCall, targetCTypeHash);
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
