@@ -91,7 +91,7 @@ const project: SubstrateProject = {
             handler: "handleAttestationDepositReclaimed",
             filter: {
               module: "attestation",
-              method: "ReclaimDeposit",
+              method: "DepositReclaimed",
             },
           },
           {

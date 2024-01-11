@@ -103,7 +103,7 @@ export async function handleAttestationRevoked(
   // another way of doing it:
   // const attestations = await store.getByField(
   //   "Attestation",
-  //   "id",
+  //   "claimHash",
   //   claimHash.toHex()
   // );
 
@@ -161,7 +161,64 @@ export async function handleAttestationRemoved(
     );
   });
 
-  // Get the attestation that still has not been removed yet:
+  // Get the attestation that has still not been removed yet:
+  let attestation = attestations.find((atty) => !atty.removalBlockId);
+
+  // the attestation (creation) could have happened before the DB start block
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'attestation' a constant.
+    assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  } catch (error) {
+    logger.info(error);
+    attestation = await createPrehistoricAttestation(event);
+  }
+
+  attestation.removalBlockId = await saveBlock(block);
+  attestation.valid = false;
+
+  await attestation.save();
+
+  await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
+}
+
+export async function handleAttestationDepositReclaimed(
+  event: SubstrateEvent
+): Promise<void> {
+  // "The deposit owner reclaimed a deposit by removing an attestation." [account id, claim hash]
+  // Attestation removed by owner reclaiming his deposit. [account id, claim hash]
+  const {
+    block,
+    event: {
+      data: [accountID, claimHash],
+    },
+  } = event;
+
+  logger.info(
+    `Attestation-Deposit reclaimed at block ${block.block.header.number}`
+  );
+
+  logger.info(
+    `The whole AttestationDepositReclaimed event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  // There could be several attestations with the same claim hash.
+  // Given that the older ones has been previously removed from the chain state
+  const attestations = await Attestation.getByFields([
+    ["claimHash", "=", claimHash.toHex()],
+  ]);
+
+  logger.info(`printing the attestations array:`);
+  attestations.forEach((atty, index) => {
+    logger.info(
+      `Index: ${index}, attestation: ${JSON.stringify(atty, null, 2)}`
+    );
+  });
+
+  // Get the attestation that has still not been removed yet:
   let attestation = attestations.find((atty) => !atty.removalBlockId);
 
   // the attestation (creation) could have happened before the DB start block
