@@ -78,13 +78,20 @@ const project: SubstrateProject = {
               method: "AttestationRevoked",
             },
           },
-
           {
             kind: SubstrateHandlerKind.Event,
             handler: "handleAttestationRemoved",
             filter: {
               module: "attestation",
               method: "AttestationRemoved",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleAttestationDepositReclaimed",
+            filter: {
+              module: "attestation",
+              method: "ReclaimDeposit",
             },
           },
           {
