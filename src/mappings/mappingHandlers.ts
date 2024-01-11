@@ -185,7 +185,7 @@ export async function handleAttestationDepositReclaimed(
   event: SubstrateEvent
 ): Promise<void> {
   // "The deposit owner reclaimed a deposit by removing an attestation." [account id, claim hash]
-  // Attestation removed by owner reclaiming his deposit. [account id, claim hash]
+  // Attestation removed by owner reclaiming his deposit. [account id, claim hash] (rephrased by me)
   const {
     block,
     event: {
@@ -237,6 +237,12 @@ export async function handleAttestationDepositReclaimed(
 
   await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
 }
+
+// TODO: Add a handler for the (future) Event emitted when the deposit owner is changed
+// related to:
+// #[pallet::call_index(4)]
+// #[pallet::weight(<T as pallet::Config>::WeightInfo::change_deposit_owner())]
+// pub fn change_deposit_owner(origin: OriginFor<T>, claim_hash: ClaimHashOf<T>) -> DispatchResult
 
 export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
   // A new CType has been created.\[creator identifier, CType hash\]"
