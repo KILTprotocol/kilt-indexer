@@ -220,7 +220,7 @@ function manageAddCTypeCall(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
   const cTypeDefinition = (call as any).args.ctype;
-  return doDefinitionMatchHash(cTypeDefinition, targetCTypeHash);
+  return validateDefinitionAgainstHash(cTypeDefinition, targetCTypeHash);
 }
 
 /** Hashes the `cTypeDefinition` and compares it to the `targetCTypeHash`.
@@ -230,7 +230,7 @@ function manageAddCTypeCall(
  * @param cTypeDefinition
  * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
  */
-function doDefinitionMatchHash(
+function validateDefinitionAgainstHash(
   cTypeDefinition: string,
   targetCTypeHash: CTypeHash
 ): string | false {
