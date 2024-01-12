@@ -1,4 +1,5 @@
 import type { SubstrateExtrinsic } from "@subql/types";
+import type { Bytes } from "@polkadot/types";
 import assert from "assert";
 import { cTypeHasher } from "./cTypeHasher";
 import type { CTypeHash, ICType } from "@kiltprotocol/types";
@@ -28,13 +29,11 @@ export function extractCTypeDefinition(
 
   const blockNumber = extrinsic.block.block.header.number.toString();
 
-  const decodedExtrinsic = extrinsic.extrinsic.toHuman() as any;
+  // const decodedExtrinsic = extrinsic.extrinsic.toHuman() as any;
 
-  const usedCall = decodedExtrinsic.method;
+  const usedCall: GenericExtrinsic["method"] = extrinsic.extrinsic.method;
 
-  logger.trace(
-    "The whole extrinsic: " + JSON.stringify(decodedExtrinsic, null, 2)
-  );
+  logger.trace("The whole extrinsic: " + JSON.stringify(usedCall, null, 2));
 
   let definition: string | false;
 
@@ -87,7 +86,8 @@ function manageProxyCall(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
-  const childCall = (call as any).args.call;
+  // call.args.call
+  const childCall = call.args[2] as GenericExtrinsic["method"];
   const { section: childPallet, method: childMethod } = childCall;
 
   if (childPallet === relevantCalls.addCType.pallet) {
@@ -126,7 +126,8 @@ function manageBatchCalls(
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
   );
 
-  const childrenCalls: GenericExtrinsic["method"][] = (call as any).args.calls;
+  // call.args.calls;
+  const childrenCalls: GenericExtrinsic["method"][] = call.args[0] as any;
 
   const matchedDefinitions = childrenCalls
     .map((childCall) => {
@@ -177,7 +178,8 @@ function manageSubmitDidCall(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
-  const childCall = (call as any).args.did_call.call;
+  // call.args.did_call.call
+  const childCall = (call.args[0] as any).call as GenericExtrinsic["method"];
   const { section: childPallet, method: childMethod } = childCall;
 
   if (childPallet === relevantCalls.addCType.pallet) {
@@ -219,8 +221,12 @@ function manageAddCTypeCall(
     method === relevantCalls.addCType.method,
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
-  const cTypeDefinition = (call as any).args.ctype;
-  return validateDefinitionAgainstHash(cTypeDefinition, targetCTypeHash);
+  // call.args.ctype
+  const cTypeDefinition = call.args[0] as Bytes;
+  return validateDefinitionAgainstHash(
+    cTypeDefinition.toUtf8(),
+    targetCTypeHash
+  );
 }
 
 /** Hashes the `cTypeDefinition` and compares it to the `targetCTypeHash`.
@@ -237,15 +243,6 @@ function validateDefinitionAgainstHash(
   logger.trace("The target CTypeHash from the event: " + targetCTypeHash);
 
   logger.trace("The definition being evaluated: " + cTypeDefinition);
-
-  // Sometimes the ctype-definition has unusual characters
-  // this leads to getting a hex-string instead of a stringify-object.
-  if (cTypeDefinition.startsWith("0x")) {
-    logger.info("CType with unusual characters");
-    const raw = Buffer.from(cTypeDefinition.slice(2), "hex");
-    cTypeDefinition = raw.toString("utf8");
-    logger.trace("The redecoded cType-schema: " + cTypeDefinition);
-  }
 
   const cTypeSchema: ICType = JSON.parse(cTypeDefinition);
   const cTypeHash = cTypeHasher(cTypeSchema);
