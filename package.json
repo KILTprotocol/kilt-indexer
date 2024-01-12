@@ -43,8 +43,5 @@
   "exports": {
     "chaintypes": "./src/chaintypes.ts"
   },
-  "packageManager": "yarn@3.6.0",
-  "dependencies": {
-    "jsonabc": "^2.3.1"
-  }
+  "packageManager": "yarn@3.6.0"
 }
