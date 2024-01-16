@@ -1,9 +1,9 @@
 import type { SubstrateExtrinsic } from "@subql/types";
-import type { Bytes } from "@polkadot/types";
+import type { Bytes, Vec } from "@polkadot/types";
 import assert from "assert";
 import { cTypeHasher } from "./cTypeHasher";
 import type { CTypeHash, ICType } from "@kiltprotocol/types";
-import { GenericExtrinsic } from "@polkadot/types/extrinsic";
+import type { GenericExtrinsic } from "@polkadot/types/extrinsic";
 
 const relevantCalls = {
   submitDidCall: { pallet: "did", method: "submitDidCall" },
@@ -28,8 +28,6 @@ export function extractCTypeDefinition(
   assert(extrinsic, "Extrinsic not defined");
 
   const blockNumber = extrinsic.block.block.header.number.toString();
-
-  // const decodedExtrinsic = extrinsic.extrinsic.toHuman() as any;
 
   const usedCall: GenericExtrinsic["method"] = extrinsic.extrinsic.method;
 
@@ -86,7 +84,7 @@ function manageProxyCall(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
-  // call.args.call
+  // third call argument is proxied call
   const childCall = call.args[2] as GenericExtrinsic["method"];
   const { section: childPallet, method: childMethod } = childCall;
 
@@ -126,8 +124,8 @@ function manageBatchCalls(
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
   );
 
-  // call.args.calls;
-  const childrenCalls: GenericExtrinsic["method"][] = call.args[0] as any;
+  // first call argument is a vector of calls:
+  const childrenCalls = call.args[0] as Vec<GenericExtrinsic["method"]>;
 
   const matchedDefinitions = childrenCalls
     .map((childCall) => {
@@ -178,7 +176,7 @@ function manageSubmitDidCall(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
-  // call.args.did_call.call
+  // first call argument is a struct with a 'call' property
   const childCall = (call.args[0] as any).call as GenericExtrinsic["method"];
   const { section: childPallet, method: childMethod } = childCall;
 
@@ -221,7 +219,7 @@ function manageAddCTypeCall(
     method === relevantCalls.addCType.method,
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
-  // call.args.ctype
+  // first call argument is the ctype definition, but without the id
   const cTypeDefinition = call.args[0] as Bytes;
   return validateDefinitionAgainstHash(
     cTypeDefinition.toUtf8(),
