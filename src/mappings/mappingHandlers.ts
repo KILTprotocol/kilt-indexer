@@ -1,6 +1,10 @@
-import type { SubstrateEvent } from "@subql/types";
+import type {
+  SubstrateBlock,
+  SubstrateEvent,
+} from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
+import { extractCTypeDefinition } from "../utilities/callManagers";
 
 // TODO: Remove the UNKNOWN constant before deployment.
 /** Solves problems while trying to start Data Base from higher block. */
@@ -9,15 +13,15 @@ const UNKNOWN = "UNKNOWN_BECAUSE_IT_IS_PREHISTORIC";
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
-  logger.info(
-    `New attestation created at block ${event.block.block.header.number}`
-  );
   // A new attestation has been created.\[attester DID, claim hash, CType hash, (optional) delegation ID\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
     },
   } = event;
+
+  logger.info(`New attestation created at block ${block.block.header.number}`);
 
   // idx describes the type of event, not the count:
   // Ex.: idx= 0x3e00 = 64:00 = Attestation Pallet: 0th Event (att. created)
@@ -26,13 +30,13 @@ export async function handleAttestationCreated(
 
   logger.trace(
     `The whole AttestationCreated event: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
   );
 
-  const blockNumber = await saveBlock(event);
+  const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const payer = event.extrinsic!.extrinsic.signer.toString();
 
@@ -73,19 +77,19 @@ export async function handleAttestationCreated(
 export async function handleAttestationRevoked(
   event: SubstrateEvent
 ): Promise<void> {
-  logger.info(
-    `Attestation revoked at block ${event.block.block.header.number}`
-  );
   // An attestation has been revoked.\[attester DID, claim hash\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash],
     },
   } = event;
 
+  logger.info(`Attestation revoked at block ${block.block.header.number}`);
+
   logger.trace(
     `The whole AttestationRevoked event: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
@@ -115,7 +119,7 @@ export async function handleAttestationRevoked(
     attestation = await createPrehistoricAttestation(event);
   }
 
-  attestation.revocationBlockId = await saveBlock(event);
+  attestation.revocationBlockId = await saveBlock(block);
   attestation.valid = false;
 
   await attestation.save();
@@ -126,19 +130,19 @@ export async function handleAttestationRevoked(
 export async function handleAttestationRemoved(
   event: SubstrateEvent
 ): Promise<void> {
-  logger.info(
-    `Attestation removed at block ${event.block.block.header.number}`
-  );
   // An attestation has been removed.\[attester DID, claim hash\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash],
     },
   } = event;
 
+  logger.info(`Attestation removed at block ${block.block.header.number}`);
+
   logger.trace(
     `The whole AttestationRemoved event: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
@@ -169,7 +173,7 @@ export async function handleAttestationRemoved(
     attestation = await createPrehistoricAttestation(event);
   }
 
-  attestation.removalBlockId = await saveBlock(event);
+  attestation.removalBlockId = await saveBlock(block);
   attestation.valid = false;
 
   await attestation.save();
@@ -178,28 +182,32 @@ export async function handleAttestationRemoved(
 }
 
 export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
-  logger.info(
-    `New CType registered at block ${event.block.block.header.number}`
-  );
   // A new CType has been created.\[creator identifier, CType hash\]"
   const {
+    block,
     event: {
       data: [authorDID, cTypeHash],
     },
+    extrinsic,
   } = event;
 
+  logger.info(`New CType registered at block ${block.block.header.number}`);
+
   logger.trace(
-    `The whole CTypeCreated event: ${JSON.stringify(event.toJSON(), null, 2)}`
+    `The whole CTypeCreated event: ${JSON.stringify(event.toHuman(), null, 2)}`
   );
 
-  const blockNumber = await saveBlock(event);
+  const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const author = "did:kilt:" + authorDID.toString();
+
+  const definition = extractCTypeDefinition(extrinsic, cTypeHash.toHex());
 
   const newCType = CType.create({
     id: cTypeId,
     registrationBlockId: blockNumber,
     author: author,
+    definition: definition,
     attestationsCreated: 0,
     attestationsRevoked: 0,
     attestationsRemoved: 0,
@@ -226,6 +234,7 @@ export async function handleCTypeAggregations(
       validAttestations: 0,
       author: UNKNOWN,
       registrationBlockId: UNKNOWN,
+      definition: UNKNOWN,
     });
   }
 
@@ -255,15 +264,15 @@ export async function handleCTypeAggregations(
 }
 
 /**
- * Saves Block information from the Event into our Data Base.
+ * Saves Block information into our Data Base.
  *
- * @param event
+ * @param block
  * @returns Returns the Block-Hash, also known as Block-ID.
  */
-async function saveBlock(event: SubstrateEvent) {
-  const blockNumber = event.block.block.header.number.toString();
-  const blockHash = event.block.block.hash.toHex();
-  const issuanceDate = event.block.timestamp;
+async function saveBlock(block: SubstrateBlock) {
+  const blockNumber = block.block.header.number.toString();
+  const blockHash = block.block.hash.toHex();
+  const issuanceDate = block.timestamp;
 
   const exists = await Block.get(blockNumber);
   // Existence check not really necessary if we trust the chain
@@ -293,7 +302,7 @@ async function saveBlock(event: SubstrateEvent) {
 }
 
 /**
- * TODO: This function should deleted before deployment.
+ * TODO: This function should be deleted before deployment.
  *
  * @param event a revocation or a removal of an attestation
  */
@@ -308,6 +317,7 @@ export async function createPrehistoricAttestation(
   // An attestation has been revoked.\[attester DID, claim hash\]
   // An attestation has been removed.\[attester DID, claim hash\]
   const {
+    block,
     event: {
       data: [attesterDID, claimHash],
     },
@@ -315,13 +325,13 @@ export async function createPrehistoricAttestation(
 
   logger.trace(
     `The whole event involving a prehistoric attestation: ${JSON.stringify(
-      event.toJSON(),
+      event.toHuman(),
       null,
       2
     )}`
   );
 
-  const blockNumber = await saveBlock(event);
+  const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + UNKNOWN;
   const payer = UNKNOWN;
 
