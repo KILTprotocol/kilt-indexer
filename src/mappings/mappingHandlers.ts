@@ -1,13 +1,9 @@
 import type {
   SubstrateBlock,
   SubstrateEvent,
-  SubstrateExtrinsic,
 } from "@subql/types";
 import { CType, Attestation, Block } from "../types";
 import assert from "assert";
-import { cTypeHasher } from "../utilities/cTypeHasher";
-import type { CTypeHash, ICType } from "@kiltprotocol/types";
-import { GenericExtrinsic } from "@polkadot/types/extrinsic";
 import { extractCTypeDefinition } from "../utilities/callManagers";
 
 // TODO: Remove the UNKNOWN constant before deployment.

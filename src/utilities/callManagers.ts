@@ -118,7 +118,7 @@ function manageBatchCalls(
   call: GenericExtrinsic["method"],
   targetCTypeHash: CTypeHash
 ): string | false {
-  const { section: parentPallet, method: parentMethod } = call;
+  const { section: parentPallet } = call;
   assert(
     parentPallet === relevantCalls.batchAll.pallet,
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
