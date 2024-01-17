@@ -4,7 +4,12 @@ import {
   SubstrateProject,
 } from "@subql/types";
 
-import { CRAWL_PEREGRINE, DWELLIR_KEY, ONFINALITY_KEY } from "./configuration";
+import {
+  CRAWL_PEREGRINE,
+  PRIVATE_NODE,
+  DWELLIR_KEY,
+  ONFINALITY_KEY,
+} from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
@@ -39,7 +44,7 @@ const project: SubstrateProject = {
      * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
     endpoint: CRAWL_PEREGRINE
-      ? ["wss://peregrine.kilt.io"]
+      ? [PRIVATE_NODE ? "ws://localhost:1821" : "wss://peregrine.kilt.io"]
       : [
           DWELLIR_KEY
             ? `wss://kilt-rpc.dwellir.com/${DWELLIR_KEY}`
