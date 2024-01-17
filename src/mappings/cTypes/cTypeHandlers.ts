@@ -1,6 +1,6 @@
 import type { SubstrateEvent } from "@subql/types";
 import { CType, Attestation } from "../../types";
-import { extractCTypeDefinition } from "../utilities/callManagers";
+import { extractCTypeDefinition } from "./extractCTypeDefinition";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 
