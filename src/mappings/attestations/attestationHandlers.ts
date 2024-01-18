@@ -192,7 +192,7 @@ export async function handleAttestationDepositReclaimed(
     `Attestation-Deposit reclaimed at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole AttestationDepositReclaimed event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -206,9 +206,9 @@ export async function handleAttestationDepositReclaimed(
     ["claimHash", "=", claimHash.toHex()],
   ]);
 
-  logger.info(`printing the attestations array:`);
+  logger.trace(`printing the attestations array:`);
   attestations.forEach((atty, index) => {
-    logger.info(
+    logger.trace(
       `Index: ${index}, attestation: ${JSON.stringify(atty, null, 2)}`
     );
   });
