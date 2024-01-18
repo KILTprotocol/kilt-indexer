@@ -58,7 +58,7 @@ const project: SubstrateProject = {
   dataSources: [
     {
       kind: SubstrateDatasourceKind.Runtime,
-      startBlock: 1300000,
+      startBlock: 1_100_000,
       mapping: {
         file: "./dist/index.js",
         handlers: [
@@ -116,6 +116,14 @@ const project: SubstrateProject = {
             filter: {
               module: "did",
               method: "DidDeleted",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameClaimed",
+            filter: {
+              module: "web3names",
+              method: "Web3NameClaimed",
             },
           },
         ],

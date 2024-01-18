@@ -13,3 +13,5 @@ export {
 export { handleCTypeCreated } from "./cTypes/cTypeHandlers";
 
 export { handleDidCreated, handleDidDeleted } from "./dids/didHandlers";
+
+export { handleWeb3NameClaimed } from "./dids/w3nHandlers";
