@@ -3,6 +3,7 @@ import { DID } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
+import { createPrehistoricDID } from "./createPrehistoricDID";
 
 export async function handleDidCreated(event: SubstrateEvent): Promise<void> {
   // A new DID has been created. \[transaction signer, DID identifier\]
@@ -50,9 +51,16 @@ export async function handleDidDeleted(event: SubstrateEvent): Promise<void> {
 
   const id = "did:kilt:" + identifier.toString();
 
-  const did = await DID.get(id);
+  let did = await DID.get(id);
 
-  assert(did, `Can't find this DID on the data base: ${id}.`);
+  // the did (creation) could have happened before the Data base's starting block
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'did' a constant.
+    assert(did, `Can't find this DID on the data base: ${id}.`);
+  } catch (error) {
+    logger.info(error);
+    did = await createPrehistoricDID(event);
+  }
 
   did.deletionBlockId = await saveBlock(block);
 
