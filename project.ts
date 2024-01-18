@@ -102,6 +102,14 @@ const project: SubstrateProject = {
               method: "CTypeCreated",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDidCreated",
+            filter: {
+              module: "did",
+              method: "DidCreated",
+            },
+          },
         ],
       },
     },
