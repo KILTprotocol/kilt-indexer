@@ -23,7 +23,7 @@ type Attestation @entity {
 
 type CType @entity {
   # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
-  id: ID! #id is  "kilt:ctype:" + CType hash
+  id: ID! # id is  "kilt:ctype:" + CType hash
   registrationBlock: Block!
   author: String! @index # DID of the creator
   definition: String! # cType Schema
@@ -31,4 +31,12 @@ type CType @entity {
   attestationsRevoked: Int!
   attestationsRemoved: Int! # either valid or revoked credentials can be removed.
   validAttestations: Int! # number of credentials neither revoked nor removed.
+}
+
+type DID @entity {
+  id: ID! # id is  "did:kilt:" + 4...
+  payer: String! @index
+  creationBlock: Block!
+  deletionBlock: Block
+  web3name: String # w3n:user
 }
