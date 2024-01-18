@@ -3,24 +3,6 @@ import { DID } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
-import { UNKNOWN } from "../mappingHandlers";
-
-// #[pallet::event]
-// #[pallet::generate_deposit(pub(super) fn deposit_event)]
-// pub enum Event<T: Config> {
-//     /// A new DID has been created.
-//     /// \[transaction signer, DID identifier\]
-//     DidCreated(AccountIdOf<T>, DidIdentifierOf<T>),
-//     /// A DID has been updated.
-//     /// \[DID identifier\]
-//     DidUpdated(DidIdentifierOf<T>),
-//     /// A DID has been deleted.
-//     /// \[DID identifier\]
-//     DidDeleted(DidIdentifierOf<T>),
-//     /// A DID-authorised call has been executed.
-//     /// \[DID caller, dispatch result\]
-//     DidCallDispatched(DidIdentifierOf<T>, DispatchResult),
-// }
 
 export async function handleDidCreated(event: SubstrateEvent): Promise<void> {
   // A new DID has been created. \[transaction signer, DID identifier\]
