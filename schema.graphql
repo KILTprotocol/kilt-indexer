@@ -39,4 +39,6 @@ type DID @entity {
   creationBlock: Block!
   deletionBlock: Block
   web3name: String # w3n:user
+  # Should we add a "valid" or "deactivated" field??
+  # Or is the deletionBlock enough?
 }

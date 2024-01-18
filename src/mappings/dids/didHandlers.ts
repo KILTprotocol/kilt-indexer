@@ -1,5 +1,6 @@
 import type { SubstrateEvent } from "@subql/types";
 import { DID } from "../../types";
+import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
@@ -22,7 +23,7 @@ import { UNKNOWN } from "../mappingHandlers";
 // }
 
 export async function handleDidCreated(event: SubstrateEvent): Promise<void> {
-  // A new DID has been created. [transaction signer, DID identifier\]
+  // A new DID has been created. \[transaction signer, DID identifier\]
   const {
     block,
     event: {
@@ -47,4 +48,31 @@ export async function handleDidCreated(event: SubstrateEvent): Promise<void> {
   });
 
   await newDID.save();
+}
+
+export async function handleDidDeleted(event: SubstrateEvent): Promise<void> {
+  // A DID has been deleted. \[DID identifier\]
+  const {
+    block,
+    event: {
+      data: [identifier],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(`A DID was deactivated at block ${block.block.header.number}`);
+
+  logger.trace(
+    `The whole DidDeleted event: ${JSON.stringify(event.toHuman(), null, 2)}`
+  );
+
+  const id = "did:kilt:" + identifier.toString();
+
+  const did = await DID.get(id);
+
+  assert(did, `Can't find this DID on the data base: ${id}.`);
+
+  did.deletionBlockId = await saveBlock(block);
+
+  await did.save();
 }

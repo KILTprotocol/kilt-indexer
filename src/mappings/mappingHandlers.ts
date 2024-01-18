@@ -12,4 +12,4 @@ export {
 
 export { handleCTypeCreated } from "./cTypes/cTypeHandlers";
 
-export { handleDidCreated } from "./dids/didHandlers";
+export { handleDidCreated, handleDidDeleted } from "./dids/didHandlers";

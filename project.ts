@@ -110,6 +110,14 @@ const project: SubstrateProject = {
               method: "DidCreated",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDidDeleted",
+            filter: {
+              module: "did",
+              method: "DidDeleted",
+            },
+          },
         ],
       },
     },
