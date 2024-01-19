@@ -57,15 +57,13 @@ export async function handleWeb3NameClaimed(
   // the did (creation) could have happened before the Data base's starting block
   try {
     // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'did' a constant.
-    assert(did, `Can't find this DID on the data base: ${did}.`);
+    assert(did, `Can't find this DID on the data base: ${owner}.`);
   } catch (error) {
     logger.info(error);
     did = await createPrehistoricDID(event);
   }
 
-  // did.web3name ? did.web3name.unshift(w3n) : (did.web3name = [w3n]);
-
-  did.web3name = did.web3name ? [w3n].concat(did.web3name) : [w3n];
+  did.web3nameId = w3n;
 
   await did.save();
 
@@ -89,6 +87,86 @@ export async function handleWeb3NameClaimed(
   });
 
   await bearingData.save();
+
+  await web3Name.save();
+}
+
+export async function handleWeb3NameReleased(
+  event: SubstrateEvent
+): Promise<void> {
+  // A name has been released. \[owner, name\]
+  const {
+    block,
+    event: {
+      data: [ownerDID, name],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `A web3-name has been released at block ${block.block.header.number}`
+  );
+
+  logger.info(
+    `The whole Web3NameReleased event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const blockNumber = await saveBlock(block);
+  const w3n = "w3n:" + name.toHuman();
+  const owner = "did:kilt:" + ownerDID.toString();
+
+  let did = await DID.get(owner);
+
+  // the did (creation) could have happened before the Data base's starting block
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'did' a constant.
+    assert(did, `Can't find this DID on the data base: ${owner}.`);
+  } catch (error) {
+    logger.info(error);
+    did = await createPrehistoricDID(event);
+  }
+
+  did.web3nameId = undefined;
+  await did.save();
+
+  // Entity:
+  let web3Name = await Web3Name.get(w3n);
+
+  if (!web3Name) {
+    // Prehistoric case
+    // TODO: delete before deployment
+    web3Name = Web3Name.create({
+      id: w3n,
+      banned: false,
+    });
+  }
+
+  const allBearers = await Bearer.getByFields([["titleId", "=", w3n]]);
+
+  if (allBearers.length === 0) {
+    // Prehistoric case
+    // TODO: delete before deployment
+    const prehistoricBearing = Bearer.create({
+      id: `#Prehistoric_${w3n}`,
+      titleId: w3n,
+      didId: owner,
+      claimBlockId: blockNumber,
+    });
+    allBearers.push(prehistoricBearing);
+  }
+
+  // Find the bearing title that has not been released yet
+  const bearer = allBearers.find((teddy) => !teddy.releaseBlockId);
+
+  assert(bearer, `Can't find the bearer of ${w3n} on the data base.`);
+
+  bearer.releaseBlockId = await saveBlock(block);
+
+  await bearer.save();
 
   await web3Name.save();
 }

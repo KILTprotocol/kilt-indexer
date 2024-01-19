@@ -126,6 +126,14 @@ const project: SubstrateProject = {
               method: "Web3NameClaimed",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameReleased",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameReleased",
+            },
+          },
         ],
       },
     },

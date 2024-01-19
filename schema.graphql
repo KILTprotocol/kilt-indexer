@@ -38,7 +38,7 @@ type DID @entity {
   payer: String! @index
   creationBlock: Block!
   deletionBlock: Block
-  web3name: [String] # w3n:user
+  web3name: Web3Name # w3n:user , only the current one
   # Should we add a "valid" or "deactivated" field??
   # Or is the deletionBlock enough?
 }
@@ -49,6 +49,8 @@ type Web3Name @entity {
   bearers: [Bearer]! @derivedFrom(field: "title")
 }
 
+# other possible names:
+# BearingTitle | BearingData | Ownership
 type Bearer @entity {
   id: ID! # "#" + ordinal number + "w3n:" + user name
   title: Web3Name! @index
