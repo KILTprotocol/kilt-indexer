@@ -3,7 +3,7 @@ import { Bearer, DID, Web3Name } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
-import { createPrehistoricDID } from "./createPrehistoricDID";
+import { createPrehistoricDID } from "../dids/createPrehistoricDID";
 
 // #[pallet::event]
 // #[pallet::generate_deposit(pub(super) fn deposit_event)]
