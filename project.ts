@@ -122,7 +122,7 @@ const project: SubstrateProject = {
             kind: SubstrateHandlerKind.Event,
             handler: "handleWeb3NameClaimed",
             filter: {
-              module: "web3names",
+              module: "web3Names",
               method: "Web3NameClaimed",
             },
           },

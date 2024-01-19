@@ -42,3 +42,20 @@ type DID @entity {
   # Should we add a "valid" or "deactivated" field??
   # Or is the deletionBlock enough?
 }
+
+type Web3Name @entity {
+  id: ID! # id is "w3n:" + user name
+  banned: Boolean!
+  bearers: [Bearer]! @derivedFrom(field: "title")
+}
+
+type Bearer @entity {
+  id: ID! # "#" + ordinal number + "w3n:" + user name
+  title: Web3Name! @index
+  did: DID! @index
+  claimBlock: Block!
+  releaseBlock: Block
+}
+
+# using numbers on the field names don't let you use them as @index
+# using "w3n" instead of "title" on Bearer breaks Postgres

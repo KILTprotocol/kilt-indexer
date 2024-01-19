@@ -1,5 +1,5 @@
 import type { SubstrateEvent } from "@subql/types";
-import { DID } from "../../types";
+import { Bearer, DID, Web3Name } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
@@ -40,7 +40,7 @@ export async function handleWeb3NameClaimed(
     `A web3-name has been claimed at block ${block.block.header.number}`
   );
 
-  logger.logger(
+  logger.info(
     `The whole Web3NameClaimed event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -49,18 +49,15 @@ export async function handleWeb3NameClaimed(
   );
 
   const blockNumber = await saveBlock(block);
-  const w3n = "w3n:" + name.toString();
+  const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
 
-  logger.info("owner: " + owner);
-
   let did = await DID.get(owner);
-  assert(did, `Can't find this DID on the data base: ${w3n}.`);
 
   // the did (creation) could have happened before the Data base's starting block
   try {
     // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'did' a constant.
-    assert(did, `Can't find this DID on the data base: ${w3n}.`);
+    assert(did, `Can't find this DID on the data base: ${did}.`);
   } catch (error) {
     logger.info(error);
     did = await createPrehistoricDID(event);
@@ -70,7 +67,30 @@ export async function handleWeb3NameClaimed(
 
   did.web3name = did.web3name ? [w3n].concat(did.web3name) : [w3n];
 
-  // did.web3name = w3n;
-  logger.info("did.web3name " + did.web3name);
   await did.save();
+
+  // Entity:
+  let web3Name = await Web3Name.get(w3n);
+
+  if (!web3Name) {
+    web3Name = Web3Name.create({
+      id: w3n,
+      banned: false,
+    });
+  }
+
+  const previousBearers = await store.getByField("Bearer", "wnId", w3n);
+
+  const bearingData = Bearer.create({
+    id: `#${previousBearers.length + 1}_${w3n}`,
+    wnId: w3n,
+    didId: owner,
+    claimBlockId: blockNumber,
+  });
+
+  logger.info("previousBearers: " + previousBearers.length);
+
+  await bearingData.save();
+
+  await web3Name.save();
 }
