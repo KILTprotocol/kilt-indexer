@@ -88,8 +88,6 @@ export async function handleWeb3NameClaimed(
     claimBlockId: blockNumber,
   });
 
-  logger.info("previousBearers: " + previousBearers.length);
-
   await bearingData.save();
 
   await web3Name.save();
