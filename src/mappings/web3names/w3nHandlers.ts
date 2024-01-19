@@ -79,11 +79,11 @@ export async function handleWeb3NameClaimed(
     });
   }
 
-  const previousBearers = await store.getByField("Bearer", "wnId", w3n);
+  const previousBearers = await store.getByField("Bearer", "titleId", w3n);
 
   const bearingData = Bearer.create({
     id: `#${previousBearers.length + 1}_${w3n}`,
-    wnId: w3n,
+    titleId: w3n,
     didId: owner,
     claimBlockId: blockNumber,
   });
