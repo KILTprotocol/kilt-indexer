@@ -23,7 +23,7 @@ type Attestation @entity {
 
 type CType @entity {
   # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
-  id: ID! #id is  "kilt:ctype:" + CType hash
+  id: ID! # id is  "kilt:ctype:" + CType hash
   registrationBlock: Block!
   author: String! @index # DID of the creator
   definition: String! # cType Schema
@@ -31,4 +31,46 @@ type CType @entity {
   attestationsRevoked: Int!
   attestationsRemoved: Int! # either valid or revoked credentials can be removed.
   validAttestations: Int! # number of credentials neither revoked nor removed.
+}
+
+type DID @entity {
+  id: ID! # id is  "did:kilt:" + 4...
+  payer: String! @index
+  creationBlock: Block!
+  deletionBlock: Block
+  web3name: Web3Name # w3n:user , only the current one
+  # Should we add a "valid" or "deactivated" field??
+  # Or is the deletionBlock enough?
+}
+
+type Web3Name @entity {
+  id: ID! # id is "w3n:" + user name
+  banned: Boolean!
+  bearers: [Bearer]! @derivedFrom(field: "title")
+}
+
+# other possible names:
+# BearingTitle | BearingData | Ownership
+type Bearer @entity {
+  id: ID! # "#" + ordinal number + "w3n:" + user name
+  title: Web3Name! @index
+  did: DID! @index
+  claimBlock: Block!
+  releaseBlock: Block
+}
+
+# using numbers on the field names don't let you use them as an @index
+# using "w3n" instead of "title" on Bearer breaks Postgres
+
+enum SanctionType {
+  banned
+  unbanned
+}
+
+type Sanction @entity {
+  id: ID! #  "§" + ordinal number + "w3n:" + user name
+  title: Web3Name! @index
+  type: SanctionType!
+  # not sure yet :: type: SanctionType! @index # made it an index to count totals of banned or unbanned
+  enforcementBlock: Block!
 }
