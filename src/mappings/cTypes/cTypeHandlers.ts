@@ -61,9 +61,8 @@ export async function handleCTypeAggregations(
     });
   }
 
-  const attestationsOfThisCType = await Attestation.getByFields([
-    ["cTypeId", "=", cTypeId],
-  ]);
+  const attestationsOfThisCType =
+    (await Attestation.getByCTypeId(cTypeId)) || [];
 
   aggregation.validAttestations = attestationsOfThisCType.filter(
     (atty) => atty.valid

@@ -57,8 +57,8 @@ export async function handleWeb3NameClaimed(
       banned: false,
     });
   }
-  // craft my bearers ordinal index:
-  const previousBearers = await store.getByField("Bearer", "titleId", w3n);
+  // craft bearers ordinal index:
+  const previousBearers = (await Bearer.getByTitleId(w3n)) || [];
 
   const bearingData = Bearer.create({
     id: `#${previousBearers.length + 1}_${w3n}`,
@@ -126,7 +126,7 @@ export async function handleWeb3NameReleased(
     });
   }
 
-  const allBearers = await Bearer.getByFields([["titleId", "=", w3n]]);
+  const allBearers = (await Bearer.getByTitleId(w3n)) || [];
 
   if (allBearers.length === 0) {
     // Prehistoric case
