@@ -62,6 +62,8 @@ export function extractCTypeDefinition(
   return definition;
 }
 
+// Use "manage" instead of "handle" to differentiate from the handlers on `mappingHandlers.ts`.
+
 /** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
  *
  * @param call Call of this type:
