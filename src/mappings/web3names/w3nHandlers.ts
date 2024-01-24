@@ -5,25 +5,6 @@ import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { createPrehistoricDID } from "../dids/createPrehistoricDID";
 
-// #[pallet::event]
-// #[pallet::generate_deposit(pub(super) fn deposit_event)]
-// pub enum Event<T: Config> {
-//     /// A new name has been claimed.
-//     Web3NameClaimed {
-//         owner: Web3NameOwnerOf<T>,
-//         name: Web3NameOf<T>,
-//     },
-//     /// A name has been released.
-//     Web3NameReleased {
-//         owner: Web3NameOwnerOf<T>,
-//         name: Web3NameOf<T>,
-//     },
-//     /// A name has been banned.
-//     Web3NameBanned { name: Web3NameOf<T> },
-//     /// A name has been unbanned.
-//     Web3NameUnbanned { name: Web3NameOf<T> },
-// }
-
 export async function handleWeb3NameClaimed(
   event: SubstrateEvent
 ): Promise<void> {
