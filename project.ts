@@ -142,6 +142,14 @@ const project: SubstrateProject = {
               method: "Web3NameBanned",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameUnbanned",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameUnbanned",
+            },
+          },
         ],
       },
     },

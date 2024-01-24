@@ -18,4 +18,5 @@ export {
   handleWeb3NameClaimed,
   handleWeb3NameReleased,
   handleWeb3NameBanned,
+  handleWeb3NameUnbanned,
 } from "./web3names/w3nHandlers";

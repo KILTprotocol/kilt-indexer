@@ -228,3 +228,59 @@ export async function handleWeb3NameBanned(
   // If a did owned this web3Name at the moment of the ban, a Web3NameReleased event would be release.
   // So, no extra logic for the dids inside of this handler is needed.
 }
+
+export async function handleWeb3NameUnbanned(
+  event: SubstrateEvent
+): Promise<void> {
+  // A name has been unbanned. \[name\]
+  const {
+    block,
+    event: {
+      data: [name],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `A web3-name has been unbanned at block ${block.block.header.number}`
+  );
+
+  logger.info(
+    `The whole Web3NameUnbanned event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const blockNumber = await saveBlock(block);
+  const w3n = "w3n:" + name.toHuman();
+
+  // Entity:
+  let web3Name = await Web3Name.get(w3n);
+
+  if (!web3Name) {
+    // Prehistoric case
+    // TODO: delete before deployment
+    web3Name = Web3Name.create({
+      id: w3n,
+      banned: false,
+    });
+  }
+
+  // craft sanction ordinal index:
+  const previousSanctions = (await Sanction.getByTitleId(w3n)) || [];
+
+  const newSanction = Sanction.create({
+    id: `§${previousSanctions.length + 1}_${w3n}`,
+    titleId: w3n,
+    type: SanctionType.unbanned,
+    enforcementBlockId: blockNumber,
+  });
+
+  await newSanction.save();
+
+  web3Name.banned = false;
+
+  await web3Name.save();
+}
