@@ -1,5 +1,5 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Bearer, DID, Web3Name } from "../../types";
+import { Bearer, DID, Sanction, SanctionType, Web3Name } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
@@ -76,7 +76,7 @@ export async function handleWeb3NameClaimed(
       banned: false,
     });
   }
-
+  // craft my bearers ordinal index:
   const previousBearers = await store.getByField("Bearer", "titleId", w3n);
 
   const bearingData = Bearer.create({
@@ -169,4 +169,62 @@ export async function handleWeb3NameReleased(
   await bearer.save();
 
   await web3Name.save();
+}
+
+export async function handleWeb3NameBanned(
+  event: SubstrateEvent
+): Promise<void> {
+  // A name has been banned. \[name\]
+  const {
+    block,
+    event: {
+      data: [name],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `A web3-name has been banned at block ${block.block.header.number}`
+  );
+
+  logger.info(
+    `The whole Web3NameBanned event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const blockNumber = await saveBlock(block);
+  const w3n = "w3n:" + name.toHuman();
+
+  // Entity:
+  let web3Name = await Web3Name.get(w3n);
+
+  if (!web3Name) {
+    // Prehistoric case
+    // TODO: delete before deployment
+    web3Name = Web3Name.create({
+      id: w3n,
+      banned: false,
+    });
+  }
+  // craft sanction ordinal index:
+  const previousSanctions = (await Sanction.getByTitleId(w3n)) || [];
+
+  const newSanction = Sanction.create({
+    id: `§${previousSanctions.length + 1}_${w3n}`,
+    titleId: w3n,
+    type: SanctionType.banned,
+    enforcementBlockId: blockNumber,
+  });
+
+  await newSanction.save();
+
+  web3Name.banned = true;
+
+  await web3Name.save();
+
+  // If a did owned this web3Name at the moment of the ban, a Web3NameReleased event would be release.
+  // So, no extra logic for the dids inside of this handler is needed.
 }

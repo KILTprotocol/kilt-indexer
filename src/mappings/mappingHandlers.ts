@@ -17,4 +17,5 @@ export { handleDidCreated, handleDidDeleted } from "./dids/didHandlers";
 export {
   handleWeb3NameClaimed,
   handleWeb3NameReleased,
+  handleWeb3NameBanned,
 } from "./web3names/w3nHandlers";
