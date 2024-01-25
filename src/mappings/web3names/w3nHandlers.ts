@@ -119,7 +119,7 @@ export async function handleWeb3NameReleased(
 
   if (!web3Name) {
     // Prehistoric case
-    // TODO: delete before deployment
+    // TODO: delete before deployment and make 'web3name' a constant
     web3Name = Web3Name.create({
       id: w3n,
       banned: false,
@@ -184,7 +184,7 @@ export async function handleWeb3NameBanned(
 
   if (!web3Name) {
     // Prehistoric case
-    // TODO: delete before deployment
+    // TODO: delete before deployment and make 'web3name' a constant
     web3Name = Web3Name.create({
       id: w3n,
       banned: false,
@@ -242,7 +242,7 @@ export async function handleWeb3NameUnbanned(
 
   if (!web3Name) {
     // Prehistoric case
-    // TODO: delete before deployment
+    // TODO: delete before deployment and make 'web3name' a constant
     web3Name = Web3Name.create({
       id: w3n,
       banned: false,
