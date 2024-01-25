@@ -71,6 +71,5 @@ type Sanction @entity {
   id: ID! #  "§" + ordinal number + "w3n:" + user name
   nature: SanctionNature!
   title: Web3Name! @index
-  # not sure yet :: type: SanctionNature! @index # made it an index to count totals of banned or unbanned
   enforcementBlock: Block!
 }
