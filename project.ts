@@ -164,54 +164,6 @@ const project: SubstrateProject = {
               method: "Web3NameUnbanned",
             },
           },
-          {
-            kind: SubstrateHandlerKind.Event,
-            handler: "handleDidCreated",
-            filter: {
-              module: "did",
-              method: "DidCreated",
-            },
-          },
-          {
-            kind: SubstrateHandlerKind.Event,
-            handler: "handleDidDeleted",
-            filter: {
-              module: "did",
-              method: "DidDeleted",
-            },
-          },
-          {
-            kind: SubstrateHandlerKind.Event,
-            handler: "handleWeb3NameClaimed",
-            filter: {
-              module: "web3Names",
-              method: "Web3NameClaimed",
-            },
-          },
-          {
-            kind: SubstrateHandlerKind.Event,
-            handler: "handleWeb3NameReleased",
-            filter: {
-              module: "web3Names",
-              method: "Web3NameReleased",
-            },
-          },
-          {
-            kind: SubstrateHandlerKind.Event,
-            handler: "handleWeb3NameBanned",
-            filter: {
-              module: "web3Names",
-              method: "Web3NameBanned",
-            },
-          },
-          {
-            kind: SubstrateHandlerKind.Event,
-            handler: "handleWeb3NameUnbanned",
-            filter: {
-              module: "web3Names",
-              method: "Web3NameUnbanned",
-            },
-          },
         ],
       },
     },
