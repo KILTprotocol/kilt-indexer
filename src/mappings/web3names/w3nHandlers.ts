@@ -1,5 +1,5 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Bearer, DID, Sanction, SanctionType, Web3Name } from "../../types";
+import { Bearer, DID, Sanction, SanctionNature, Web3Name } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
@@ -196,7 +196,7 @@ export async function handleWeb3NameBanned(
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
     titleId: w3n,
-    type: SanctionType.banned,
+    nature: SanctionNature.prohibition,
     enforcementBlockId: blockNumber,
   });
 
@@ -255,7 +255,7 @@ export async function handleWeb3NameUnbanned(
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
     titleId: w3n,
-    type: SanctionType.unbanned,
+    nature: SanctionNature.permission,
     enforcementBlockId: blockNumber,
   });
 

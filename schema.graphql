@@ -62,15 +62,15 @@ type Bearer @entity {
 # using numbers on the field names don't let you use them as an @index
 # using "w3n" instead of "title" on Bearer breaks Postgres
 
-enum SanctionType {
-  banned
-  unbanned
+enum SanctionNature {
+  permission
+  prohibition
 }
 
 type Sanction @entity {
   id: ID! #  "§" + ordinal number + "w3n:" + user name
+  nature: SanctionNature!
   title: Web3Name! @index
-  type: SanctionType!
-  # not sure yet :: type: SanctionType! @index # made it an index to count totals of banned or unbanned
+  # not sure yet :: type: SanctionNature! @index # made it an index to count totals of banned or unbanned
   enforcementBlock: Block!
 }
