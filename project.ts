@@ -16,7 +16,9 @@ const project: SubstrateProject = {
   specVersion: "1.0.0",
   version: "0.0.1",
   name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
+  name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
   description:
+    "This projects registers (with custom aggregations) all claim types and credential attestations from the KILT network.",
     "This projects registers (with custom aggregations) all claim types and credential attestations from the KILT network.",
   runner: {
     node: {
@@ -32,6 +34,10 @@ const project: SubstrateProject = {
     file: "./schema.graphql",
   },
   network: {
+    /* The hash of the network genesis block. Block 0 identifier. */
+    chainId: CRAWL_PEREGRINE
+      ? "0xa0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21" // Falcon Egg
+      : "0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21", // Partially germinated barley
     /* The hash of the network genesis block. Block 0 identifier. */
     chainId: CRAWL_PEREGRINE
       ? "0xa0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21" // Falcon Egg
@@ -101,10 +107,66 @@ const project: SubstrateProject = {
           },
           {
             kind: SubstrateHandlerKind.Event,
+            handler: "handleAttestationDepositReclaimed",
+            filter: {
+              module: "attestation",
+              method: "DepositReclaimed",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
             handler: "handleCTypeCreated",
             filter: {
               module: "ctype",
               method: "CTypeCreated",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDidCreated",
+            filter: {
+              module: "did",
+              method: "DidCreated",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDidDeleted",
+            filter: {
+              module: "did",
+              method: "DidDeleted",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameClaimed",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameClaimed",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameReleased",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameReleased",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameBanned",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameBanned",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameUnbanned",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameUnbanned",
             },
           },
           {
