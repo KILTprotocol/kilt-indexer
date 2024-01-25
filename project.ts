@@ -16,9 +16,7 @@ const project: SubstrateProject = {
   specVersion: "1.0.0",
   version: "0.0.1",
   name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
-  name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
   description:
-    "This projects registers (with custom aggregations) all claim types and credential attestations from the KILT network.",
     "This projects registers (with custom aggregations) all claim types and credential attestations from the KILT network.",
   runner: {
     node: {
@@ -39,9 +37,6 @@ const project: SubstrateProject = {
       ? "0xa0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21" // Falcon Egg
       : "0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21", // Partially germinated barley
     /* The hash of the network genesis block. Block 0 identifier. */
-    chainId: CRAWL_PEREGRINE
-      ? "0xa0c6e3bac382b316a68bca7141af1fba507207594c761076847ce358aeedcc21" // Falcon Egg
-      : "0x411f057b9107718c9624d6aa4a3f23c1653898297f3d4d529d9bb6511a39dd21", // Partially germinated barley
     /**
      * This endpoint must be a public non-pruned archive node
      * Public nodes may be rate limited, which can affect indexing speed
