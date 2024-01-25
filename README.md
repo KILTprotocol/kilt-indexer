@@ -274,3 +274,68 @@ fragment wholeAttestation on Attestation {
      }
    }
    ```
+
+7. **Find DID owner of w3n:alice and since when:**
+
+   ```
+   query {
+     dIDs(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
+       totalCount
+       nodes {
+         id
+         payer
+
+         creationBlock {
+           id
+           timeStamp
+         }
+         deletionBlockId
+         web3NameId
+         bearersByDidId {
+           nodes {
+             id
+             claimBlock {
+               id
+               timeStamp
+             }
+           }
+         }
+       }
+     }
+   }
+
+   ```
+
+8. **Find registered data about banned web3names:**
+
+   ```
+   query {
+     web3Names(filter: { banned: { equalTo: true } }) {
+       totalCount
+       nodes {
+         id
+         banned
+         bearers {
+           totalCount
+           nodes {
+             id
+             didId
+             claimBlockId
+             releaseBlockId
+           }
+         }
+
+         sanctionsByTitleId {
+           totalCount
+           nodes {
+             id
+             titleId
+             type
+             enforcementBlockId
+           }
+         }
+       }
+     }
+   }
+
+   ```
