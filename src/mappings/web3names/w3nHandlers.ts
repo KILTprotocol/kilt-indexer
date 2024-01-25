@@ -183,8 +183,7 @@ export async function handleWeb3NameBanned(
   let web3Name = await Web3Name.get(w3n);
 
   if (!web3Name) {
-    // Prehistoric case
-    // TODO: delete before deployment and make 'web3name' a constant
+    // A web3name can be banned before anyone ever claiming it. This also covers the prehistoric case.
     web3Name = Web3Name.create({
       id: w3n,
       banned: false,
@@ -245,7 +244,7 @@ export async function handleWeb3NameUnbanned(
     // TODO: delete before deployment and make 'web3name' a constant
     web3Name = Web3Name.create({
       id: w3n,
-      banned: false,
+      banned: true,
     });
   }
 
