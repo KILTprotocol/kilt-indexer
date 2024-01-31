@@ -6,9 +6,9 @@ import assert from "assert";
  * Saves Block information into our Data Base.
  *
  * @param block
- * @returns Returns the Block-Number, also known as Block-ID.
+ * @returns Returns the Block-Number, also known as Block-ID. Type "string".
  */
-export async function saveBlock(block: SubstrateBlock) {
+export async function saveBlock(block: SubstrateBlock): Promise<Block["id"]> {
   const blockNumber = block.block.header.number.toString();
   const blockHash = block.block.hash.toHex();
   const issuanceDate = block.timestamp;
