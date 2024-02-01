@@ -4,7 +4,12 @@ import {
   SubstrateProject,
 } from "@subql/types";
 
-import { CRAWL_PEREGRINE, DWELLIR_KEY, ONFINALITY_KEY } from "./configuration";
+import {
+  START_BLOCK,
+  CRAWL_PEREGRINE,
+  DWELLIR_KEY,
+  ONFINALITY_KEY,
+} from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
@@ -58,7 +63,7 @@ const project: SubstrateProject = {
   dataSources: [
     {
       kind: SubstrateDatasourceKind.Runtime,
-      startBlock: 1_100_000,
+      startBlock: START_BLOCK || 1,
       mapping: {
         file: "./dist/index.js",
         handlers: [
