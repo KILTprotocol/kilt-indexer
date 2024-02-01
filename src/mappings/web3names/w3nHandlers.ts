@@ -21,7 +21,7 @@ export async function handleWeb3NameClaimed(
     `A web3-name has been claimed at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameClaimed event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -88,7 +88,7 @@ export async function handleWeb3NameReleased(
     `A web3-name has been released at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameReleased event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -168,7 +168,7 @@ export async function handleWeb3NameBanned(
     `A web3-name has been banned at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameBanned event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -225,7 +225,7 @@ export async function handleWeb3NameUnbanned(
     `A web3-name has been unbanned at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameUnbanned event: ${JSON.stringify(
       event.toHuman(),
       null,
