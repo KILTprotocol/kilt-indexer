@@ -58,11 +58,11 @@ export async function handleWeb3NameClaimed(
     });
   }
   // craft bearers ordinal index:
-  const previousBearers = (await Bearer.getByTitleId(w3n)) || [];
+  const previousBearers = (await Bearer.getByNameId(w3n)) || [];
 
   const bearingData = Bearer.create({
     id: `#${previousBearers.length + 1}_${w3n}`,
-    titleId: w3n,
+    nameId: w3n,
     didId: owner,
     claimBlockId: blockNumber,
   });
@@ -126,14 +126,14 @@ export async function handleWeb3NameReleased(
     });
   }
 
-  const allBearers = (await Bearer.getByTitleId(w3n)) || [];
+  const allBearers = (await Bearer.getByNameId(w3n)) || [];
 
   if (allBearers.length === 0) {
     // Prehistoric case
     // TODO: delete before deployment
     const prehistoricBearing = Bearer.create({
       id: `#Prehistoric_${w3n}`,
-      titleId: w3n,
+      nameId: w3n,
       didId: owner,
       claimBlockId: blockNumber,
     });
@@ -190,11 +190,11 @@ export async function handleWeb3NameBanned(
     });
   }
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByTitleId(w3n)) || [];
+  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
 
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
-    titleId: w3n,
+    nameId: w3n,
     nature: SanctionNature.prohibition,
     enforcementBlockId: blockNumber,
   });
@@ -249,11 +249,11 @@ export async function handleWeb3NameUnbanned(
   }
 
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByTitleId(w3n)) || [];
+  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
 
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
-    titleId: w3n,
+    nameId: w3n,
     nature: SanctionNature.permission,
     enforcementBlockId: blockNumber,
   });

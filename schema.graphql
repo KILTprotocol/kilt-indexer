@@ -46,21 +46,21 @@ type Did @entity {
 type Web3Name @entity {
   id: ID! # id is "w3n:" + user name
   banned: Boolean!
-  bearers: [Bearer]! @derivedFrom(field: "title")
+  bearers: [Bearer]! @derivedFrom(field: "name")
 }
 
 # other possible names:
 # BearingTitle | BearingData | Ownership
 type Bearer @entity {
   id: ID! # "#" + ordinal number + "w3n:" + user name
-  title: Web3Name! @index
+  name: Web3Name! @index
   did: Did! @index
   claimBlock: Block!
   releaseBlock: Block
 }
 
 # using numbers on the field names don't let you use them as an @index
-# using "w3n" instead of "title" on Bearer breaks Postgres
+# using "w3n" instead of "name" on Bearer breaks Postgres
 
 enum SanctionNature {
   permission
@@ -70,6 +70,6 @@ enum SanctionNature {
 type Sanction @entity {
   id: ID! #  "§" + ordinal number + "w3n:" + user name
   nature: SanctionNature!
-  title: Web3Name! @index
+  name: Web3Name! @index
   enforcementBlock: Block!
 }
