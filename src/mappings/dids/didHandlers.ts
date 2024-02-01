@@ -1,5 +1,5 @@
 import type { SubstrateEvent } from "@subql/types";
-import { DID } from "../../types";
+import { Did } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
@@ -24,7 +24,7 @@ export async function handleDidCreated(event: SubstrateEvent): Promise<void> {
   const blockNumber = await saveBlock(block);
   const id = "did:kilt:" + identifier.toString();
 
-  const newDID = DID.create({
+  const newDID = Did.create({
     id: id,
     payer: payer.toString(),
     creationBlockId: blockNumber,
@@ -51,7 +51,7 @@ export async function handleDidDeleted(event: SubstrateEvent): Promise<void> {
 
   const id = "did:kilt:" + identifier.toString();
 
-  let did = await DID.get(id);
+  let did = await Did.get(id);
 
   // the did (creation) could have happened before the Data base's starting block
   try {

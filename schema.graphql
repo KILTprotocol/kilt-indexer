@@ -33,7 +33,7 @@ type CType @entity {
   validAttestations: Int! # number of credentials neither revoked nor removed.
 }
 
-type DID @entity {
+type Did @entity {
   id: ID! # id is  "did:kilt:" + 4...
   payer: String! @index
   creationBlock: Block!
@@ -54,7 +54,7 @@ type Web3Name @entity {
 type Bearer @entity {
   id: ID! # "#" + ordinal number + "w3n:" + user name
   title: Web3Name! @index
-  did: DID! @index
+  did: Did! @index
   claimBlock: Block!
   releaseBlock: Block
 }

@@ -1,5 +1,5 @@
 import type { SubstrateEvent } from "@subql/types";
-import { DID } from "../../types";
+import { Did } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 
@@ -10,7 +10,7 @@ import { UNKNOWN } from "../mappingHandlers";
  */
 export async function createPrehistoricDID(
   event: SubstrateEvent
-): Promise<DID> {
+): Promise<Did> {
   logger.info(
     `A DID from before the Database's startBlock is being added with default values.`
   );
@@ -36,7 +36,7 @@ export async function createPrehistoricDID(
   const id = "did:kilt:" + identifier.toString();
   const payer = UNKNOWN;
 
-  const prehistoricDID = DID.create({
+  const prehistoricDID = Did.create({
     id: id,
     payer: payer,
     creationBlockId: blockNumber,

@@ -1,5 +1,5 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Bearer, DID, Sanction, SanctionNature, Web3Name } from "../../types";
+import { Bearer, Did, Sanction, SanctionNature, Web3Name } from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
@@ -33,7 +33,7 @@ export async function handleWeb3NameClaimed(
   const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
 
-  let did = await DID.get(owner);
+  let did = await Did.get(owner);
 
   // the did (creation) could have happened before the Data base's starting block
   try {
@@ -100,7 +100,7 @@ export async function handleWeb3NameReleased(
   const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
 
-  let did = await DID.get(owner);
+  let did = await Did.get(owner);
 
   // the did (creation) could have happened before the Data base's starting block
   try {
