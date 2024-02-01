@@ -275,67 +275,63 @@ fragment wholeAttestation on Attestation {
    }
    ```
 
-7. **Find DID owner of w3n:alice and since when:**
+7. **Find DID bearer of w3n:alice and since when:**
 
    ```
-   query {
-     dIDs(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
-       totalCount
-       nodes {
-         id
-         payer
-
-         creationBlock {
-           id
-           timeStamp
-         }
-         deletionBlockId
-         web3NameId
-         bearersByDidId {
-           nodes {
-             id
-             claimBlock {
-               id
-               timeStamp
-             }
-           }
-         }
-       }
-     }
-   }
-
+    query {
+      dids(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
+        nodes {
+          id
+          payer
+          creationBlock {
+            id
+            timeStamp
+          }
+          deletionBlockId
+          web3NameId
+          bearers {
+            nodes {
+              id
+              claimBlock {
+                id
+                timeStamp
+              }
+            }
+          }
+        }
+      }
+    }
    ```
 
 8. **Find registered data about banned web3names:**
 
    ```
-   query {
-     web3Names(filter: { banned: { equalTo: true } }) {
-       totalCount
-       nodes {
-         id
-         banned
-         bearers {
-           totalCount
-           nodes {
-             id
-             didId
-             claimBlockId
-             releaseBlockId
-           }
-         }
+    query {
+      web3Names(filter: { banned: { equalTo: true } }) {
+        totalCount
+        nodes {
+          id
+          banned
+          bearers {
+            totalCount
+            nodes {
+              id
+              didId
+              claimBlockId
+              releaseBlockId
+            }
+          }
 
-         sanctionsByTitleId {
-           totalCount
-           nodes {
-             id
-             titleId
-             type
-             enforcementBlockId
-           }
-         }
-       }
-     }
-   }
-
+          sanctionsByNameId {
+            totalCount
+            nodes {
+              id
+              nameId
+              nature
+              enforcementBlockId
+            }
+          }
+        }
+      }
+    }
    ```
