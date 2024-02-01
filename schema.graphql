@@ -49,8 +49,6 @@ type Web3Name @entity {
   bearers: [Bearer]! @derivedFrom(field: "name")
 }
 
-# other possible names:
-# BearingTitle | BearingData | Ownership
 type Bearer @entity {
   id: ID! # "#" + ordinal number + "w3n:" + user name
   name: Web3Name! @index
@@ -58,9 +56,6 @@ type Bearer @entity {
   claimBlock: Block!
   releaseBlock: Block
 }
-
-# using numbers on the field names don't let you use them as an @index
-# using "w3n" instead of "name" on Bearer breaks Postgres
 
 enum SanctionNature {
   permission
