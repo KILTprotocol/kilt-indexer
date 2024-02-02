@@ -1,5 +1,11 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Bearer, Did, Sanction, SanctionNature, Web3Name } from "../../types";
+import {
+  Ownership,
+  Did,
+  Sanction,
+  SanctionNature,
+  Web3Name,
+} from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
@@ -58,12 +64,12 @@ export async function handleWeb3NameClaimed(
     });
   }
   // craft bearers ordinal index:
-  const previousBearers = (await Bearer.getByNameId(w3n)) || [];
+  const previousBearers = (await Ownership.getByNameId(w3n)) || [];
 
-  const bearingData = Bearer.create({
+  const bearingData = Ownership.create({
     id: `#${previousBearers.length + 1}_${w3n}`,
     nameId: w3n,
-    didId: owner,
+    bearerId: owner,
     claimBlockId: blockNumber,
   });
 
@@ -126,15 +132,15 @@ export async function handleWeb3NameReleased(
     });
   }
 
-  const allBearers = (await Bearer.getByNameId(w3n)) || [];
+  const allBearers = (await Ownership.getByNameId(w3n)) || [];
 
   if (allBearers.length === 0) {
     // Prehistoric case
     // TODO: delete before deployment
-    const prehistoricBearing = Bearer.create({
+    const prehistoricBearing = Ownership.create({
       id: `#Prehistoric_${w3n}`,
       nameId: w3n,
-      didId: owner,
+      bearerId: owner,
       claimBlockId: blockNumber,
     });
     allBearers.push(prehistoricBearing);
