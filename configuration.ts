@@ -2,9 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const START_BLOCK = loadEnv("START_BLOCK", false)
-  ? parseInt(process.env.START_BLOCK as string)
-  : undefined;
+export const START_BLOCK = parseInt(loadEnv("START_BLOCK", false) ?? "1");
 export const DWELLIR_KEY = loadEnv("DWELLIR_KEY", false);
 export const ONFINALITY_KEY = loadEnv("ONFINALITY_KEY", false);
 export const CRAWL_PEREGRINE = loadEnv("CRAWL_PEREGRINE", false);
