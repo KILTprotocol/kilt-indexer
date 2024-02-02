@@ -39,8 +39,7 @@ type Did @entity {
   creationBlock: Block!
   deletionBlock: Block
   web3name: Web3Name # w3n:user , only the current one
-  # Should we add a "valid" or "deactivated" field??
-  # Or is the deletionBlock enough?
+  active: Boolean! # whether it has been deactivated or not
 }
 
 type Web3Name @entity {

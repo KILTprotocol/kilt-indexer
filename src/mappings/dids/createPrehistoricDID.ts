@@ -17,6 +17,8 @@ export async function createPrehistoricDID(
   );
 
   // A DID has been deleted. \[DID identifier\]
+  // A new name has been claimed. \[owner, name\]
+  // A name has been released. \[owner, name\]
   const {
     block,
     event: {
@@ -41,6 +43,7 @@ export async function createPrehistoricDID(
     id: id,
     payer: payer,
     creationBlockId: blockNumber,
+    active: true,
   });
 
   await prehistoricDID.save();

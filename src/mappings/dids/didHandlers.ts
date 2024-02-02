@@ -28,6 +28,7 @@ export async function handleDidCreated(event: SubstrateEvent): Promise<void> {
     id: id,
     payer: payer.toString(),
     creationBlockId: blockNumber,
+    active: true,
   });
 
   await newDID.save();
@@ -63,6 +64,7 @@ export async function handleDidDeleted(event: SubstrateEvent): Promise<void> {
   }
 
   did.deletionBlockId = await saveBlock(block);
+  did.active = false;
 
   await did.save();
 }
