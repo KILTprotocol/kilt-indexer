@@ -3,7 +3,8 @@ import { Did } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 
-/**
+/** Solves problems while trying to start Data Base from higher block.
+ *
  * TODO: This function should be deleted before deployment.
  *
  * @param event a DID deletion.
