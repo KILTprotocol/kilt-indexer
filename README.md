@@ -50,17 +50,17 @@ There are some instructions on how to use them inside the `.env.example`-file, b
 - **START_BLOCK**: Allows starting your data base from a higher block.
   It only has an effect if there is no current data base `.data/`.
 
-      A lot of actions on the chain depend on previous events; for example to claim a web3name first the DID musst have been created.
-      The handlers that process this events and turn them into data base entries know this and will normally throw if they can't find the correspondent dependencies on the data base.
-      When a handler throws the building of the data base will stop (the project will try again a couple of times and then crash).
-      While this behavior is great for the end product, it impedes you from setting a higher block as starting point; for example if the DID was created in a block before the start block, but the web3name claim afterwards.
+  A lot of actions on the chain depend on previous events; for example to claim a web3name first the DID musst have been created.
+  The handlers that process this events and turn them into data base entries know this and will normally throw if they can't find the correspondent dependencies on the data base.
+  When a handler throws the building of the data base will stop (the project will try again a couple of times and then crash).
+  While this behavior is great for the end product, it impedes you from setting a higher block as starting point; for example if the DID was created in a block before the start block, but the web3name claim afterwards.
 
-      To bypass this behaviors and be able to use a higher starting block some workarounds were implemented.
-      They all basically add the missing dependencies as they are needed but with fake values.
-      This fake entries are consistently refer as ***prehistoric***, they use the block from the moment of inclusion an fill any unknown values with the `UNKNOWN` constant inside `mappingHandlers.ts`.
-      
-      _All this workarounds should be remove before deploying the final product_, but have shown very helpful during the development. 
-      They save a lot of time, especially while working with the testnet Kilt Peregrine that currently only disposes slower nodes.
+  To bypass this behaviors and be able to use a higher starting block some workarounds were implemented.
+  They all basically add the missing dependencies as they are needed but with fake values.
+  This fake entries are consistently refer as ***prehistoric***, they use the block from the moment of inclusion an fill any unknown values with the `UNKNOWN` constant inside `mappingHandlers.ts`.
+  
+  _All this workarounds should be remove before deploying the final product_, but have shown very helpful during the development. 
+  They save a lot of time, especially while working with the testnet Kilt Peregrine that currently only disposes slower nodes.
 
 - **CUTOFF_HEIGHT**: Sets a target or end block.
   If there is an existing data base with blocks higher than it, they will be removed.
