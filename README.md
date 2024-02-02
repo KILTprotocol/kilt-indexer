@@ -305,60 +305,83 @@ fragment wholeAttestation on Attestation {
 7. **Find DID bearer of w3n:alice and since when:**
 
    ```
-    query {
-      dids(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
-        nodes {
-          id
-          payer
-          creationBlock {
-            id
-            timeStamp
-          }
-          deletionBlockId
-          web3NameId
-          bearers {
-            nodes {
-              id
-              claimBlock {
-                id
-                timeStamp
-              }
-            }
-          }
-        }
-      }
-    }
-   ```
-
-8. **Find registered data about banned web3names:**
+	query {
+	  dids(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
+	    nodes {
+	      id
+	      payer
+	      creationBlock {
+	        id
+	        timeStamp
+	      }
+	      deletionBlockId
+	      web3NameId
+	      ownershipsByBearerId {
+	        nodes {
+	          id
+	          claimBlock {
+	            id
+	            timeStamp
+	          }
+	          releaseBlockId
+	        }
+	      }
+	    }
+	  }
+	}
 
    ```
-    query {
-      web3Names(filter: { banned: { equalTo: true } }) {
-        totalCount
-        nodes {
-          id
-          banned
-          bearers {
-            totalCount
-            nodes {
-              id
-              didId
-              claimBlockId
-              releaseBlockId
-            }
-          }
 
-          sanctionsByNameId {
-            totalCount
-            nodes {
-              id
-              nameId
-              nature
-              enforcementBlockId
-            }
-          }
-        }
-      }
-    }
+8. **Find registered data about banned web3names:** (It has never happend on KILT Spiritnet)
+
    ```
+	query {
+	  web3Names(filter: { banned: { equalTo: true } }) {
+	    totalCount
+	    nodes {
+	      id
+	      banned
+	      ownerships {
+	        totalCount
+	        nodes {
+	          id
+	          bearerId
+	          claimBlockId
+	          releaseBlockId
+	        }
+	      }
+	
+	      sanctionsByNameId {
+	        totalCount
+	        nodes {
+	          id
+	          nameId
+	          nature
+	          enforcementBlockId
+	        }
+	      }
+	    }
+	  }
+	}
+   ```
+9. **Find out who has ever owned w3n:john_doe and when:**
+
+	 ```
+	 query {
+	  web3Names(filter: { id: { equalTo: "w3n:john_doe" } }) {
+	    nodes {
+	      id
+	      banned
+	      ownerships(orderBy: ID_ASC) {
+	        totalCount
+	        nodes {
+	          id
+	          bearerId
+	          claimBlockId
+	          releaseBlockId
+	        }
+	      }
+	    }
+	  }
+	}
+	```
