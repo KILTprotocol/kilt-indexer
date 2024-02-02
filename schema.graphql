@@ -3,13 +3,13 @@
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
 type Block @entity {
-  id: ID! # Block Ordinal Number from genesis block
+  id: ID! # Block ordinal number from genesis block
   hash: String! @index(unique: true) # Block Hash as hex-string
   timeStamp: Date! # Date of creation of this block
 }
 
 type Attestation @entity {
-  id: ID! # event id, i.e.: block number and event index
+  id: ID! # Block number + "-" + ordinal number within block
   claimHash: String! @index # ClaimHashOf, can be duplicated
   cType: CType! @index # Id of the CType used in this attestation. A.k.a.: cTypeHash
   attester: String! @index # DID of the attester
@@ -23,7 +23,7 @@ type Attestation @entity {
 
 type CType @entity {
   # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
-  id: ID! # id is  "kilt:ctype:" + CType hash
+  id: ID! # "kilt:ctype:" + CType hash
   registrationBlock: Block!
   author: String! @index # DID of the creator
   definition: String! # cType Schema
@@ -34,7 +34,7 @@ type CType @entity {
 }
 
 type Did @entity {
-  id: ID! # id is  "did:kilt:" + 4...
+  id: ID! # "did:kilt:" + 4...
   payer: String! @index
   creationBlock: Block!
   deletionBlock: Block
@@ -44,7 +44,7 @@ type Did @entity {
 }
 
 type Web3Name @entity {
-  id: ID! # id is "w3n:" + user name
+  id: ID! # "w3n:" + user name
   banned: Boolean!
   bearers: [Bearer]! @derivedFrom(field: "name")
 }
@@ -63,7 +63,7 @@ enum SanctionNature {
 }
 
 type Sanction @entity {
-  id: ID! #  "§" + ordinal number + "w3n:" + user name
+  id: ID! # "§" + ordinal number + "w3n:" + user name
   nature: SanctionNature!
   name: Web3Name! @index
   enforcementBlock: Block!
