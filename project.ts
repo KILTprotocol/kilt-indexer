@@ -4,7 +4,12 @@ import {
   SubstrateProject,
 } from "@subql/types";
 
-import { CRAWL_PEREGRINE, DWELLIR_KEY, ONFINALITY_KEY } from "./configuration";
+import {
+  START_BLOCK,
+  CRAWL_PEREGRINE,
+  DWELLIR_KEY,
+  ONFINALITY_KEY,
+} from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
@@ -58,7 +63,7 @@ const project: SubstrateProject = {
   dataSources: [
     {
       kind: SubstrateDatasourceKind.Runtime,
-      startBlock: 500000,
+      startBlock: START_BLOCK,
       mapping: {
         file: "./dist/index.js",
         handlers: [
@@ -100,6 +105,54 @@ const project: SubstrateProject = {
             filter: {
               module: "ctype",
               method: "CTypeCreated",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDidCreated",
+            filter: {
+              module: "did",
+              method: "DidCreated",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDidDeleted",
+            filter: {
+              module: "did",
+              method: "DidDeleted",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameClaimed",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameClaimed",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameReleased",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameReleased",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameBanned",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameBanned",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleWeb3NameUnbanned",
+            filter: {
+              module: "web3Names",
+              method: "Web3NameUnbanned",
             },
           },
         ],
