@@ -8,6 +8,8 @@ type Block @entity {
   timeStamp: Date! # Date of creation of this block
 }
 
+## For Credentials:
+
 type Attestation @entity {
   id: ID! # Block number + "-" + ordinal number within block
   claimHash: String! @index # ClaimHashOf, can be duplicated
@@ -32,6 +34,8 @@ type CType @entity {
   attestationsRemoved: Int! # either valid or revoked credentials can be removed.
   validAttestations: Int! # number of credentials neither revoked nor removed.
 }
+
+## For DIDs:
 
 type Did @entity {
   id: ID! # "did:kilt:" + 4...
@@ -66,4 +70,23 @@ type Sanction @entity {
   nature: SanctionNature!
   name: Web3Name! @index
   enforcementBlock: Block!
+}
+
+## For AssetDIDs:
+
+type Chain @jsonField(indexed: false) {
+  namespace: String! # could be a Enum of the list of supported Chains
+  reference: String!
+}
+
+type Asset @jsonField(indexed: false) {
+  namespace: String!
+  reference: String!
+  identifier: Int
+}
+
+type AssetDID @entity {
+  id: ID! # "kilt:did:asset:..."
+  chain: Chain!
+  asset: Asset!
 }
