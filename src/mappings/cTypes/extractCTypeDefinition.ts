@@ -56,7 +56,6 @@ export function extractCTypeDefinition(
   );
 
   // Print the definition
-  logger.info(`typeof definition: ${typeof definition}`);
   logger.info(`cType definition: ${definition}`);
 
   return definition;
