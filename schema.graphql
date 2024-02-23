@@ -86,7 +86,7 @@ type Asset @jsonField(indexed: false) {
 }
 
 type AssetDID @entity {
-  id: ID! # "kilt:did:asset:..."
+  id: ID! # "did:asset:..."
   chain: Chain!
   asset: Asset!
 }
