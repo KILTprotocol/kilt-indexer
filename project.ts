@@ -67,6 +67,10 @@ const project: SubstrateProject = {
       mapping: {
         file: "./dist/index.js",
         handlers: [
+          /**
+           *  `module` refers to the pallet name.
+           *  `method` refers to the event emitted.
+           */
           {
             handler: "handleAttestationCreated",
             kind: SubstrateHandlerKind.Event,
@@ -153,6 +157,14 @@ const project: SubstrateProject = {
             filter: {
               module: "web3Names",
               method: "Web3NameUnbanned",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handlePublicCredentialStored",
+            filter: {
+              module: "publicCredentials",
+              method: "CredentialStored",
             },
           },
         ],
