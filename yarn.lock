@@ -2872,15 +2872,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@noble/curves@npm:1.3.0"
-  dependencies:
-    "@noble/hashes": 1.3.3
-  checksum: b65342ee66c4a440eee2978524412eabba9a9efdd16d6370e15218c6a7d80bddf35e66bb57ed52c0dfd32cb9a717b439ab3a72db618f1a0066dfebe3fd12a421
-  languageName: node
-  linkType: hard
-
 "@noble/ed25519@npm:^1.7.1":
   version: 1.7.3
   resolution: "@noble/ed25519@npm:1.7.3"
@@ -2899,13 +2890,6 @@ __metadata:
   version: 1.3.2
   resolution: "@noble/hashes@npm:1.3.2"
   checksum: fe23536b436539d13f90e4b9be843cc63b1b17666a07634a2b1259dded6f490be3d050249e6af98076ea8f2ea0d56f578773c2197f2aa0eeaa5fba5bc18ba474
-  languageName: node
-  linkType: hard
-
-"@noble/hashes@npm:1.3.3, @noble/hashes@npm:^1.3.3":
-  version: 1.3.3
-  resolution: "@noble/hashes@npm:1.3.3"
-  checksum: 8a6496d1c0c64797339bc694ad06cdfaa0f9e56cd0c3f68ae3666cfb153a791a55deb0af9c653c7ed2db64d537aa3e3054629740d2f2338bb1dcb7ab60cd205b
   languageName: node
   linkType: hard
 
@@ -9765,6 +9749,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kilt-indexer@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "kilt-indexer@workspace:."
+  dependencies:
+    "@kiltprotocol/type-definitions": latest
+    "@kiltprotocol/types": ^0.34.0
+    "@polkadot/api": ^10.11.2
+    "@subql/cli": latest
+    "@subql/node": latest
+    "@subql/testing": latest
+    "@subql/types": latest
+    "@types/jsonabc": ^2.3.3
+    dotenv: ^16.3.1
+    jsonabc: ^2.3.1
+    ts-node: ^10.9.1
+    typescript: ^5.2.2
+  languageName: unknown
+  linkType: soft
+
 "kind-of@npm:^6.0.2":
   version: 6.0.3
   resolution: "kind-of@npm:6.0.3"
@@ -10977,25 +10980,6 @@ __metadata:
   checksum: 2c950a100b1da72123449208e231afc188d980177d021d7121e96a2de7f2abbc96ead2b87d03d8fe5c318face097f203270d7e27908af9f471c165a4e8e69c92
   languageName: node
   linkType: hard
-
-"peregrine-indexer@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "peregrine-indexer@workspace:."
-  dependencies:
-    "@kiltprotocol/type-definitions": latest
-    "@kiltprotocol/types": ^0.34.0
-    "@polkadot/api": ^10.11.2
-    "@subql/cli": latest
-    "@subql/node": latest
-    "@subql/testing": latest
-    "@subql/types": latest
-    "@types/jsonabc": ^2.3.3
-    dotenv: ^16.3.1
-    jsonabc: ^2.3.1
-    ts-node: ^10.9.1
-    typescript: ^5.2.2
-  languageName: unknown
-  linkType: soft
 
 "pg-cloudflare@npm:^1.1.1":
   version: 1.1.1
@@ -13580,21 +13564,6 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 3ca0dad26e8cc6515ff392b622a1467430814c463b3368b0258e33696b1d4bed7510bc7030f7b72838b9fdeb8dbd8839cbf808367d6aae2e1d668ce741d4308b
-  languageName: node
-  linkType: hard
-
-"ws@npm:^8.15.1":
-  version: 8.16.0
-  resolution: "ws@npm:8.16.0"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: feb3eecd2bae82fa8a8beef800290ce437d8b8063bdc69712725f21aef77c49cb2ff45c6e5e7fce622248f9c7abaee506bae0a9064067ffd6935460c7357321b
   languageName: node
   linkType: hard
 

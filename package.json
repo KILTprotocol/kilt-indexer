@@ -1,6 +1,6 @@
 {
-  "name": "peregrine-indexer",
-  "version": "1.0.0",
+  "name": "kilt-indexer",
+  "version": "0.0.1",
   "description": "indexing of attestations and CTypes",
   "main": "dist/index.js",
   "scripts": {
