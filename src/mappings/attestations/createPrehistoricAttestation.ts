@@ -5,6 +5,8 @@ import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
 import { UNKNOWN } from "../mappingHandlers";
 
 /**
+ * Solves problems while trying to start Data Base from higher block.
+ *
  * TODO: This function should be deleted before deployment.
  *
  * @param event a revocation or a removal of an attestation

@@ -1,5 +1,11 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Bearer, DID, Sanction, SanctionNature, Web3Name } from "../../types";
+import {
+  Ownership,
+  Did,
+  Sanction,
+  SanctionNature,
+  Web3Name,
+} from "../../types";
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
@@ -21,7 +27,7 @@ export async function handleWeb3NameClaimed(
     `A web3-name has been claimed at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameClaimed event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -33,7 +39,7 @@ export async function handleWeb3NameClaimed(
   const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
 
-  let did = await DID.get(owner);
+  let did = await Did.get(owner);
 
   // the did (creation) could have happened before the Data base's starting block
   try {
@@ -58,12 +64,12 @@ export async function handleWeb3NameClaimed(
     });
   }
   // craft bearers ordinal index:
-  const previousBearers = (await Bearer.getByTitleId(w3n)) || [];
+  const previousBearers = (await Ownership.getByNameId(w3n)) || [];
 
-  const bearingData = Bearer.create({
+  const bearingData = Ownership.create({
     id: `#${previousBearers.length + 1}_${w3n}`,
-    titleId: w3n,
-    didId: owner,
+    nameId: w3n,
+    bearerId: owner,
     claimBlockId: blockNumber,
   });
 
@@ -88,7 +94,7 @@ export async function handleWeb3NameReleased(
     `A web3-name has been released at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameReleased event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -100,7 +106,7 @@ export async function handleWeb3NameReleased(
   const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
 
-  let did = await DID.get(owner);
+  let did = await Did.get(owner);
 
   // the did (creation) could have happened before the Data base's starting block
   try {
@@ -126,15 +132,15 @@ export async function handleWeb3NameReleased(
     });
   }
 
-  const allBearers = (await Bearer.getByTitleId(w3n)) || [];
+  const allBearers = (await Ownership.getByNameId(w3n)) || [];
 
   if (allBearers.length === 0) {
     // Prehistoric case
     // TODO: delete before deployment
-    const prehistoricBearing = Bearer.create({
+    const prehistoricBearing = Ownership.create({
       id: `#Prehistoric_${w3n}`,
-      titleId: w3n,
-      didId: owner,
+      nameId: w3n,
+      bearerId: owner,
       claimBlockId: blockNumber,
     });
     allBearers.push(prehistoricBearing);
@@ -168,7 +174,7 @@ export async function handleWeb3NameBanned(
     `A web3-name has been banned at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameBanned event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -183,19 +189,18 @@ export async function handleWeb3NameBanned(
   let web3Name = await Web3Name.get(w3n);
 
   if (!web3Name) {
-    // Prehistoric case
-    // TODO: delete before deployment and make 'web3name' a constant
+    // A web3name can be banned before anyone ever claiming it. This also covers the prehistoric case.
     web3Name = Web3Name.create({
       id: w3n,
       banned: false,
     });
   }
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByTitleId(w3n)) || [];
+  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
 
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
-    titleId: w3n,
+    nameId: w3n,
     nature: SanctionNature.prohibition,
     enforcementBlockId: blockNumber,
   });
@@ -226,7 +231,7 @@ export async function handleWeb3NameUnbanned(
     `A web3-name has been unbanned at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole Web3NameUnbanned event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -245,16 +250,16 @@ export async function handleWeb3NameUnbanned(
     // TODO: delete before deployment and make 'web3name' a constant
     web3Name = Web3Name.create({
       id: w3n,
-      banned: false,
+      banned: true,
     });
   }
 
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByTitleId(w3n)) || [];
+  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
 
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
-    titleId: w3n,
+    nameId: w3n,
     nature: SanctionNature.permission,
     enforcementBlockId: blockNumber,
   });
