@@ -9749,6 +9749,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kilt-indexer@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "kilt-indexer@workspace:."
+  dependencies:
+    "@kiltprotocol/type-definitions": latest
+    "@kiltprotocol/types": ^0.34.0
+    "@polkadot/api": ^10.11.2
+    "@subql/cli": latest
+    "@subql/node": latest
+    "@subql/testing": latest
+    "@subql/types": latest
+    "@types/jsonabc": ^2.3.3
+    dotenv: ^16.3.1
+    jsonabc: ^2.3.1
+    ts-node: ^10.9.1
+    typescript: ^5.2.2
+  languageName: unknown
+  linkType: soft
+
 "kind-of@npm:^6.0.2":
   version: 6.0.3
   resolution: "kind-of@npm:6.0.3"

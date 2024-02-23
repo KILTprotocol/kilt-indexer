@@ -7,9 +7,9 @@ import {
 import {
   START_BLOCK,
   CRAWL_PEREGRINE,
-  PRIVATE_NODE_ENABLE,
   DWELLIR_KEY,
   ONFINALITY_KEY,
+  PRIVATE_NODE_ENABLE,
 } from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
