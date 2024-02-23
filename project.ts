@@ -7,7 +7,7 @@ import {
 import {
   START_BLOCK,
   CRAWL_PEREGRINE,
-  PRIVATE_NODE,
+  PRIVATE_NODE_ENABLE,
   DWELLIR_KEY,
   ONFINALITY_KEY,
 } from "./configuration";
@@ -45,7 +45,11 @@ const project: SubstrateProject = {
      * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
     endpoint: CRAWL_PEREGRINE
-      ? [PRIVATE_NODE ? "ws://peregrine-rpc-node:9944" : "wss://peregrine.kilt.io"]
+      ? [
+          PRIVATE_NODE_ENABLE
+            ? "ws://peregrine-rpc-node:9944"
+            : "wss://peregrine.kilt.io",
+        ]
       : [
           DWELLIR_KEY
             ? `wss://kilt-rpc.dwellir.com/${DWELLIR_KEY}`
