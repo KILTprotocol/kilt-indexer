@@ -33,7 +33,7 @@ services:
       - ./:/app
     networks:
       - default
-      - aw-testnet-lab
+      - private-peregrine-rpc-node-net
     command:
       - ${SUB_COMMAND:-} # set SUB_COMMAND env variable to "test" to run tests
       - -f=/app
@@ -77,6 +77,6 @@ services:
       - --indexer=http://subquery-node:3000
 
 networks:
-  aw-testnet-lab:
-    external: true
-    name: aw-testnet-lab
+  private-peregrine-rpc-node-net:
+    external: ${PRIVATE_NODE_ENABLE:-false}
+    name: ${PRIVATE_NODE_NET_NAME:-}
