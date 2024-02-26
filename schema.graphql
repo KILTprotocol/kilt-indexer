@@ -97,7 +97,7 @@ type PublicCredential {
   id: ID! # <claim-hash>
   object: AssetDID!
   cType: CType!
-  attester: DID!
+  attester: Did!
   claim: String! # content of the claim
   delegationID: String
   valid: Boolean!
