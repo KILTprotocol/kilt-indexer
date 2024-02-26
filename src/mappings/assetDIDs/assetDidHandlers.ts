@@ -1,7 +1,7 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Asset, AssetDID, Chain } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
+import { saveAssetDid } from "./saveAssetDID";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -10,7 +10,7 @@ export async function handlePublicCredentialStored(
   const {
     block,
     event: {
-      data: [objectID, credentialID],
+      data: [subjectID, credentialID],
     },
     extrinsic,
   } = event;
@@ -28,45 +28,5 @@ export async function handlePublicCredentialStored(
   );
 
   const blockNumber = await saveBlock(block);
-
-  interface SubjectId {
-    chainId: {
-      [key: string]: string;
-    };
-    assetId: {
-      [key: string]: string[];
-    };
-  }
-
-  const assetObject = objectID.toHuman() as unknown as SubjectId;
-
-  logger.info("assetObject: " + JSON.stringify(assetObject));
-
-  const chain: Chain = {
-    namespace: Object.keys(assetObject.chainId)[0],
-    reference: Object.values(assetObject.chainId)[0],
-  };
-
-  const asset: Asset = {
-    namespace: Object.keys(assetObject.assetId)[0],
-    reference: Object.values(assetObject.assetId)[0][0],
-    identifier: Object.values(assetObject.assetId)[0][1],
-  };
-
-  const chainComponent = chain.namespace.toLowerCase() + ":" + chain.reference;
-  const assetComponent =
-    asset.namespace.toLowerCase() +
-    ":" +
-    asset.reference +
-    (asset.identifier ? ":" + asset.identifier : "");
-
-  const id = "did:asset:" + chainComponent + "." + assetComponent;
-
-  const newAssetDID = AssetDID.create({
-    id,
-    chain,
-    asset,
-  });
-
-  await newAssetDID.save();
+  const assetDidUri = await saveAssetDid(subjectID);
 }
