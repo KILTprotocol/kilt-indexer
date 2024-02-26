@@ -93,7 +93,7 @@ type AssetDID @entity {
   asset: Asset!
 }
 
-type PublicCredential {
+type PublicCredential @entity {
   id: ID! # <claim-hash>
   object: AssetDID!
   cType: CType!
