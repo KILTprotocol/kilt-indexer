@@ -23,6 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@polkadot/api": "^10.11.2",
+    "cbor-web": "^9.0.2",
     "dotenv": "^16.3.1",
     "jsonabc": "^2.3.1"
   },

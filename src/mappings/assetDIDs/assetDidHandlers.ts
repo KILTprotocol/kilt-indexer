@@ -3,6 +3,7 @@ import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
 import { PublicCredential } from "../../types";
+import { extractCredentialClaims } from "./extractCredentialClaims";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -30,6 +31,9 @@ export async function handlePublicCredentialStored(
 
   const blockNumber = await saveBlock(block);
   const assetDidUri = await saveAssetDid(subjectID);
+  const claimsHash = credentialID.toHex();
+
+  const claims = extractCredentialClaims(extrinsic, claimsHash);
 
   // const newPublicCredential = PublicCredential.create({
   //   id: credentialID.toHex(),
