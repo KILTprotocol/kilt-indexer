@@ -88,7 +88,19 @@ type Asset @entity {
 }
 
 type AssetDID @entity {
-  id: ID! # "did:asset:..."
+  id: ID! # "did:asset:" + <chain-namespace> + ":" + <chain-reference> + <asset-namespace> + ":" + <asset-reference> + [":" + <asset-id>]
   chain: Chain!
   asset: Asset!
+}
+
+type PublicCredential {
+  id: ID! # <claim-hash>
+  object: AssetDID!
+  cType: CType!
+  attester: DID!
+  claim: String! # content of the claim
+  delegationID: String
+  valid: Boolean!
+  creationBlock: Block!
+  revocationBlock: Block
 }
