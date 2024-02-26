@@ -1,7 +1,7 @@
 import type { SubstrateEvent } from "@subql/types";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
-import { saveAssetDid } from "./saveAssetDID";
+import { saveAssetDid } from "./saveAssetDid";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
