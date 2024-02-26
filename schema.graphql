@@ -74,12 +74,14 @@ type Sanction @entity {
 
 ## For AssetDIDs:
 
-type Chain @jsonField {
-  namespace: String! # could be a Enum of the list of supported Chains
+type Chain @entity {
+  id: ID! # <chain-namespace> + ":" + <chain-reference> = caip-2-chain-id
+  namespace: String!
   reference: String!
 }
 
-type Asset @jsonField {
+type Asset @entity {
+  id: ID! # <asset-namespace> + ":" + <asset-reference> + [":" + <asset-id>]
   namespace: String!
   reference: String!
   identifier: String
