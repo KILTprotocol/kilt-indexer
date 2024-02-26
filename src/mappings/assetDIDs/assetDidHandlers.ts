@@ -2,6 +2,7 @@ import type { SubstrateEvent } from "@subql/types";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
+import { PublicCredential } from "../../types";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -29,4 +30,11 @@ export async function handlePublicCredentialStored(
 
   const blockNumber = await saveBlock(block);
   const assetDidUri = await saveAssetDid(subjectID);
+
+  // const newPublicCredential = PublicCredential.create({
+  //   id: credentialID.toHex(),
+  //   objectId: assetDidUri,
+  //   creationBlockId: blockNumber,
+  //   valid: true,
+  // });
 }
