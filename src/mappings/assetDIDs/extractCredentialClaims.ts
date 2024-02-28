@@ -3,8 +3,18 @@ import type { Bytes, Vec } from "@polkadot/types";
 import assert from "assert";
 import type { HexString, ICType } from "@kiltprotocol/types";
 import type { GenericExtrinsic } from "@polkadot/types/extrinsic";
-import { cTypeHasher } from "../cTypes/cTypeHasher";
-import cbor from "cbor-web";
+import type { DidUri } from "@kiltprotocol/types";
+
+interface CredentialOnChain {
+  ctypeHash: HexString;
+  subject: string; // assetDID-URI
+  claims: HexString; // CBOR serialized claims
+  authorization: string | null;
+}
+
+export interface CredentialFromChain extends CredentialOnChain {
+  attesterDid: DidUri;
+}
 
 const relevantCalls = {
   submitDidCall: { pallet: "did", method: "submitDidCall" },
@@ -25,7 +35,7 @@ const relevantCalls = {
 export function extractCredentialClaims(
   extrinsic: SubstrateExtrinsic | undefined,
   targetCredentialHash: HexString
-): string {
+): CredentialFromChain {
   assert(extrinsic, "Extrinsic not defined");
 
   const blockNumber = extrinsic.block.block.header.number.toString();
@@ -34,7 +44,7 @@ export function extractCredentialClaims(
 
   logger.info("The whole extrinsic: " + JSON.stringify(usedCall, null, 2));
 
-  let definition: string | false;
+  let definition: CredentialFromChain | false;
 
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
@@ -53,11 +63,11 @@ export function extractCredentialClaims(
 
   assert(
     definition,
-    `Could not extract ctype definition from extrinsic in block #${blockNumber}`
+    `Could not extract credential from extrinsic in block #${blockNumber}`
   );
 
   // Print the definition
-  logger.info(`cType definition: ${definition}`);
+  logger.info(`credential on chain: ${JSON.stringify(definition, null, 2)}`);
 
   return definition;
 }
@@ -75,7 +85,7 @@ export function extractCredentialClaims(
 function manageProxyCall(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): string | false {
+): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
     parentPallet === relevantCalls.proxy.pallet,
@@ -119,7 +129,7 @@ function manageProxyCall(
 function manageBatchCalls(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): string | false {
+): CredentialFromChain | false {
   const { section: parentPallet } = call;
   assert(
     parentPallet === relevantCalls.batchAll.pallet,
@@ -147,7 +157,7 @@ function manageBatchCalls(
       }
       return false;
     })
-    .filter((element): element is string => !!element);
+    .filter((element): element is CredentialFromChain => !!element);
 
   assert(
     matchedDefinitions.length <= 1,
@@ -167,7 +177,7 @@ function manageBatchCalls(
 function manageSubmitDidCall(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): string | false {
+): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
     parentPallet === relevantCalls.submitDidCall.pallet,
@@ -178,19 +188,15 @@ function manageSubmitDidCall(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
-  // debugger:
-  logger.info(" Im here on the manageSubmitDidCall");
-
-  // first call argument is a struct with a 'call' property
+  // first call argument is a struct with a 'call' and a 'did' property
   const childCall = (call.args[0] as any).call as GenericExtrinsic["method"];
+  const didAccountId = (call.args[0] as any).did as string;
   const { section: childPallet, method: childMethod } = childCall;
 
-  logger.info(
-    "the childPallet: " + childPallet + "; childMethod: " + childMethod
-  );
+  const attesterDid = ("did:kilt:" + didAccountId) as DidUri;
 
   if (childPallet === relevantCalls.addCredential.pallet) {
-    return manageAddPublicCredential(childCall, targetCTypeHash);
+    return manageAddPublicCredential(childCall, targetCTypeHash, attesterDid);
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
     return manageBatchCalls(childCall, targetCTypeHash);
@@ -204,20 +210,10 @@ function manageSubmitDidCall(
     return manageSubmitDidCall(childCall, targetCTypeHash);
   }
 
-  // debugger:
-  logger.info(" Im leaving the manageSubmitDidCall");
-
   return false;
 }
 
-interface CredentialOnChain {
-  ctypeHash: HexString;
-  subject: HexString;
-  claims: HexString;
-  authorization: string | null;
-}
-
-/** Process extrinsic call and extracts cType definition, if it matches `targetCTypeHash`.
+/** Process extrinsic call and extracts credential.
  *
  * @param call Calls of this type:
  *  Pallet: publicCredentials.
@@ -227,8 +223,9 @@ interface CredentialOnChain {
  */
 function manageAddPublicCredential(
   call: GenericExtrinsic["method"],
-  targetCredentialHash: HexString
-): string | false {
+  targetCredentialHash: HexString,
+  attesterDid: DidUri = "did:kilt:4foobar"
+): CredentialFromChain | false {
   const { section: pallet, method } = call;
   assert(
     pallet === relevantCalls.addCredential.pallet,
@@ -239,46 +236,50 @@ function manageAddPublicCredential(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
   // the only call argument is the credential object
-  const credential = call.args[0] as unknown as CredentialOnChain;
+  const credential = call.args[0].toHuman() as unknown as CredentialOnChain;
 
-  // debugger
-  logger.info("type of credential: " + typeof credential);
+  // without args.toJSON or .toHuman, circular objects are delivered.
+  // If .JSON is used, the following transformation is needed:
+  // const credentialInternalSubjectId = Buffer.from(
+  //   credential.subject
+  // ).toString();
 
-  logger.info("credential: " + JSON.stringify(credential, null, 2));
+  return { ...credential, attesterDid };
 
-  return validateClaimsAgainstHash(credential.claims, targetCredentialHash);
+  // return validateClaimsAgainstHash(credential.claims, targetCredentialHash);
 }
 
-/** Hashes the `encodedClaims` and compares it to the `targetCredentialHash`.
- *
- * If there is a match, it returns the decoded claims, otherwise `false`.
- *
- * @param encodedClaims
- * @param targetCredentialHash Hex-string from Event.
- */
-function validateClaimsAgainstHash(
-  encodedClaims: HexString,
-  targetCredentialHash: HexString
-): string | false {
-  logger.info(
-    "The target CredentialHash from the event: " + targetCredentialHash
-  );
+// FAILED:
+// /** Hashes the `encodedClaims` and compares it to the `targetCredentialHash`.
+//  *
+//  * If there is a match, it returns the decoded claims, otherwise `false`.
+//  *
+//  * @param encodedClaims
+//  * @param targetCredentialHash Hex-string from Event.
+//  */
+// function validateClaimsAgainstHash(
+//   encodedClaims: HexString,
+//   targetCredentialHash: HexString
+// ): string | false {
+//   logger.info(
+//     "The target CredentialHash from the event: " + targetCredentialHash
+//   );
 
-  logger.info("The encoded claims being evaluated: " + encodedClaims);
+//   logger.info("The encoded claims being evaluated: " + encodedClaims);
 
-  const claims = cbor.decode(encodedClaims);
+//   const claims = cbor.decode(encodedClaims);
 
-  // const claims = cbor.decode(encodedClaims.split("x")[1]);
+//   // const claims = cbor.decode(encodedClaims.split("x")[1]);
 
-  logger.info("The decoded claims being evaluated: " + claims);
+//   logger.info("The decoded claims being evaluated: " + claims);
 
-  const cTypeSchema: ICType = JSON.parse(encodedClaims);
-  const cTypeHash = cTypeHasher(cTypeSchema);
+//   const cTypeSchema: ICType = JSON.parse(encodedClaims);
+//   const cTypeHash = cTypeHasher(cTypeSchema);
 
-  logger.trace("The resulting cTypeHash is: " + cTypeHash);
+//   logger.trace("The resulting cTypeHash is: " + cTypeHash);
 
-  if (targetCredentialHash === cTypeHash) {
-    return encodedClaims;
-  }
-  return false;
-}
+//   if (targetCredentialHash === cTypeHash) {
+//     return encodedClaims;
+//   }
+//   return false;
+// }

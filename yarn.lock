@@ -6462,13 +6462,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cbor-web@npm:^9.0.2":
-  version: 9.0.2
-  resolution: "cbor-web@npm:9.0.2"
-  checksum: bea4733172fbac8689950348f79b7022855f5b78cde38964d2f74ff285cabd374c193e9f8fa25bfeeed8d3c7f98c8b76f3edd443f6992b78117be85f502e1fd9
-  languageName: node
-  linkType: hard
-
 "cborg@npm:^1.5.4, cborg@npm:^1.6.0":
   version: 1.10.2
   resolution: "cborg@npm:1.10.2"
@@ -12155,7 +12148,6 @@ __metadata:
     "@subql/testing": latest
     "@subql/types": latest
     "@types/jsonabc": ^2.3.3
-    cbor-web: ^9.0.2
     dotenv: ^16.3.1
     jsonabc: ^2.3.1
     ts-node: ^10.9.1

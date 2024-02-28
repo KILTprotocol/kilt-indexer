@@ -1,9 +1,13 @@
 import type { SubstrateEvent } from "@subql/types";
+import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
 import { PublicCredential } from "../../types";
-import { extractCredentialClaims } from "./extractCredentialClaims";
+import {
+  CredentialFromChain,
+  extractCredentialClaims,
+} from "./extractCredentialClaims";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -33,12 +37,28 @@ export async function handlePublicCredentialStored(
   const assetDidUri = await saveAssetDid(subjectID);
   const claimsHash = credentialID.toHex();
 
-  const claims = extractCredentialClaims(extrinsic, claimsHash);
+  const credential: CredentialFromChain = extractCredentialClaims(
+    extrinsic,
+    claimsHash
+  );
 
-  // const newPublicCredential = PublicCredential.create({
-  //   id: credentialID.toHex(),
-  //   objectId: assetDidUri,
-  //   creationBlockId: blockNumber,
-  //   valid: true,
-  // });
+  const cTypeId = "kilt:ctype:" + credential.ctypeHash;
+
+  assert(
+    assetDidUri === credential.subject,
+    `The extracted public credential does not belongs to this assetDID. \n Target: ${assetDidUri} \n Obtained: ${credential.subject}`
+  );
+
+  const newPublicCredential = PublicCredential.create({
+    id: credentialID.toHex(),
+    objectId: assetDidUri,
+    creationBlockId: blockNumber,
+    valid: true,
+    cTypeId,
+    claim: credential.claims,
+    attesterId: credential.attesterDid,
+    delegationID: credential.authorization ?? undefined,
+  });
+
+  await newPublicCredential.save();
 }
