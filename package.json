@@ -1,13 +1,13 @@
 {
-  "name": "spiritnet-attestations-indexer",
-  "version": "1.0.0",
+  "name": "kilt-indexer",
+  "version": "0.0.1",
   "description": "indexing of attestations and CTypes",
   "main": "dist/index.js",
   "scripts": {
     "codegen": "subql codegen",
     "build": "subql build",
-    "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
-    "dev": "subql codegen && subql build && docker-compose pull && docker-compose up --build --remove-orphans",
+    "start:docker": "docker compose pull && docker compose up --remove-orphans",
+    "dev": "subql codegen && subql build && docker compose pull && docker compose up --build --remove-orphans",
     "prepack": "rm -rf dist && npm run build",
     "test": "subql build && subql-node test",
     "slash": "yarn ts-node src/slash.ts"

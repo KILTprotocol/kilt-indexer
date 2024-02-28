@@ -6,6 +6,8 @@ export const START_BLOCK = parseInt(loadEnv("START_BLOCK", false) ?? "1");
 export const DWELLIR_KEY = loadEnv("DWELLIR_KEY", false);
 export const ONFINALITY_KEY = loadEnv("ONFINALITY_KEY", false);
 export const CRAWL_PEREGRINE = loadEnv("CRAWL_PEREGRINE", false);
+export const PRIVATE_NODE_ENABLE = loadEnv("PRIVATE_NODE_ENABLE", false);
+export const PRIVATE_NODE_NET_NAME = loadEnv("PRIVATE_NODE_NET_NAME", false);
 
 function loadEnv(name: string, compulsory: boolean = true) {
   const envValue = process.env[name];
