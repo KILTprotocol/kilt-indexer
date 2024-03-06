@@ -282,3 +282,24 @@ function manageAddPublicCredential(
 //   }
 //   return false;
 // }
+
+// TODO: reimplement this function or use the SDK
+// /**
+//  * Calculates the ID of a [[IPublicCredentialInput]], to be used to retrieve the full credential content from the blockchain.
+//  *
+//  * The ID is formed by first concatenating the SCALE-encoded [[IPublicCredentialInput]] with the SCALE-encoded [[DidUri]] and then Blake2b hashing the result.
+//  *
+//  * @param credential The input credential object.
+//  * @param attester The DID of the credential attester.
+//  * @returns The credential ID.
+//  */
+// function getIdForCredential(credential, attester) {
+//   const api = config_1.ConfigService.get('api');
+//   const scaleEncodedCredential = api
+//       .createType('PublicCredentialsCredentialsCredential', (0, PublicCredential_chain_js_1.toChain)(credential))
+//       .toU8a();
+//   const scaleEncodedAttester = api
+//       .createType('AccountId', Did.toChain(attester))
+//       .toU8a();
+//   return (0, util_crypto_1.blake2AsHex)(Uint8Array.from([...scaleEncodedCredential, ...scaleEncodedAttester]));
+// }
