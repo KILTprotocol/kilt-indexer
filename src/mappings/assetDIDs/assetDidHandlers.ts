@@ -45,7 +45,7 @@ export async function handlePublicCredentialStored(
   const cTypeId = "kilt:ctype:" + credential.ctypeHash;
 
   assert(
-    assetDidUri === credential.subject,
+    assetDidUri === credential.subject.toLowerCase(),
     `The extracted public credential does not belongs to this assetDID. \n Target: ${assetDidUri} \n Obtained: ${credential.subject}`
   );
 
