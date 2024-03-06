@@ -30,14 +30,14 @@ const relevantCalls = {
   proxy: { pallet: "proxy", method: "proxy" },
 };
 
-/** Extracts the claims content on the public credential from the extrinsic, coming from the PublicCredentialStored event.
+/** Extracts the content on the public credential from the extrinsic, coming from the PublicCredentialStored event.
  *
  * In case that there are several public credentials in one extrinsic batch, it would hash the claims and compare with `targetCredentialHash`.
  *
  * @param extrinsic
  * @param targetCredentialHash Hex-string from Event.
  */
-export function extractCredentialClaims(
+export function extractCredential(
   extrinsic: SubstrateExtrinsic | undefined,
   targetCredentialHash: HexString
 ): CredentialFromChain {
@@ -79,12 +79,12 @@ export function extractCredentialClaims(
 
 // Use "manage" instead of "handle" to differentiate from the handlers on `mappingHandlers.ts`.
 
-/** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
+/** Process extrinsic call and extracts credential that matches `targetCredentialHash`.
  *
  * @param call Call of this type:
  *  Pallet: Proxy.
  *  Method: proxy.
- * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
+ * @param targetCTypeHash Hex-string from Event.
  *
  */
 function manageProxyCall(
@@ -123,12 +123,12 @@ function manageProxyCall(
   return false;
 }
 
-/** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
+/** Process extrinsic call and extracts credential that matches `targetCredentialHash`.
  *
  * @param call Calls of this type:
  *  Pallet: Utility.
  *  Method: batch | batch_all | force_batch.
- * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
+ * @param targetCTypeHash Hex-string from Event.
  *
  */
 function manageBatchCalls(
@@ -171,12 +171,12 @@ function manageBatchCalls(
 
   return matchedDefinitions[0] ?? false;
 }
-/** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
+/** Process extrinsic call and extracts credential that matches `targetCredentialHash`.
  *
  * @param call Call of this type:
  *  Pallet: DID.
  *  Method: submit_did_call.
- * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
+ * @param targetCTypeHash Hex-string from Event.
  *
  */
 function manageSubmitDidCall(
@@ -218,7 +218,7 @@ function manageSubmitDidCall(
   return false;
 }
 
-/** Process extrinsic call and extracts credential.
+/** Process extrinsic call and extracts credential that matches `targetCredentialHash`.
  *
  * @param call Calls of this type:
  *  Pallet: publicCredentials.

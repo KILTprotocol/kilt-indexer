@@ -6,7 +6,7 @@ import { saveAssetDid } from "./saveAssetDid";
 import { PublicCredential } from "../../types";
 import {
   CredentialFromChain,
-  extractCredentialClaims,
+  extractCredential,
 } from "./extractCredentialClaims";
 
 export async function handlePublicCredentialStored(
@@ -37,17 +37,17 @@ export async function handlePublicCredentialStored(
   const assetDidUri = await saveAssetDid(subjectID);
   const claimsHash = credentialID.toHex();
 
-  const credential: CredentialFromChain = extractCredentialClaims(
+  const credential: CredentialFromChain = extractCredential(
     extrinsic,
     claimsHash
   );
-
-  const cTypeId = "kilt:ctype:" + credential.ctypeHash;
 
   assert(
     assetDidUri === credential.subject.toLowerCase(),
     `The extracted public credential does not belongs to this assetDID. \n Target: ${assetDidUri} \n Obtained: ${credential.subject}`
   );
+
+  const cTypeId = "kilt:ctype:" + credential.ctypeHash;
 
   const newPublicCredential = PublicCredential.create({
     id: credentialID.toHex(),
