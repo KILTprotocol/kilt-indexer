@@ -1,12 +1,18 @@
 import type { SubstrateExtrinsic } from "@subql/types";
 import type { Bytes, Vec } from "@polkadot/types";
 import assert from "assert";
-import type { HexString, DidUri } from "@kiltprotocol/types";
+import type {
+  HexString,
+  DidUri,
+  IPublicCredentialInput,
+  AssetDidUri,
+} from "@kiltprotocol/types";
 import type { GenericExtrinsic } from "@polkadot/types/extrinsic";
+import { AssetDID } from "../../types";
 
 interface CredentialOnChain {
   ctypeHash: HexString;
-  subject: string; // assetDID-URI
+  subject: AssetDidUri; // assetDID-URI
   claims: HexString; // CBOR serialized claims
   authorization: string | null;
 }
@@ -245,10 +251,16 @@ function manageAddPublicCredential(
 
   return { ...credential, attesterDid };
 
-  // return validateClaimsAgainstHash(credential.claims, targetCredentialHash);
+  // return validateClaimsAgainstHash(
+  //   credential,
+  //   attesterDid,
+  //   targetCredentialHash
+  // );
 }
 
-// FAILED:
+// Fails because the cbor module does not run on the container
+
+// import * as Kilt from "@kiltprotocol/sdk-js";
 // /** Hashes the `encodedClaims` and compares it to the `targetCredentialHash`.
 //  *
 //  * If there is a match, it returns the decoded claims, otherwise `false`.
@@ -257,49 +269,31 @@ function manageAddPublicCredential(
 //  * @param targetCredentialHash Hex-string from Event.
 //  */
 // function validateClaimsAgainstHash(
-//   encodedClaims: HexString,
+//   credential: CredentialOnChain,
+//   attesterDid: DidUri,
 //   targetCredentialHash: HexString
-// ): string | false {
+// ): CredentialFromChain | false {
 //   logger.info(
 //     "The target CredentialHash from the event: " + targetCredentialHash
 //   );
 
-//   logger.info("The encoded claims being evaluated: " + encodedClaims);
+//   logger.info("The encoded claims being evaluated: " + credential.claims);
+//   const credentialSDKed: IPublicCredentialInput = {
+//     cTypeHash: credential.ctypeHash,
+//     delegationId: credential.authorization,
+//     subject: credential.subject,
+//     claims: Kilt.Utils.cbor.decode(credential.claims),
+//   };
 
-//   const claims = cbor.decode(encodedClaims);
+//   const credentialID = Kilt.PublicCredential.getIdForCredential(
+//     credentialSDKed,
+//     attesterDid
+//   );
 
-//   // const claims = cbor.decode(encodedClaims.split("x")[1]);
+//   logger.trace("The resulting Credential ID is: " + credentialID);
 
-//   logger.info("The decoded claims being evaluated: " + claims);
-
-//   const cTypeSchema: ICType = JSON.parse(encodedClaims);
-//   const cTypeHash = cTypeHasher(cTypeSchema);
-
-//   logger.trace("The resulting cTypeHash is: " + cTypeHash);
-
-//   if (targetCredentialHash === cTypeHash) {
-//     return encodedClaims;
+//   if (targetCredentialHash === credentialID) {
+//     return { ...credential, attesterDid };
 //   }
 //   return false;
-// }
-
-// TODO: reimplement this function or use the SDK
-// /**
-//  * Calculates the ID of a [[IPublicCredentialInput]], to be used to retrieve the full credential content from the blockchain.
-//  *
-//  * The ID is formed by first concatenating the SCALE-encoded [[IPublicCredentialInput]] with the SCALE-encoded [[DidUri]] and then Blake2b hashing the result.
-//  *
-//  * @param credential The input credential object.
-//  * @param attester The DID of the credential attester.
-//  * @returns The credential ID.
-//  */
-// function getIdForCredential(credential, attester) {
-//   const api = config_1.ConfigService.get('api');
-//   const scaleEncodedCredential = api
-//       .createType('PublicCredentialsCredentialsCredential', (0, PublicCredential_chain_js_1.toChain)(credential))
-//       .toU8a();
-//   const scaleEncodedAttester = api
-//       .createType('AccountId', Did.toChain(attester))
-//       .toU8a();
-//   return (0, util_crypto_1.blake2AsHex)(Uint8Array.from([...scaleEncodedCredential, ...scaleEncodedAttester]));
 // }
