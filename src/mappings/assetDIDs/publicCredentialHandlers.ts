@@ -7,7 +7,7 @@ import { PublicCredential } from "../../types";
 import {
   type CredentialFromChain,
   extractCredential,
-} from "./extractCredentialClaims";
+} from "./extractCredential";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
