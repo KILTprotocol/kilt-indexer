@@ -1,9 +1,8 @@
 import type { SubstrateExtrinsic } from "@subql/types";
 import type { Bytes, Vec } from "@polkadot/types";
 import assert from "assert";
-import type { HexString, ICType } from "@kiltprotocol/types";
+import type { HexString, DidUri } from "@kiltprotocol/types";
 import type { GenericExtrinsic } from "@polkadot/types/extrinsic";
-import type { DidUri } from "@kiltprotocol/types";
 
 interface CredentialOnChain {
   ctypeHash: HexString;
