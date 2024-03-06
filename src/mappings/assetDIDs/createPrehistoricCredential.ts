@@ -1,0 +1,58 @@
+import type { SubstrateEvent } from "@subql/types";
+import { Codec } from "@polkadot/types-codec/types";
+import { PublicCredential } from "../../types";
+import { saveBlock } from "../blocks/saveBlock";
+import { UNKNOWN } from "../mappingHandlers";
+import { saveAssetDid } from "./saveAssetDid";
+
+/** Solves problems while trying to start Data Base from higher block.
+ *
+ * TODO: This function should be deleted before deployment.
+ *
+ * @param event a Public Credential removal/revocation/un-revocation.
+ */
+export async function createPrehistoricCredential(
+  event: SubstrateEvent
+): Promise<PublicCredential> {
+  logger.info(
+    `A Public Credential from before the Database's startBlock is being added with default values.`
+  );
+
+  // A public credentials has been removed. \[subject_id, credential_id\]
+  // A public credential has been revoked. \[credential_id\]
+  // A public credential has been unrevoked. \[credential_id\]
+  const {
+    block,
+    event: {
+      data: [argument1, argument2],
+    },
+    extrinsic,
+  } = event;
+
+  logger.trace(
+    `The whole event involving a prehistoric public credential: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const credentialID: Codec = argument2 ?? argument1;
+  const assetDidUri = argument2 ? await saveAssetDid(argument1) : UNKNOWN;
+  const blockNumber = await saveBlock(block);
+
+  const prehistoricCredential = PublicCredential.create({
+    id: credentialID.toHex(),
+    objectId: assetDidUri,
+    creationBlockId: blockNumber,
+    valid: true,
+    cTypeId: UNKNOWN,
+    claim: UNKNOWN,
+    attesterId: UNKNOWN,
+    delegationID: UNKNOWN,
+  });
+
+  await prehistoricCredential.save();
+
+  return prehistoricCredential;
+}
