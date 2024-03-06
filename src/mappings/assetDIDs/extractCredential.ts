@@ -259,6 +259,7 @@ function manageAddPublicCredential(
 }
 
 // Fails because the cbor module does not run on the container
+// The cbor module depend on some default node modules that are not inside of the container, so it crashes
 
 // import * as Kilt from "@kiltprotocol/sdk-js";
 // /** Hashes the `encodedClaims` and compares it to the `targetCredentialHash`.
