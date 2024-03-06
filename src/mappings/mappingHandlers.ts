@@ -21,4 +21,7 @@ export {
   handleWeb3NameUnbanned,
 } from "./web3names/w3nHandlers";
 
-export { handlePublicCredentialStored } from "./assetDIDs/publicCredentialHandlers";
+export {
+  handlePublicCredentialStored,
+  handlePublicCredentialRemoved,
+} from "./assetDIDs/publicCredentialHandlers";
