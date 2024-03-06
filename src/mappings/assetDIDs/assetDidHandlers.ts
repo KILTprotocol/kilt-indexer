@@ -5,7 +5,7 @@ import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
 import { PublicCredential } from "../../types";
 import {
-  CredentialFromChain,
+  type CredentialFromChain,
   extractCredential,
 } from "./extractCredentialClaims";
 
