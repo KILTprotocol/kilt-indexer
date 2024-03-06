@@ -1,6 +1,6 @@
 import type { SubstrateEvent } from "@subql/types";
 import { Codec } from "@polkadot/types-codec/types";
-import { PublicCredential } from "../../types";
+import { Did, PublicCredential } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
@@ -40,6 +40,21 @@ export async function createPrehistoricCredential(
   const credentialID: Codec = argument2 ?? argument1;
   const assetDidUri = argument2 ? await saveAssetDid(argument1) : UNKNOWN;
   const blockNumber = await saveBlock(block);
+
+  // need a prehistoric did
+  const didId = "did:kilt:" + UNKNOWN;
+
+  let prehistoricDID = await Did.get(didId);
+  if (!prehistoricDID) {
+    prehistoricDID = Did.create({
+      id: didId,
+      payer: UNKNOWN,
+      creationBlockId: blockNumber,
+      active: true,
+    });
+
+    await prehistoricDID.save();
+  }
 
   const prehistoricCredential = PublicCredential.create({
     id: credentialID.toHex(),
