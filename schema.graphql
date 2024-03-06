@@ -102,5 +102,7 @@ type PublicCredential @entity {
   delegationID: String
   valid: Boolean!
   creationBlock: Block!
-  revocationBlock: Block
+  removalBlock: Block
+  revocationBlocks: [Block]
+  restorationBlocks: [Block] # un-revocation
 }
