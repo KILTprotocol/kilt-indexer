@@ -94,7 +94,7 @@ type AssetDID @entity {
 }
 
 type PublicCredential @entity {
-  id: ID! # <claim-hash>
+  id: ID! # <credential-hash>
   object: AssetDID!
   cType: CType!
   attester: Did!
