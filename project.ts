@@ -183,6 +183,14 @@ const project: SubstrateProject = {
               method: "CredentialRevoked",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handlePublicCredentialUnrevoked",
+            filter: {
+              module: "publicCredentials",
+              method: "CredentialUnrevoked",
+            },
+          },
         ],
       },
     },

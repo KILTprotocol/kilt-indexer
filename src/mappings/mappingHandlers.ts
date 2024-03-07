@@ -25,4 +25,5 @@ export {
   handlePublicCredentialStored,
   handlePublicCredentialRemoved,
   handlePublicCredentialRevoked,
+  handlePublicCredentialUnrevoked,
 } from "./assetDIDs/publicCredentialHandlers";
