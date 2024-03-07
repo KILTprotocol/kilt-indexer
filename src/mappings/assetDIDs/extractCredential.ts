@@ -34,10 +34,10 @@ const relevantCalls = {
  * @param extrinsic
  * @param targetCredentialHash Hex-string from Event.
  */
-export async function extractCredential(
+export function extractCredential(
   extrinsic: SubstrateExtrinsic | undefined,
   targetCredentialHash: HexString
-): Promise<CredentialFromChain> {
+): CredentialFromChain {
   assert(extrinsic, "Extrinsic not defined");
 
   const blockNumber = extrinsic.block.block.header.number.toString();
@@ -50,13 +50,13 @@ export async function extractCredential(
 
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
-      definition = await manageSubmitDidCall(usedCall, targetCredentialHash);
+      definition = manageSubmitDidCall(usedCall, targetCredentialHash);
       break;
     case relevantCalls.batchAll.pallet:
-      definition = await manageBatchCalls(usedCall, targetCredentialHash);
+      definition = manageBatchCalls(usedCall, targetCredentialHash);
       break;
     case relevantCalls.proxy.pallet:
-      definition = await manageProxyCall(usedCall, targetCredentialHash);
+      definition = manageProxyCall(usedCall, targetCredentialHash);
       break;
     default:
       definition = false;
@@ -84,10 +84,10 @@ export async function extractCredential(
  * @param targetCTypeHash Hex-string from Event.
  *
  */
-async function manageProxyCall(
+function manageProxyCall(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): Promise<CredentialFromChain | false> {
+): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
     parentPallet === relevantCalls.proxy.pallet,
@@ -107,15 +107,15 @@ async function manageProxyCall(
   //   return await manageAddPublicCredential(childCall, targetCTypeHash);
   // }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return await manageBatchCalls(childCall, targetCTypeHash);
+    return manageBatchCalls(childCall, targetCTypeHash);
   }
   if (childMethod === relevantCalls.submitDidCall.method) {
-    return await manageSubmitDidCall(childCall, targetCTypeHash);
+    return manageSubmitDidCall(childCall, targetCTypeHash);
   }
 
   if (childMethod === relevantCalls.proxy.method) {
     // Is this possible?
-    return await manageProxyCall(childCall, targetCTypeHash);
+    return manageProxyCall(childCall, targetCTypeHash);
   }
 
   return false;
@@ -129,10 +129,10 @@ async function manageProxyCall(
  * @param targetCTypeHash Hex-string from Event.
  *
  */
-async function manageBatchCalls(
+function manageBatchCalls(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): Promise<false | CredentialFromChain> {
+): false | CredentialFromChain {
   const { section: parentPallet } = call;
   assert(
     parentPallet === relevantCalls.batchAll.pallet,
@@ -142,29 +142,26 @@ async function manageBatchCalls(
   // first call argument is a vector of calls:
   const childrenCalls = call.args[0] as Vec<GenericExtrinsic["method"]>;
 
-  const matchedDefinitions = await Promise.all(
-    childrenCalls
-      .map(async (childCall) => {
-        const { section: childPallet, method: childMethod } = childCall;
+  const matchedDefinitions = childrenCalls
+    .map((childCall) => {
+      const { section: childPallet, method: childMethod } = childCall;
 
-        // Not really possible:
-        // if (childPallet === relevantCalls.addCredential.pallet) {
-        //   return manageAddPublicCredential(childCall, targetCTypeHash);
-        // }
-        if (childPallet === relevantCalls.submitDidCall.pallet) {
-          return await manageSubmitDidCall(childCall, targetCTypeHash);
-        }
-        if (childPallet === relevantCalls.batchAll.pallet) {
-          return await manageBatchCalls(childCall, targetCTypeHash);
-        }
-        if (childMethod === relevantCalls.proxy.method) {
-          return await manageProxyCall(childCall, targetCTypeHash);
-        }
-        return false;
-      })
-      .filter((element): element is Promise<CredentialFromChain> => !!element)
-  );
-
+      // Not really possible:
+      // if (childPallet === relevantCalls.addCredential.pallet) {
+      //   return manageAddPublicCredential(childCall, targetCTypeHash);
+      // }
+      if (childPallet === relevantCalls.submitDidCall.pallet) {
+        return manageSubmitDidCall(childCall, targetCTypeHash);
+      }
+      if (childPallet === relevantCalls.batchAll.pallet) {
+        return manageBatchCalls(childCall, targetCTypeHash);
+      }
+      if (childMethod === relevantCalls.proxy.method) {
+        return manageProxyCall(childCall, targetCTypeHash);
+      }
+      return false;
+    })
+    .filter((element): element is CredentialFromChain => !!element);
   assert(
     matchedDefinitions.length <= 1,
     "More than one add-PublicCredential extrinsic in this utility batch has a credential who's hash that matches credential-id from event."
@@ -180,10 +177,10 @@ async function manageBatchCalls(
  * @param targetCTypeHash Hex-string from Event.
  *
  */
-async function manageSubmitDidCall(
+function manageSubmitDidCall(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): Promise<CredentialFromChain | false> {
+): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
     parentPallet === relevantCalls.submitDidCall.pallet,
@@ -202,22 +199,18 @@ async function manageSubmitDidCall(
   // const attesterDid = ("did:kilt:" + didAccountId) as DidUri;
 
   if (childPallet === relevantCalls.addCredential.pallet) {
-    return await manageAddPublicCredential(
-      childCall,
-      targetCTypeHash,
-      didAccountId
-    );
+    return manageAddPublicCredential(childCall, targetCTypeHash, didAccountId);
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return await manageBatchCalls(childCall, targetCTypeHash);
+    return manageBatchCalls(childCall, targetCTypeHash);
   }
   if (childMethod === relevantCalls.proxy.method) {
-    return await manageProxyCall(childCall, targetCTypeHash);
+    return manageProxyCall(childCall, targetCTypeHash);
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
     // Is this possible?
-    return await manageSubmitDidCall(childCall, targetCTypeHash);
+    return manageSubmitDidCall(childCall, targetCTypeHash);
   }
 
   return false;
@@ -231,11 +224,11 @@ async function manageSubmitDidCall(
  * @param targetCredentialHash Hex-string from Event.
  *
  */
-async function manageAddPublicCredential(
+function manageAddPublicCredential(
   call: GenericExtrinsic["method"],
   targetCredentialHash: HexString,
   attesterDidAccount: Codec
-): Promise<CredentialFromChain | false> {
+): CredentialFromChain | false {
   const { section: pallet, method } = call;
   assert(
     pallet === relevantCalls.addCredential.pallet,
@@ -263,11 +256,11 @@ async function manageAddPublicCredential(
  * @param encodedClaims
  * @param targetCredentialHash Hex-string from Event.
  */
-async function validateClaimsAgainstHash(
+function validateClaimsAgainstHash(
   credential: Codec,
   attesterDidAccount: Codec,
   targetCredentialHash: HexString
-): Promise<CredentialFromChain | false> {
+): CredentialFromChain | false {
   logger.info(
     "The target CredentialHash from the event: " + targetCredentialHash
   );
