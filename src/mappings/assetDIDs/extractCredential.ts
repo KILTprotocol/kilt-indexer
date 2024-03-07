@@ -1,14 +1,11 @@
-import type { SubstrateExtrinsic } from "@subql/types";
-import type { Bytes, Vec } from "@polkadot/types";
-import assert from "assert";
-import type {
-  HexString,
-  DidUri,
-  IPublicCredentialInput,
-  AssetDidUri,
-} from "@kiltprotocol/types";
+import type { AssetDidUri, DidUri, HexString } from "@kiltprotocol/types";
+import type { Vec } from "@polkadot/types";
+import { Codec } from "@polkadot/types-codec/types";
 import type { GenericExtrinsic } from "@polkadot/types/extrinsic";
-import { AssetDID } from "../../types";
+import { u8aConcat } from "@polkadot/util";
+import { blake2AsHex } from "@polkadot/util-crypto";
+import type { SubstrateExtrinsic } from "@subql/types";
+import assert from "assert";
 
 interface CredentialOnChain {
   ctypeHash: HexString;
@@ -37,10 +34,10 @@ const relevantCalls = {
  * @param extrinsic
  * @param targetCredentialHash Hex-string from Event.
  */
-export function extractCredential(
+export async function extractCredential(
   extrinsic: SubstrateExtrinsic | undefined,
   targetCredentialHash: HexString
-): CredentialFromChain {
+): Promise<CredentialFromChain> {
   assert(extrinsic, "Extrinsic not defined");
 
   const blockNumber = extrinsic.block.block.header.number.toString();
@@ -53,13 +50,13 @@ export function extractCredential(
 
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
-      definition = manageSubmitDidCall(usedCall, targetCredentialHash);
+      definition = await manageSubmitDidCall(usedCall, targetCredentialHash);
       break;
     case relevantCalls.batchAll.pallet:
-      definition = manageBatchCalls(usedCall, targetCredentialHash);
+      definition = await manageBatchCalls(usedCall, targetCredentialHash);
       break;
     case relevantCalls.proxy.pallet:
-      definition = manageProxyCall(usedCall, targetCredentialHash);
+      definition = await manageProxyCall(usedCall, targetCredentialHash);
       break;
     default:
       definition = false;
@@ -87,10 +84,10 @@ export function extractCredential(
  * @param targetCTypeHash Hex-string from Event.
  *
  */
-function manageProxyCall(
+async function manageProxyCall(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): CredentialFromChain | false {
+): Promise<CredentialFromChain | false> {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
     parentPallet === relevantCalls.proxy.pallet,
@@ -105,19 +102,20 @@ function manageProxyCall(
   const childCall = call.args[2] as GenericExtrinsic["method"];
   const { section: childPallet, method: childMethod } = childCall;
 
-  if (childPallet === relevantCalls.addCredential.pallet) {
-    return manageAddPublicCredential(childCall, targetCTypeHash);
-  }
+  // Not really Possible:
+  // if (childPallet === relevantCalls.addCredential.pallet) {
+  //   return await manageAddPublicCredential(childCall, targetCTypeHash);
+  // }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return manageBatchCalls(childCall, targetCTypeHash);
+    return await manageBatchCalls(childCall, targetCTypeHash);
   }
   if (childMethod === relevantCalls.submitDidCall.method) {
-    return manageSubmitDidCall(childCall, targetCTypeHash);
+    return await manageSubmitDidCall(childCall, targetCTypeHash);
   }
 
   if (childMethod === relevantCalls.proxy.method) {
     // Is this possible?
-    return manageProxyCall(childCall, targetCTypeHash);
+    return await manageProxyCall(childCall, targetCTypeHash);
   }
 
   return false;
@@ -131,10 +129,10 @@ function manageProxyCall(
  * @param targetCTypeHash Hex-string from Event.
  *
  */
-function manageBatchCalls(
+async function manageBatchCalls(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): CredentialFromChain | false {
+): Promise<false | CredentialFromChain> {
   const { section: parentPallet } = call;
   assert(
     parentPallet === relevantCalls.batchAll.pallet,
@@ -144,29 +142,32 @@ function manageBatchCalls(
   // first call argument is a vector of calls:
   const childrenCalls = call.args[0] as Vec<GenericExtrinsic["method"]>;
 
-  const matchedDefinitions = childrenCalls
-    .map((childCall) => {
-      const { section: childPallet, method: childMethod } = childCall;
+  const matchedDefinitions = await Promise.all(
+    childrenCalls
+      .map(async (childCall) => {
+        const { section: childPallet, method: childMethod } = childCall;
 
-      if (childPallet === relevantCalls.addCredential.pallet) {
-        return manageAddPublicCredential(childCall, targetCTypeHash);
-      }
-      if (childPallet === relevantCalls.submitDidCall.pallet) {
-        return manageSubmitDidCall(childCall, targetCTypeHash);
-      }
-      if (childPallet === relevantCalls.batchAll.pallet) {
-        return manageBatchCalls(childCall, targetCTypeHash);
-      }
-      if (childMethod === relevantCalls.proxy.method) {
-        return manageProxyCall(childCall, targetCTypeHash);
-      }
-      return false;
-    })
-    .filter((element): element is CredentialFromChain => !!element);
+        // Not really possible:
+        // if (childPallet === relevantCalls.addCredential.pallet) {
+        //   return manageAddPublicCredential(childCall, targetCTypeHash);
+        // }
+        if (childPallet === relevantCalls.submitDidCall.pallet) {
+          return await manageSubmitDidCall(childCall, targetCTypeHash);
+        }
+        if (childPallet === relevantCalls.batchAll.pallet) {
+          return await manageBatchCalls(childCall, targetCTypeHash);
+        }
+        if (childMethod === relevantCalls.proxy.method) {
+          return await manageProxyCall(childCall, targetCTypeHash);
+        }
+        return false;
+      })
+      .filter((element): element is Promise<CredentialFromChain> => !!element)
+  );
 
   assert(
     matchedDefinitions.length <= 1,
-    "More than one add-ctype extrinsic in this utility batch has a cType-definition that matches cType-id from event."
+    "More than one add-PublicCredential extrinsic in this utility batch has a credential who's hash that matches credential-id from event."
   );
 
   return matchedDefinitions[0] ?? false;
@@ -179,10 +180,10 @@ function manageBatchCalls(
  * @param targetCTypeHash Hex-string from Event.
  *
  */
-function manageSubmitDidCall(
+async function manageSubmitDidCall(
   call: GenericExtrinsic["method"],
   targetCTypeHash: HexString
-): CredentialFromChain | false {
+): Promise<CredentialFromChain | false> {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
     parentPallet === relevantCalls.submitDidCall.pallet,
@@ -195,24 +196,28 @@ function manageSubmitDidCall(
 
   // first call argument is a struct with a 'call' and a 'did' property
   const childCall = (call.args[0] as any).call as GenericExtrinsic["method"];
-  const didAccountId = (call.args[0] as any).did as string;
+  const didAccountId = (call.args[0] as any).did as Codec;
   const { section: childPallet, method: childMethod } = childCall;
 
-  const attesterDid = ("did:kilt:" + didAccountId) as DidUri;
+  // const attesterDid = ("did:kilt:" + didAccountId) as DidUri;
 
   if (childPallet === relevantCalls.addCredential.pallet) {
-    return manageAddPublicCredential(childCall, targetCTypeHash, attesterDid);
+    return await manageAddPublicCredential(
+      childCall,
+      targetCTypeHash,
+      didAccountId
+    );
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return manageBatchCalls(childCall, targetCTypeHash);
+    return await manageBatchCalls(childCall, targetCTypeHash);
   }
   if (childMethod === relevantCalls.proxy.method) {
-    return manageProxyCall(childCall, targetCTypeHash);
+    return await manageProxyCall(childCall, targetCTypeHash);
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
     // Is this possible?
-    return manageSubmitDidCall(childCall, targetCTypeHash);
+    return await manageSubmitDidCall(childCall, targetCTypeHash);
   }
 
   return false;
@@ -226,11 +231,11 @@ function manageSubmitDidCall(
  * @param targetCredentialHash Hex-string from Event.
  *
  */
-function manageAddPublicCredential(
+async function manageAddPublicCredential(
   call: GenericExtrinsic["method"],
   targetCredentialHash: HexString,
-  attesterDid: DidUri = "did:kilt:4foobar"
-): CredentialFromChain | false {
+  attesterDidAccount: Codec
+): Promise<CredentialFromChain | false> {
   const { section: pallet, method } = call;
   assert(
     pallet === relevantCalls.addCredential.pallet,
@@ -240,61 +245,57 @@ function manageAddPublicCredential(
     method === relevantCalls.addCredential.method,
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
+
   // the only call argument is the credential object
-  const credential = call.args[0].toHuman() as unknown as CredentialOnChain;
+  const credential = call.args[0];
 
-  // without args.toJSON or .toHuman, circular objects are delivered.
-  // If .JSON is used, the following transformation is needed:
-  // const credentialInternalSubjectId = Buffer.from(
-  //   credential.subject
-  // ).toString();
-
-  return { ...credential, attesterDid };
-
-  // return validateClaimsAgainstHash(
-  //   credential,
-  //   attesterDid,
-  //   targetCredentialHash
-  // );
+  return validateClaimsAgainstHash(
+    credential,
+    attesterDidAccount,
+    targetCredentialHash
+  );
 }
 
-// Fails because the cbor module does not run on the container
-// The cbor module depend on some default node modules that are not inside of the container, so it crashes
+/** Hashes the `encodedClaims` and compares it to the `targetCredentialHash`.
+ *
+ * If there is a match, it returns the decoded claims, otherwise `false`.
+ *
+ * @param encodedClaims
+ * @param targetCredentialHash Hex-string from Event.
+ */
+async function validateClaimsAgainstHash(
+  credential: Codec,
+  attesterDidAccount: Codec,
+  targetCredentialHash: HexString
+): Promise<CredentialFromChain | false> {
+  logger.info(
+    "The target CredentialHash from the event: " + targetCredentialHash
+  );
 
-// import * as Kilt from "@kiltprotocol/sdk-js";
-// /** Hashes the `encodedClaims` and compares it to the `targetCredentialHash`.
-//  *
-//  * If there is a match, it returns the decoded claims, otherwise `false`.
-//  *
-//  * @param encodedClaims
-//  * @param targetCredentialHash Hex-string from Event.
-//  */
-// function validateClaimsAgainstHash(
-//   credential: CredentialOnChain,
-//   attesterDid: DidUri,
-//   targetCredentialHash: HexString
-// ): CredentialFromChain | false {
-//   logger.info(
-//     "The target CredentialHash from the event: " + targetCredentialHash
-//   );
+  const encodedCredential = credential.toU8a();
+  const encodedAttester = attesterDidAccount.toU8a();
+  const hashedCredential = blake2AsHex(
+    u8aConcat(encodedCredential, encodedAttester)
+  );
 
-//   logger.info("The encoded claims being evaluated: " + credential.claims);
-//   const credentialSDKed: IPublicCredentialInput = {
-//     cTypeHash: credential.ctypeHash,
-//     delegationId: credential.authorization,
-//     subject: credential.subject,
-//     claims: Kilt.Utils.cbor.decode(credential.claims),
-//   };
+  logger.info("encodedCredential length: " + encodedCredential.byteLength);
+  logger.info("encodedAttester length: " + encodedAttester.byteLength);
 
-//   const credentialID = Kilt.PublicCredential.getIdForCredential(
-//     credentialSDKed,
-//     attesterDid
-//   );
+  logger.info("The resulting Credential ID is: " + hashedCredential);
 
-//   logger.trace("The resulting Credential ID is: " + credentialID);
+  const attesterDid = ("did:kilt:" + attesterDidAccount) as DidUri;
 
-//   if (targetCredentialHash === credentialID) {
-//     return { ...credential, attesterDid };
-//   }
-//   return false;
-// }
+  const credentialHumanized =
+    credential.toHuman() as unknown as CredentialOnChain;
+
+  if (targetCredentialHash === hashedCredential) {
+    return { ...credentialHumanized, attesterDid };
+  }
+  return false;
+}
+
+// How the Kilt-Node does it:
+// // Credential ID = H(<scale_encoded_credential_input> ||
+// // <scale_encoded_attester_identifier>)
+// let credential_id =
+// 	T::CredentialHash::hash(&[&credential.encode()[..], &attester.encode()[..]].concat()[..

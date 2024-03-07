@@ -38,7 +38,7 @@ export async function handlePublicCredentialStored(
   const assetDidUri = await saveAssetDid(subjectID);
   const credentialHash = credentialID.toHex();
 
-  const credential: CredentialFromChain = extractCredential(
+  const credential: CredentialFromChain = await extractCredential(
     extrinsic,
     credentialHash
   );
