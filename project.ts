@@ -175,6 +175,14 @@ const project: SubstrateProject = {
               method: "CredentialRemoved",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handlePublicCredentialRevoked",
+            filter: {
+              module: "publicCredentials",
+              method: "CredentialRevoked",
+            },
+          },
         ],
       },
     },

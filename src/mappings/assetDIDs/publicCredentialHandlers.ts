@@ -3,7 +3,7 @@ import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
-import { PublicCredential } from "../../types";
+import { PublicCredential, Ruling, RulingNature } from "../../types";
 import {
   type CredentialFromChain,
   extractCredential,
@@ -94,7 +94,61 @@ export async function handlePublicCredentialRemoved(
 
   let publicCredential = await PublicCredential.get(credentialHash);
 
-  // the  public credential creation could have happened before the Data base's starting block
+  // Prehistoric Case:
+  // the public credential creation could have happened before the Data base's starting block
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'publicCredential' a constant.
+    assert(
+      publicCredential,
+      `Can't find this Public Credential on the data base: ${publicCredential}.`
+    );
+  } catch (error) {
+    logger.info(error);
+    publicCredential = await createPrehistoricCredential(event);
+  }
+
+  assert(
+    assetDidUri === publicCredential.objectId,
+    "This Credential does not belong to this Asset-DID"
+  );
+
+  publicCredential.valid = false;
+  publicCredential.removalBlockId = blockNumber;
+
+  await publicCredential.save();
+}
+
+export async function handlePublicCredentialRevoked(
+  event: SubstrateEvent
+): Promise<void> {
+  // A public credential has been revoked. \[credential_id\]
+  const {
+    block,
+    event: {
+      data: [credentialID],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `Public Credential revoked from chain state at block ${block.block.header.number}`
+  );
+
+  logger.info(
+    `The whole CredentialRevoked event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const blockNumber = await saveBlock(block);
+  const credentialHash = credentialID.toHex();
+
+  let publicCredential = await PublicCredential.get(credentialHash);
+
+  // Prehistoric Case:
+  // the public credential creation could have happened before the Data base's starting block
   try {
     // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'publicCredential' a constant.
     assert(
@@ -107,7 +161,17 @@ export async function handlePublicCredentialRemoved(
   }
 
   publicCredential.valid = false;
-  publicCredential.removalBlockId = blockNumber;
-
   await publicCredential.save();
+
+  const previousRulings =
+    (await Ruling.getByCredentialId(credentialHash)) || [];
+
+  const newRuling = Ruling.create({
+    id: `§${previousRulings.length + 1}_${credentialHash}`,
+    credentialId: credentialHash,
+    rulingBlockId: blockNumber,
+    nature: RulingNature.revocation,
+  });
+
+  await newRuling.save();
 }
