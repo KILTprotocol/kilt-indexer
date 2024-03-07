@@ -103,6 +103,6 @@ type PublicCredential @entity {
   valid: Boolean!
   creationBlock: Block!
   removalBlock: Block
-  revocationBlocks: [Block]
-  restorationBlocks: [Block] # un-revocation
+  revocationBlocks: Block
+  restorationBlocks: Block # un-revocation
 }

@@ -4,6 +4,8 @@ import { Did, PublicCredential } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
+import { createPrehistoricAssetDid } from "./createPrehistoricAssetDid";
+import { createPrehistoricCType } from "../cTypes/createPrehistoricCType";
 
 /** Solves problems while trying to start Data Base from higher block.
  *
@@ -29,7 +31,10 @@ export async function createPrehistoricCredential(
     extrinsic,
   } = event;
 
-  logger.trace(
+  // `argument1` could be 'subject_id' or 'credential_id'
+  // `argument2` could be 'credential_id' or undefined
+
+  logger.info(
     `The whole event involving a prehistoric public credential: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -38,8 +43,12 @@ export async function createPrehistoricCredential(
   );
 
   const credentialID: Codec = argument2 ?? argument1;
-  const assetDidUri = argument2 ? await saveAssetDid(argument1) : UNKNOWN;
   const blockNumber = await saveBlock(block);
+
+  // If the subject_id is not on the event, need to create a prehistoric assetDID
+  const assetDidUri = argument2
+    ? await saveAssetDid(argument1)
+    : await createPrehistoricAssetDid();
 
   // need a prehistoric did
   const didId = "did:kilt:" + UNKNOWN;
@@ -56,14 +65,16 @@ export async function createPrehistoricCredential(
     await prehistoricDID.save();
   }
 
+  const prehistoricCTypeId = await createPrehistoricCType(blockNumber);
+
   const prehistoricCredential = PublicCredential.create({
     id: credentialID.toHex(),
     objectId: assetDidUri,
     creationBlockId: blockNumber,
     valid: true,
-    cTypeId: UNKNOWN,
+    cTypeId: prehistoricCTypeId,
     claim: UNKNOWN,
-    attesterId: UNKNOWN,
+    attesterId: prehistoricDID.id,
     delegationID: UNKNOWN,
   });
 
