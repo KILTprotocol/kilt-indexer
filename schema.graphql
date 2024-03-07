@@ -95,14 +95,31 @@ type AssetDID @entity {
 
 type PublicCredential @entity {
   id: ID! # <credential-hash>
-  object: AssetDID!
+  object: AssetDID! @index
   cType: CType!
-  attester: Did!
+  attester: Did! @index
   claim: String! # content of the claim
   delegationID: String
   valid: Boolean!
   creationBlock: Block!
   removalBlock: Block
-  revocationBlocks: Block
-  restorationBlocks: Block # un-revocation
+  rulingBlock: [Ruling] @derivedFrom(field: "credential")
+}
+
+# # just "[Block]" is unfortunately not possible
+# # Failed approach:
+# revocationBlocks: [Block]
+# restorationBlocks: [Block] # un-revocation
+
+enum RulingNature {
+  revocation
+  restoration # un-revocation
+}
+
+## Possible names "Validation", "Evaluation", "Accreditation"
+type Ruling @entity {
+  id: ID! # "#" + <ordinal number> + "_" + <credential-hash>
+  credential: PublicCredential!
+  nature: RulingNature!
+  rulingBlock: Block!
 }
