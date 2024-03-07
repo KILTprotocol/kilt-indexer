@@ -103,7 +103,7 @@ type PublicCredential @entity {
   valid: Boolean!
   creationBlock: Block!
   removalBlock: Block
-  rulingBlock: [Ruling] @derivedFrom(field: "credential")
+  rulings: [Ruling] @derivedFrom(field: "credential")
 }
 
 # # just "[Block]" is unfortunately not possible
@@ -118,7 +118,7 @@ enum RulingNature {
 
 ## Possible names "Validation", "Evaluation", "Accreditation"
 type Ruling @entity {
-  id: ID! # "#" + <ordinal number> + "_" + <credential-hash>
+  id: ID! # "§" + <ordinal number> + "_" + <credential-hash>
   credential: PublicCredential!
   nature: RulingNature!
   rulingBlock: Block!
