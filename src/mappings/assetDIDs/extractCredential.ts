@@ -268,11 +268,16 @@ function validateClaimsAgainstHash(
   const encodedCredential = credential.toU8a();
   const encodedAttester = attesterDidAccount.toU8a();
   const hashedCredential = blake2AsHex(
-    u8aConcat(encodedCredential, encodedAttester)
+    Uint8Array.from([...encodedCredential, ...encodedAttester])
   );
+  const longHex = credential.toHex() + attesterDidAccount.toHex().split("x")[1];
+  logger.info("longHex: " + longHex);
+  // const hashedCredential = blake2AsHex(longHex);
 
   logger.info("encodedCredential length: " + encodedCredential.byteLength);
   logger.info("encodedAttester length: " + encodedAttester.byteLength);
+  logger.info("encodedCredential: " + credential.toHex());
+  logger.info("encodedAttester: " + attesterDidAccount.toHex());
 
   logger.info("The resulting Credential ID is: " + hashedCredential);
 
