@@ -94,11 +94,12 @@ type AssetDID @entity {
 }
 
 type PublicCredential @entity {
-  id: ID! # <credential-hash>
+  id: ID! # <Block number> + "-" + <ordinal number within block>
+  credentialHash: String! @index # <credential-hash> ## can be duplicated
   object: AssetDID! @index
   cType: CType!
   attester: Did! @index
-  claim: String! # content of the claim
+  claims: String! # content of the credential
   delegationID: String
   valid: Boolean!
   creationBlock: Block!
