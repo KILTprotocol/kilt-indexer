@@ -38,7 +38,7 @@ type CType @entity {
 ## For DIDs:
 
 type Did @entity {
-  id: ID! # "did:kilt:" + <identifier (encoded as address)>
+  id: ID! # "did:kilt:" + <identifier (encoded as KILT address)>
   payer: String! @index
   creationBlock: Block!
   deletionBlock: Block
