@@ -86,7 +86,8 @@ export function extractCredential(
  */
 function manageProxyCall(
   call: GenericExtrinsic["method"],
-  targetCTypeHash: HexString
+  targetCTypeHash: HexString,
+  attesterDidAccount?: Codec
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
@@ -102,20 +103,27 @@ function manageProxyCall(
   const childCall = call.args[2] as GenericExtrinsic["method"];
   const { section: childPallet, method: childMethod } = childCall;
 
-  // Not really Possible:
-  // if (childPallet === relevantCalls.addCredential.pallet) {
-  //   return await manageAddPublicCredential(childCall, targetCTypeHash);
-  // }
+  if (childPallet === relevantCalls.addCredential.pallet) {
+    assert(
+      attesterDidAccount,
+      "Attester DID missing. Can not very credential without it."
+    );
+    return manageAddPublicCredential(
+      childCall,
+      targetCTypeHash,
+      attesterDidAccount
+    );
+  }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return manageBatchCalls(childCall, targetCTypeHash);
+    return manageBatchCalls(childCall, targetCTypeHash, attesterDidAccount);
   }
   if (childMethod === relevantCalls.submitDidCall.method) {
-    return manageSubmitDidCall(childCall, targetCTypeHash);
+    return manageSubmitDidCall(childCall, targetCTypeHash, attesterDidAccount);
   }
 
   if (childMethod === relevantCalls.proxy.method) {
     // Is this possible?
-    return manageProxyCall(childCall, targetCTypeHash);
+    return manageProxyCall(childCall, targetCTypeHash, attesterDidAccount);
   }
 
   return false;
@@ -131,7 +139,8 @@ function manageProxyCall(
  */
 function manageBatchCalls(
   call: GenericExtrinsic["method"],
-  targetCTypeHash: HexString
+  targetCTypeHash: HexString,
+  attesterDidAccount?: Codec
 ): false | CredentialFromChain {
   const { section: parentPallet } = call;
   assert(
@@ -146,18 +155,29 @@ function manageBatchCalls(
     .map((childCall) => {
       const { section: childPallet, method: childMethod } = childCall;
 
-      // Not really possible:
-      // if (childPallet === relevantCalls.addCredential.pallet) {
-      //   return manageAddPublicCredential(childCall, targetCTypeHash);
-      // }
+      if (childPallet === relevantCalls.addCredential.pallet) {
+        assert(
+          attesterDidAccount,
+          "Attester DID missing. Can not very credential without it."
+        );
+        return manageAddPublicCredential(
+          childCall,
+          targetCTypeHash,
+          attesterDidAccount
+        );
+      }
       if (childPallet === relevantCalls.submitDidCall.pallet) {
-        return manageSubmitDidCall(childCall, targetCTypeHash);
+        return manageSubmitDidCall(
+          childCall,
+          targetCTypeHash,
+          attesterDidAccount
+        );
       }
       if (childPallet === relevantCalls.batchAll.pallet) {
-        return manageBatchCalls(childCall, targetCTypeHash);
+        return manageBatchCalls(childCall, targetCTypeHash, attesterDidAccount);
       }
       if (childMethod === relevantCalls.proxy.method) {
-        return manageProxyCall(childCall, targetCTypeHash);
+        return manageProxyCall(childCall, targetCTypeHash, attesterDidAccount);
       }
       return false;
     })
@@ -179,7 +199,8 @@ function manageBatchCalls(
  */
 function manageSubmitDidCall(
   call: GenericExtrinsic["method"],
-  targetCTypeHash: HexString
+  targetCTypeHash: HexString,
+  attesterDidAccount?: Codec
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
   assert(
@@ -196,21 +217,26 @@ function manageSubmitDidCall(
   const didAccountId = (call.args[0] as any).did as Codec;
   const { section: childPallet, method: childMethod } = childCall;
 
-  // const attesterDid = ("did:kilt:" + didAccountId) as DidUri;
+  if (attesterDidAccount) {
+    assert(
+      attesterDidAccount === didAccountId,
+      `Found nested Submit-DID-Calls with different DIDs. Who is the real attester? \n Outer-DID: ${attesterDidAccount}. \n Inner-DID: ${didAccountId}.`
+    );
+  }
 
   if (childPallet === relevantCalls.addCredential.pallet) {
     return manageAddPublicCredential(childCall, targetCTypeHash, didAccountId);
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return manageBatchCalls(childCall, targetCTypeHash);
+    return manageBatchCalls(childCall, targetCTypeHash, attesterDidAccount);
   }
   if (childMethod === relevantCalls.proxy.method) {
-    return manageProxyCall(childCall, targetCTypeHash);
+    return manageProxyCall(childCall, targetCTypeHash, attesterDidAccount);
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
     // Is this possible?
-    return manageSubmitDidCall(childCall, targetCTypeHash);
+    return manageSubmitDidCall(childCall, targetCTypeHash, attesterDidAccount);
   }
 
   return false;
@@ -242,7 +268,7 @@ function manageAddPublicCredential(
   // the only call argument is the credential object
   const credential = call.args[0];
 
-  return validateClaimsAgainstHash(
+  return validateCredentialAgainstHash(
     credential,
     attesterDidAccount,
     targetCredentialHash
@@ -256,7 +282,7 @@ function manageAddPublicCredential(
  * @param encodedClaims
  * @param targetCredentialHash Hex-string from Event.
  */
-function validateClaimsAgainstHash(
+function validateCredentialAgainstHash(
   credential: Codec,
   attesterDidAccount: Codec,
   targetCredentialHash: HexString
