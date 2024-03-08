@@ -50,13 +50,23 @@ export async function handlePublicCredentialStored(
 
   const cTypeId = "kilt:ctype:" + credential.ctypeHash;
 
+  // craft my event ordinal index:
+  const publicCredentials = await PublicCredential.getByFields([
+    ["creationBlockId", "=", blockNumber],
+  ]);
+  /** Only counts the number of attestations created on one block.
+   * It will not match with the event index from subscan that count all kinds of events.
+   */
+  const eventIndex = publicCredentials.length;
+
   const newPublicCredential = PublicCredential.create({
-    id: credentialID.toHex(),
+    id: `${blockNumber}-${eventIndex}`,
+    credentialHash: credentialID.toHex(),
     objectId: assetDidUri,
     creationBlockId: blockNumber,
     valid: true,
     cTypeId,
-    claim: credential.claims,
+    claims: credential.claims,
     attesterId: credential.attesterDid,
     delegationID: credential.authorization ?? undefined,
   });
@@ -92,7 +102,16 @@ export async function handlePublicCredentialRemoved(
   const assetDidUri = await saveAssetDid(subjectID);
   const credentialHash = credentialID.toHex();
 
-  let publicCredential = await PublicCredential.get(credentialHash);
+  // There could be several public credentials with the same credential hash.
+  // Given that the older ones has been previously removed from the chain state.
+  let publicCredentials = await PublicCredential.getByCredentialHash(
+    credentialHash
+  );
+
+  // Get the publicCredential that is still on the chain state
+  let publicCredential = publicCredentials?.find(
+    (pubyCreddy) => !pubyCreddy.removalBlockId
+  );
 
   // Prehistoric Case:
   // the public credential creation could have happened before the Data base's starting block
@@ -100,7 +119,7 @@ export async function handlePublicCredentialRemoved(
     // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'publicCredential' a constant.
     assert(
       publicCredential,
-      `Can't find this Public Credential on the data base: ${publicCredential}.`
+      `Can't find this Public Credential on the data base. It's ID (hash): ${credentialHash}.`
     );
   } catch (error) {
     logger.info(error);
@@ -145,7 +164,16 @@ export async function handlePublicCredentialRevoked(
   const blockNumber = await saveBlock(block);
   const credentialHash = credentialID.toHex();
 
-  let publicCredential = await PublicCredential.get(credentialHash);
+  // There could be several public credentials with the same credential hash.
+  // Given that the older ones has been previously removed from the chain state.
+  let publicCredentials = await PublicCredential.getByCredentialHash(
+    credentialHash
+  );
+
+  // Get the publicCredential that is still on the chain state
+  let publicCredential = publicCredentials?.find(
+    (pubyCreddy) => !pubyCreddy.removalBlockId
+  );
 
   // Prehistoric Case:
   // the public credential creation could have happened before the Data base's starting block
@@ -204,7 +232,16 @@ export async function handlePublicCredentialUnrevoked(
   const blockNumber = await saveBlock(block);
   const credentialHash = credentialID.toHex();
 
-  let publicCredential = await PublicCredential.get(credentialHash);
+  // There could be several public credentials with the same credential hash.
+  // Given that the older ones has been previously removed from the chain state.
+  let publicCredentials = await PublicCredential.getByCredentialHash(
+    credentialHash
+  );
+
+  // Get the publicCredential that is still on the chain state
+  let publicCredential = publicCredentials?.find(
+    (pubyCreddy) => !pubyCreddy.removalBlockId
+  );
 
   // Prehistoric Case:
   // the public credential creation could have happened before the Data base's starting block
