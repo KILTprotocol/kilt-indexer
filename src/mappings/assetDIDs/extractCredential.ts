@@ -270,14 +270,6 @@ function validateClaimsAgainstHash(
   const hashedCredential = blake2AsHex(
     Uint8Array.from([...encodedCredential, ...encodedAttester])
   );
-  const longHex = credential.toHex() + attesterDidAccount.toHex().split("x")[1];
-  logger.info("longHex: " + longHex);
-  // const hashedCredential = blake2AsHex(longHex);
-
-  logger.info("encodedCredential length: " + encodedCredential.byteLength);
-  logger.info("encodedAttester length: " + encodedAttester.byteLength);
-  logger.info("encodedCredential: " + credential.toHex());
-  logger.info("encodedAttester: " + attesterDidAccount.toHex());
 
   logger.info("The resulting Credential ID is: " + hashedCredential);
 
@@ -291,9 +283,3 @@ function validateClaimsAgainstHash(
   }
   return false;
 }
-
-// How the Kilt-Node does it:
-// // Credential ID = H(<scale_encoded_credential_input> ||
-// // <scale_encoded_attester_identifier>)
-// let credential_id =
-// 	T::CredentialHash::hash(&[&credential.encode()[..], &attester.encode()[..]].concat()[..
