@@ -52,11 +52,11 @@ export async function handlePublicCredentialStored(
 
   const newPublicCredential = PublicCredential.create({
     id: credentialHash,
-    objectId: assetDidUri,
+    subjectId: assetDidUri,
     valid: true,
     cTypeId,
     claims: credential.claims,
-    attesterId: credential.attesterDid,
+    issuerId: credential.attesterDid,
     delegationID: credential.authorization ?? undefined,
   });
 
@@ -120,7 +120,7 @@ export async function handlePublicCredentialRemoved(
   }
 
   assert(
-    assetDidUri === publicCredential.objectId,
+    assetDidUri === publicCredential.subjectId,
     "This Credential does not belong to this Asset-DID"
   );
 

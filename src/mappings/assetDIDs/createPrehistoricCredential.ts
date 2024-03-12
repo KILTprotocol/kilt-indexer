@@ -71,11 +71,11 @@ export async function createPrehistoricCredential(
 
   const prehistoricCredential = PublicCredential.create({
     id: credentialHash,
-    objectId: assetDidUri,
+    subjectId: assetDidUri,
     valid: true,
     cTypeId: prehistoricCTypeId,
     claims: UNKNOWN,
-    attesterId: prehistoricDID.id,
+    issuerId: prehistoricDID.id,
     delegationID: UNKNOWN,
   });
 
