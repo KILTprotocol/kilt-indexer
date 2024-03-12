@@ -50,20 +50,9 @@ export async function handlePublicCredentialStored(
 
   const cTypeId = "kilt:ctype:" + credential.ctypeHash;
 
-  // craft my event ordinal index:
-  const publicCredentials = await PublicCredential.getByFields([
-    ["creationBlockId", "=", blockNumber],
-  ]);
-  /** Only counts the number of attestations created on one block.
-   * It will not match with the event index from subscan that count all kinds of events.
-   */
-  const eventIndex = publicCredentials.length;
-
   const newPublicCredential = PublicCredential.create({
-    id: `${blockNumber}-${eventIndex}`,
-    credentialHash: credentialID.toHex(),
+    id: credentialHash,
     objectId: assetDidUri,
-    creationBlockId: blockNumber,
     valid: true,
     cTypeId,
     claims: credential.claims,
@@ -72,6 +61,19 @@ export async function handlePublicCredentialStored(
   });
 
   await newPublicCredential.save();
+
+  // craft ruling ordinal index:
+  const previousRulings =
+    (await Ruling.getByCredentialId(credentialHash)) || [];
+
+  const newRuling = Ruling.create({
+    id: `§${previousRulings.length + 1}_${credentialHash}`,
+    credentialId: newPublicCredential.id,
+    nature: RulingNature.creation,
+    rulingBlockId: blockNumber,
+  });
+
+  await newRuling.save();
 }
 
 export async function handlePublicCredentialRemoved(
@@ -102,16 +104,7 @@ export async function handlePublicCredentialRemoved(
   const assetDidUri = await saveAssetDid(subjectID);
   const credentialHash = credentialID.toHex();
 
-  // There could be several public credentials with the same credential hash.
-  // Given that the older ones has been previously removed from the chain state.
-  let publicCredentials = await PublicCredential.getByCredentialHash(
-    credentialHash
-  );
-
-  // Get the publicCredential that is still on the chain state
-  let publicCredential = publicCredentials?.find(
-    (pubyCreddy) => !pubyCreddy.removalBlockId
-  );
+  let publicCredential = await PublicCredential.get(credentialHash);
 
   // Prehistoric Case:
   // the public credential creation could have happened before the Data base's starting block
@@ -132,9 +125,21 @@ export async function handlePublicCredentialRemoved(
   );
 
   publicCredential.valid = false;
-  publicCredential.removalBlockId = blockNumber;
 
   await publicCredential.save();
+
+  // craft ruling ordinal index:
+  const previousRulings =
+    (await Ruling.getByCredentialId(credentialHash)) || [];
+
+  const newRuling = Ruling.create({
+    id: `§${previousRulings.length + 1}_${credentialHash}`,
+    credentialId: credentialHash,
+    nature: RulingNature.removal,
+    rulingBlockId: blockNumber,
+  });
+
+  await newRuling.save();
 }
 
 export async function handlePublicCredentialRevoked(
@@ -164,16 +169,7 @@ export async function handlePublicCredentialRevoked(
   const blockNumber = await saveBlock(block);
   const credentialHash = credentialID.toHex();
 
-  // There could be several public credentials with the same credential hash.
-  // Given that the older ones has been previously removed from the chain state.
-  let publicCredentials = await PublicCredential.getByCredentialHash(
-    credentialHash
-  );
-
-  // Get the publicCredential that is still on the chain state
-  let publicCredential = publicCredentials?.find(
-    (pubyCreddy) => !pubyCreddy.removalBlockId
-  );
+  let publicCredential = await PublicCredential.get(credentialHash);
 
   // Prehistoric Case:
   // the public credential creation could have happened before the Data base's starting block
@@ -232,16 +228,7 @@ export async function handlePublicCredentialUnrevoked(
   const blockNumber = await saveBlock(block);
   const credentialHash = credentialID.toHex();
 
-  // There could be several public credentials with the same credential hash.
-  // Given that the older ones has been previously removed from the chain state.
-  let publicCredentials = await PublicCredential.getByCredentialHash(
-    credentialHash
-  );
-
-  // Get the publicCredential that is still on the chain state
-  let publicCredential = publicCredentials?.find(
-    (pubyCreddy) => !pubyCreddy.removalBlockId
-  );
+  let publicCredential = await PublicCredential.get(credentialHash);
 
   // Prehistoric Case:
   // the public credential creation could have happened before the Data base's starting block

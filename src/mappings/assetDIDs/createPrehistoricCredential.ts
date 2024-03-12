@@ -43,6 +43,8 @@ export async function createPrehistoricCredential(
   );
 
   const credentialID: Codec = argument2 ?? argument1;
+  const credentialHash = credentialID.toHex();
+
   const blockNumber = await saveBlock(block);
 
   // If the subject_id is not on the event, need to create a prehistoric assetDID
@@ -68,10 +70,8 @@ export async function createPrehistoricCredential(
   const prehistoricCTypeId = await createPrehistoricCType(blockNumber);
 
   const prehistoricCredential = PublicCredential.create({
-    id: `#Prehistoric_${blockNumber}_${credentialID.toHex()}`,
-    credentialHash: credentialID.toHex(),
+    id: credentialHash,
     objectId: assetDidUri,
-    creationBlockId: blockNumber,
     valid: true,
     cTypeId: prehistoricCTypeId,
     claims: UNKNOWN,
@@ -80,6 +80,8 @@ export async function createPrehistoricCredential(
   });
 
   await prehistoricCredential.save();
+
+  // No creation Ruling for prehistoric Credentials
 
   return prehistoricCredential;
 }
