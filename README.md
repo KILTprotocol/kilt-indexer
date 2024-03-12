@@ -387,3 +387,28 @@ fragment wholeAttestation on Attestation {
     }
    }
    ```
+
+10. **Get all Public Credentials and its corresponding Rulings:**
+    ```
+    query {
+      publicCredentials {
+        totalCount
+        nodes {
+          id
+          subjectId
+          claims
+          cTypeId
+          issuerId
+          valid
+          rulings(orderBy: ID_ASC) {
+            totalCount
+            nodes {
+              id
+              nature
+              rulingBlockId
+            }
+          }
+        }
+      }
+    }
+    ```
