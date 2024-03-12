@@ -1,14 +1,13 @@
 import type { SubstrateEvent } from "@subql/types";
 import assert from "assert";
-import { saveBlock } from "../blocks/saveBlock";
-import { UNKNOWN } from "../mappingHandlers";
-import { saveAssetDid } from "./saveAssetDid";
 import { PublicCredential, Ruling, RulingNature } from "../../types";
-import {
-  type CredentialFromChain,
-  extractCredential,
-} from "./extractCredential";
+import { saveBlock } from "../blocks/saveBlock";
 import { createPrehistoricCredential } from "./createPrehistoricCredential";
+import {
+  extractCredential,
+  type CredentialFromChain,
+} from "./extractCredential";
+import { saveAssetDid } from "./saveAssetDid";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -38,13 +37,13 @@ export async function handlePublicCredentialStored(
   const assetDidUri = await saveAssetDid(subjectID);
   const credentialHash = credentialID.toHex();
 
-  const credential: CredentialFromChain = await extractCredential(
+  const credential: CredentialFromChain = extractCredential(
     extrinsic,
     credentialHash
   );
 
   assert(
-    assetDidUri === credential.subject.toLowerCase(),
+    assetDidUri === credential.subject,
     `The extracted public credential does not belongs to this assetDID. \n Target: ${assetDidUri} \n Obtained: ${credential.subject}`
   );
 
