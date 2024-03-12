@@ -1,7 +1,7 @@
 import type { Codec } from "@polkadot/types-codec/types";
 import { Asset, AssetDID, Chain } from "../../types";
 
-interface SubjectId {
+interface ISubjectId {
   chainId: {
     [key: string]: string;
   };
@@ -17,7 +17,7 @@ interface SubjectId {
  * @returns Returns the AssetDID-URI, also known as AssetDID-ID. Type "string".
  */
 export async function saveAssetDid(subjectId: Codec): Promise<AssetDID["id"]> {
-  const assetObject = subjectId.toHuman() as unknown as SubjectId;
+  const assetObject = subjectId.toJSON() as unknown as ISubjectId;
 
   logger.info("assetObject: " + JSON.stringify(assetObject));
 
@@ -32,13 +32,10 @@ export async function saveAssetDid(subjectId: Codec): Promise<AssetDID["id"]> {
     identifier: Object.values(assetObject.assetId)[0][1],
   };
 
-  const chainComponent =
-    chain.namespace.toLowerCase() +
-    ":" +
-    chain.reference.replace(/[^a-zA-Z0-9]/g, "");
+  const chainComponent = chain.namespace + ":" + chain.reference;
 
   const assetComponent =
-    asset.namespace.toLowerCase() +
+    asset.namespace +
     ":" +
     asset.reference +
     (asset.identifier ? ":" + asset.identifier : "");
