@@ -10,6 +10,8 @@ import {
 } from "./extractCredential";
 import { createPrehistoricCredential } from "./createPrehistoricCredential";
 
+import * as cbor from "cbor";
+
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
 ): Promise<void> {
@@ -43,6 +45,9 @@ export async function handlePublicCredentialStored(
     credentialHash
   );
 
+  const decodedClaims = cbor.decode(credential.claims);
+
+  logger.info("decodedClaims:  " + decodedClaims);
   assert(
     assetDidUri === credential.subject.toLowerCase(),
     `The extracted public credential does not belongs to this assetDID. \n Target: ${assetDidUri} \n Obtained: ${credential.subject}`

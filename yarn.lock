@@ -6918,6 +6918,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cbor@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "cbor@npm:9.0.2"
+  dependencies:
+    nofilter: ^3.1.0
+  checksum: 925edae7bf964be5a26dba1b7ba6311ac12b6a66234dc958958997a0576cdc740632dc19852a5b84d8a75101936bea1fe122dc22539d6e11f4539c731853ba2e
+  languageName: node
+  linkType: hard
+
 "cborg@npm:^1.5.4, cborg@npm:^1.6.0":
   version: 1.10.2
   resolution: "cborg@npm:1.10.2"
@@ -11098,6 +11107,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nofilter@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "nofilter@npm:3.1.0"
+  checksum: 58aa85a5b4b35cbb6e42de8a8591c5e338061edc9f3e7286f2c335e9e9b9b8fa7c335ae45daa8a1f3433164dc0b9a3d187fa96f9516e04a17a1f9ce722becc4f
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^7.0.0":
   version: 7.2.0
   resolution: "nopt@npm:7.2.0"
@@ -12648,6 +12664,7 @@ __metadata:
     "@subql/testing": latest
     "@subql/types": latest
     "@types/jsonabc": ^2.3.3
+    cbor: ^9.0.2
     dotenv: ^16.3.1
     jsonabc: ^2.3.1
     ts-node: ^10.9.1
