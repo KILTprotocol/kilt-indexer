@@ -105,7 +105,7 @@ _Tip: Commas are irrelevant._
 ### Useful example Fragments
 
 GraphQL provides reusable units called _fragments_.
-Fragments let you construct sets of fields, and then include them in queries where you need to.
+Fragments let you construct sets of fields, and then include them in queries where needed.
 
 ```
 fragment wholeBlock on Block{
