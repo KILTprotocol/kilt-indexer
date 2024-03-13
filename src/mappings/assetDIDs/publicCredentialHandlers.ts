@@ -43,7 +43,7 @@ export async function handlePublicCredentialStored(
   );
 
   assert(
-    assetDidUri === credential.subject,
+    assetDidUri === credential.subject.toLowerCase(),
     `The extracted public credential does not belongs to this assetDID. \n Target: ${assetDidUri} \n Obtained: ${credential.subject}`
   );
 
@@ -61,13 +61,13 @@ export async function handlePublicCredentialStored(
 
   await newPublicCredential.save();
 
-  // craft ruling ordinal index:
+  // Add a record of when did the creation took place
   const previousRulings =
     (await Ruling.getByCredentialId(credentialHash)) || [];
 
   const newRuling = Ruling.create({
     id: `§${previousRulings.length + 1}_${credentialHash}`,
-    credentialId: newPublicCredential.id,
+    credentialId: credentialHash,
     nature: RulingNature.creation,
     rulingBlockId: blockNumber,
   });
@@ -127,7 +127,7 @@ export async function handlePublicCredentialRemoved(
 
   await publicCredential.save();
 
-  // craft ruling ordinal index:
+  // Add a record of when did the removal took place
   const previousRulings =
     (await Ruling.getByCredentialId(credentialHash)) || [];
 
