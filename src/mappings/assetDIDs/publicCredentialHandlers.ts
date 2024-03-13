@@ -10,7 +10,12 @@ import {
 } from "./extractCredential";
 import { createPrehistoricCredential } from "./createPrehistoricCredential";
 
-import * as cbor from "cbor";
+// import "text-encoding"; // Import the polyfill
+// import { TextDecoder, TextEncoder } from "text-encoding"; // Import type definitions if available
+
+// import { decode } from "cborg";
+// import { decode } from "../../../node_modules/cborg";
+const { decode } = require("../../../node_modules/cborg/cborg");
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -45,7 +50,10 @@ export async function handlePublicCredentialStored(
     credentialHash
   );
 
-  const decodedClaims = cbor.decode(credential.claims);
+  const claimsU8a = Uint8Array.from(
+    Buffer.from(credential.claims.split("x")[1], "hex")
+  );
+  const decodedClaims = decode(claimsU8a);
 
   logger.info("decodedClaims:  " + decodedClaims);
   assert(

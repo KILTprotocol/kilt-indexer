@@ -24,9 +24,11 @@
   "dependencies": {
     "@kiltprotocol/sdk-js": "^0.35.0",
     "@polkadot/api": "^10.11.2",
-    "cbor": "^9.0.2",
+    "@types/text-encoding": "^0.0.39",
+    "cborg": "^4.1.1",
     "dotenv": "^16.3.1",
-    "jsonabc": "^2.3.1"
+    "jsonabc": "^2.3.1",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
     "@kiltprotocol/type-definitions": "latest",
