@@ -10,12 +10,7 @@ import {
 } from "./extractCredential";
 import { createPrehistoricCredential } from "./createPrehistoricCredential";
 
-// import "text-encoding"; // Import the polyfill
-// import { TextDecoder, TextEncoder } from "text-encoding"; // Import type definitions if available
-
-// import { decode } from "cborg";
-// import { decode } from "../../../node_modules/cborg";
-const { decode } = require("../../../node_modules/cborg/cborg");
+import { decode } from "../../../node_modules/cborg";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
