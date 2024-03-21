@@ -37,43 +37,81 @@ export async function saveAssetDid(
 ): Promise<AssetDID["id"]> {
   const assetObject = subjectId.toJSON() as unknown as ISubjectId;
 
+  const { chainId, assetId } = subjectId;
+
   logger.info("assetObject: " + JSON.stringify(assetObject));
 
   let chain: IChain;
   let asset: IAsset;
 
-  if (subjectId.chainId.isGeneric) {
-    const chainId = subjectId.chainId.asGeneric;
-    chain = {
-      namespace: chainId.namespace.toUtf8(), // the chain should not allow uppercase here
-      reference: chainId.reference.toUtf8(),
-    };
-  } else {
-    // 'Eip155' | 'Bip122' | 'Dotsama' | 'Solana'
-    chain = {
-      namespace: subjectId.chainId.type.toLowerCase(),
-      reference: subjectId.chainId.value.toHex().split("x")[1],
-    };
+  switch (chainId.type) {
+    case "Generic":
+      const genericChainId = chainId.asGeneric;
+      chain = {
+        namespace: genericChainId.namespace.toUtf8(), // the chain should not allow uppercase here
+        reference: genericChainId.reference.toUtf8(),
+      };
+      break;
+    case "Dotsama":
+      chain = {
+        namespace: "polkadot",
+        reference: chainId.asDotsama.toHex().split("x")[1],
+      };
+      break;
+    case "Eip155":
+      chain = {
+        namespace: "eip155",
+        reference: chainId.asEip155.toBigInt().toString(),
+      };
+      break;
+
+    default:
+      //  'Bip122' | 'Solana'
+      chain = {
+        namespace: chainId.type.toLowerCase(),
+        reference: chainId.value.toHex().split("x")[1],
+      };
+      break;
   }
 
-  logger.info(`chain object from assetDID: ${JSON.stringify(chain, null, 2)}`);
+  logger.info(`chain object from subjectId: ${JSON.stringify(chain, null, 2)}`);
 
-  if (subjectId.assetId.isGeneric) {
-    const assetId = subjectId.assetId.asGeneric;
-    asset = {
-      namespace: assetId.namespace.toUtf8(),
-      reference: assetId.reference.toUtf8(),
-      identifier: assetId.id.unwrapOr(undefined)?.toUtf8(),
-    };
-  } else {
-    // 'Slip44' | 'Erc20' | 'Erc721' | 'Erc1155'
-    asset = {
-      namespace: subjectId.assetId.type.toLowerCase(),
-      reference: subjectId.assetId.value.toString(),
-    };
+  switch (assetId.type) {
+    // "Generic" | "Slip44" | "Erc20" | "Erc721" | "Erc1155"
+    case "Generic":
+      const genericAssetId = assetId.asGeneric;
+      asset = {
+        namespace: genericAssetId.namespace.toUtf8(),
+        reference: genericAssetId.reference.toUtf8(),
+        identifier: genericAssetId.id.unwrapOr(undefined)?.toUtf8(),
+      };
+      break;
+    case "Erc721":
+      const erc721AssetId = assetId.asErc721;
+      asset = {
+        namespace: "erc721",
+        reference: erc721AssetId[0].toHex(),
+        identifier: erc721AssetId[1].unwrapOr(undefined)?.toUtf8(),
+      };
+      break;
+    case "Erc1155":
+      const erc1155AssetId = assetId.asErc1155;
+      asset = {
+        namespace: "erc1155",
+        reference: erc1155AssetId[0].toHex(),
+        identifier: erc1155AssetId[1].unwrapOr(undefined)?.toUtf8(),
+      };
+      break;
+    default:
+      // 'Slip44' | 'Erc20'
+      asset = {
+        namespace: subjectId.assetId.type.toLowerCase(),
+        reference: subjectId.assetId.value.toString(),
+      };
+      break;
   }
 
-  logger.info(`asset object from assetDID: ${JSON.stringify(asset, null, 2)}`);
+  logger.info(`asset object from subjectId: ${JSON.stringify(asset, null, 2)}`);
 
   const chainComponent = chain.namespace + ":" + chain.reference;
 
