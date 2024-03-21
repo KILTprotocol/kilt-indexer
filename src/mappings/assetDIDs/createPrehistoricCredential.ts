@@ -6,6 +6,7 @@ import { UNKNOWN } from "../mappingHandlers";
 import { saveAssetDid } from "./saveAssetDid";
 import { createPrehistoricAssetDid } from "./createPrehistoricAssetDid";
 import { createPrehistoricCType } from "../cTypes/createPrehistoricCType";
+import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
 
 /** Solves problems while trying to start Data Base from higher block.
  *
@@ -49,7 +50,7 @@ export async function createPrehistoricCredential(
 
   // If the subject_id is not on the event, need to create a prehistoric assetDID
   const assetDidUri = argument2
-    ? await saveAssetDid(argument1)
+    ? await saveAssetDid(argument1 as KiltAssetDidsV1AssetDid)
     : await createPrehistoricAssetDid();
 
   // need a prehistoric did

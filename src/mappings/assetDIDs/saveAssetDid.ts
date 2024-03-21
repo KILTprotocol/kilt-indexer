@@ -1,5 +1,11 @@
 import type { Codec } from "@polkadot/types-codec/types";
 import { Asset, AssetDID, Chain } from "../../types";
+import {
+  AssetDidUri,
+  KiltPublishedCredentialCollectionV1Type,
+} from "@kiltprotocol/types";
+
+import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
 
 interface ISubjectId {
   chainId: {
@@ -9,28 +15,65 @@ interface ISubjectId {
     [key: string]: string[];
   };
 }
+interface IChain {
+  namespace: string;
+  reference: string;
+}
+
+interface IAsset {
+  namespace: string;
+  reference: string;
+  identifier?: string;
+}
 
 /**
  * Saves AssetDID's information into our Data Base.
  *
- * @param subjectId
+ * @param subjectId in Codec (SCALE), specifically KiltAssetDidsV1AssetDid
  * @returns Returns the AssetDID-URI, also known as AssetDID-ID. Type "string".
  */
-export async function saveAssetDid(subjectId: Codec): Promise<AssetDID["id"]> {
+export async function saveAssetDid(
+  subjectId: KiltAssetDidsV1AssetDid
+): Promise<AssetDID["id"]> {
   const assetObject = subjectId.toJSON() as unknown as ISubjectId;
 
   logger.info("assetObject: " + JSON.stringify(assetObject));
 
-  const chain = {
-    namespace: Object.keys(assetObject.chainId)[0],
-    reference: Object.values(assetObject.chainId)[0],
-  };
+  let chain: IChain;
+  let asset: IAsset;
 
-  const asset = {
-    namespace: Object.keys(assetObject.assetId)[0],
-    reference: Object.values(assetObject.assetId)[0][0],
-    identifier: Object.values(assetObject.assetId)[0][1],
-  };
+  if (subjectId.chainId.isGeneric) {
+    const chainId = subjectId.chainId.asGeneric;
+    chain = {
+      namespace: chainId.namespace.toUtf8(), // the chain should not allow uppercase here
+      reference: chainId.reference.toUtf8(),
+    };
+  } else {
+    // 'Eip155' | 'Bip122' | 'Dotsama' | 'Solana'
+    chain = {
+      namespace: subjectId.chainId.type.toLowerCase(),
+      reference: subjectId.chainId.value.toHex().split("x")[1],
+    };
+  }
+
+  logger.info(`chain object from assetDID: ${JSON.stringify(chain, null, 2)}`);
+
+  if (subjectId.assetId.isGeneric) {
+    const assetId = subjectId.assetId.asGeneric;
+    asset = {
+      namespace: assetId.namespace.toUtf8(),
+      reference: assetId.reference.toUtf8(),
+      identifier: assetId.id.unwrapOr(undefined)?.toUtf8(),
+    };
+  } else {
+    // 'Slip44' | 'Erc20' | 'Erc721' | 'Erc1155'
+    asset = {
+      namespace: subjectId.assetId.type.toLowerCase(),
+      reference: subjectId.assetId.value.toString(),
+    };
+  }
+
+  logger.info(`asset object from assetDID: ${JSON.stringify(asset, null, 2)}`);
 
   const chainComponent = chain.namespace + ":" + chain.reference;
 

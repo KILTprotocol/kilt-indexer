@@ -28,6 +28,7 @@
     "jsonabc": "^2.3.1"
   },
   "devDependencies": {
+    "@kiltprotocol/augment-api": "^0.35.0",
     "@kiltprotocol/type-definitions": "latest",
     "@kiltprotocol/types": "^0.34.0",
     "@subql/cli": "latest",

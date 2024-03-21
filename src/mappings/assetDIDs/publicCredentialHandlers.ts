@@ -8,6 +8,7 @@ import {
   type CredentialFromChain,
 } from "./extractCredential";
 import { saveAssetDid } from "./saveAssetDid";
+import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -34,7 +35,7 @@ export async function handlePublicCredentialStored(
   );
 
   const blockNumber = await saveBlock(block);
-  const assetDidUri = await saveAssetDid(subjectID);
+  const assetDidUri = await saveAssetDid(subjectID as KiltAssetDidsV1AssetDid);
   const credentialHash = credentialID.toHex();
 
   const credential: CredentialFromChain = extractCredential(
@@ -43,7 +44,9 @@ export async function handlePublicCredentialStored(
   );
 
   assert(
-    assetDidUri === credential.subject.toLowerCase(),
+    !assetDidUri.localeCompare(credential.subject, "en", {
+      sensitivity: "base",
+    }),
     `The extracted public credential does not belongs to this assetDID. \n Target: ${assetDidUri} \n Obtained: ${credential.subject}`
   );
 
@@ -100,7 +103,7 @@ export async function handlePublicCredentialRemoved(
   );
 
   const blockNumber = await saveBlock(block);
-  const assetDidUri = await saveAssetDid(subjectID);
+  const assetDidUri = await saveAssetDid(subjectID as KiltAssetDidsV1AssetDid);
   const credentialHash = credentialID.toHex();
 
   let publicCredential = await PublicCredential.get(credentialHash);
