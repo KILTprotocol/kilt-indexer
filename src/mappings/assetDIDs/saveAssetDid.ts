@@ -117,11 +117,11 @@ export async function saveAssetDid(
         // "Slip44 namespace does not accept an asset identifier."
       };
       break;
-    default:
-      // 'Erc20'
+    case "Erc20":
       asset = {
-        namespace: subjectId.assetId.type.toLowerCase(),
-        reference: subjectId.assetId.value.toString(),
+        namespace: "erc20",
+        reference: assetId.asErc20.toHex(),
+        // "Erc20 namespace does not accept an asset identifier."
       };
       break;
   }
