@@ -1,11 +1,6 @@
-import type { Codec } from "@polkadot/types-codec/types";
 import { Asset, AssetDID, Chain } from "../../types";
-import {
-  AssetDidUri,
-  KiltPublishedCredentialCollectionV1Type,
-} from "@kiltprotocol/types";
 
-import { base58Encode, encodeAddress } from "@polkadot/util-crypto";
+import { base58Encode } from "@polkadot/util-crypto";
 
 import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
 
