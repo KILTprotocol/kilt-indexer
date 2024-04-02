@@ -110,8 +110,15 @@ export async function saveAssetDid(
         identifier: erc1155AssetId[1].unwrapOr(undefined)?.toUtf8(),
       };
       break;
+    case "Slip44":
+      asset = {
+        namespace: "slip44",
+        reference: assetId.asSlip44.toBigInt().toString(),
+        // "Slip44 namespace does not accept an asset identifier."
+      };
+      break;
     default:
-      // 'Slip44' | 'Erc20'
+      // 'Erc20'
       asset = {
         namespace: subjectId.assetId.type.toLowerCase(),
         reference: subjectId.assetId.value.toString(),
