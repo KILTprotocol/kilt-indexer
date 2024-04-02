@@ -333,7 +333,7 @@ fragment wholeAttestation on Attestation {
 
    ```
 
-8. **Find registered data about banned web3names:** (It has never happend on KILT Spiritnet)
+8. **Find registered data about banned web3names:** (It has never happened on KILT Spiritnet)
 
    ```
    query {
