@@ -101,20 +101,19 @@ type PublicCredential @entity {
   claims: String! # content of the credential
   delegationID: String
   valid: Boolean!
-  rulings: [Ruling]! @derivedFrom(field: "credential")
+  updates: [Update]! @derivedFrom(field: "credential")
 }
 
-enum RulingNature {
+enum UpdateNature {
   creation
   revocation
   restoration # un-revocation
   removal
 }
 
-## Possible names "Validation", "Evaluation", "Accreditation"
-type Ruling @entity {
+type Update @entity {
   id: ID! # "§" + <ordinal number> + "_" + <credential-hash>
   credential: PublicCredential!
-  nature: RulingNature!
-  rulingBlock: Block!
+  nature: UpdateNature!
+  updateBlock: Block!
 }

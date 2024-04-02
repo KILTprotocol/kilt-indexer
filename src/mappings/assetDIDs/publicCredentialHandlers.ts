@@ -1,6 +1,6 @@
 import type { SubstrateEvent } from "@subql/types";
 import assert from "assert";
-import { PublicCredential, Ruling, RulingNature } from "../../types";
+import { PublicCredential, Update, UpdateNature } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
 import { createPrehistoricCredential } from "./createPrehistoricCredential";
 import {
@@ -65,17 +65,17 @@ export async function handlePublicCredentialStored(
   await newPublicCredential.save();
 
   // Add a record of when did the creation took place
-  const previousRulings =
-    (await Ruling.getByCredentialId(credentialHash)) || [];
+  const previousUpdates =
+    (await Update.getByCredentialId(credentialHash)) || [];
 
-  const newRuling = Ruling.create({
-    id: `§${previousRulings.length + 1}_${credentialHash}`,
+  const newUpdate = Update.create({
+    id: `§${previousUpdates.length + 1}_${credentialHash}`,
     credentialId: credentialHash,
-    nature: RulingNature.creation,
-    rulingBlockId: blockNumber,
+    nature: UpdateNature.creation,
+    updateBlockId: blockNumber,
   });
 
-  await newRuling.save();
+  await newUpdate.save();
 }
 
 export async function handlePublicCredentialRemoved(
@@ -131,17 +131,17 @@ export async function handlePublicCredentialRemoved(
   await publicCredential.save();
 
   // Add a record of when did the removal took place
-  const previousRulings =
-    (await Ruling.getByCredentialId(credentialHash)) || [];
+  const previousUpdates =
+    (await Update.getByCredentialId(credentialHash)) || [];
 
-  const newRuling = Ruling.create({
-    id: `§${previousRulings.length + 1}_${credentialHash}`,
+  const newUpdate = Update.create({
+    id: `§${previousUpdates.length + 1}_${credentialHash}`,
     credentialId: credentialHash,
-    nature: RulingNature.removal,
-    rulingBlockId: blockNumber,
+    nature: UpdateNature.removal,
+    updateBlockId: blockNumber,
   });
 
-  await newRuling.save();
+  await newUpdate.save();
 }
 
 export async function handlePublicCredentialRevoked(
@@ -190,17 +190,17 @@ export async function handlePublicCredentialRevoked(
   await publicCredential.save();
 
   // Add a record of when did the revocation took place
-  const previousRulings =
-    (await Ruling.getByCredentialId(credentialHash)) || [];
+  const previousUpdates =
+    (await Update.getByCredentialId(credentialHash)) || [];
 
-  const newRuling = Ruling.create({
-    id: `§${previousRulings.length + 1}_${credentialHash}`,
+  const newUpdate = Update.create({
+    id: `§${previousUpdates.length + 1}_${credentialHash}`,
     credentialId: credentialHash,
-    rulingBlockId: blockNumber,
-    nature: RulingNature.revocation,
+    updateBlockId: blockNumber,
+    nature: UpdateNature.revocation,
   });
 
-  await newRuling.save();
+  await newUpdate.save();
 }
 
 export async function handlePublicCredentialUnrevoked(
@@ -249,15 +249,15 @@ export async function handlePublicCredentialUnrevoked(
   await publicCredential.save();
 
   // Add a record of when did the restoration (un-revocation) took place
-  const previousRulings =
-    (await Ruling.getByCredentialId(credentialHash)) || [];
+  const previousUpdates =
+    (await Update.getByCredentialId(credentialHash)) || [];
 
-  const newRuling = Ruling.create({
-    id: `§${previousRulings.length + 1}_${credentialHash}`,
+  const newUpdate = Update.create({
+    id: `§${previousUpdates.length + 1}_${credentialHash}`,
     credentialId: credentialHash,
-    rulingBlockId: blockNumber,
-    nature: RulingNature.restoration,
+    updateBlockId: blockNumber,
+    nature: UpdateNature.restoration,
   });
 
-  await newRuling.save();
+  await newUpdate.save();
 }

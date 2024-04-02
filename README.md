@@ -388,7 +388,7 @@ fragment wholeAttestation on Attestation {
    }
    ```
 
-10. **Get all Public Credentials and its corresponding Rulings:**
+10. **Get all Public Credentials and its corresponding Updates:**
     ```
     query {
       publicCredentials {
@@ -400,12 +400,12 @@ fragment wholeAttestation on Attestation {
           cTypeId
           issuerId
           valid
-          rulings(orderBy: ID_ASC) {
+          updates(orderBy: ID_ASC) {
             totalCount
             nodes {
               id
               nature
-              rulingBlockId
+              updateBlockId
             }
           }
         }

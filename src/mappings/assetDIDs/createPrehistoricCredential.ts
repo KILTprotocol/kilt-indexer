@@ -82,7 +82,7 @@ export async function createPrehistoricCredential(
 
   await prehistoricCredential.save();
 
-  // No creation Ruling for prehistoric Credentials
+  // No creation Update for prehistoric Credentials
 
   return prehistoricCredential;
 }
