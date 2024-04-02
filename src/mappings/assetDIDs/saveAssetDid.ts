@@ -9,14 +9,6 @@ import { base58Encode, encodeAddress } from "@polkadot/util-crypto";
 
 import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
 
-interface ISubjectId {
-  chainId: {
-    [key: string]: string;
-  };
-  assetId: {
-    [key: string]: string[];
-  };
-}
 interface IChain {
   namespace: string;
   reference: string;
@@ -37,11 +29,9 @@ interface IAsset {
 export async function saveAssetDid(
   subjectId: KiltAssetDidsV1AssetDid
 ): Promise<AssetDID["id"]> {
-  const assetObject = subjectId.toJSON() as unknown as ISubjectId;
-
   const { chainId, assetId } = subjectId;
 
-  logger.info("assetObject: " + JSON.stringify(assetObject));
+  logger.info("assetObject: " + JSON.stringify(subjectId.toJSON()));
 
   let chain: IChain;
   let asset: IAsset;
