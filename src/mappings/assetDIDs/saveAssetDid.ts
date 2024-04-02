@@ -74,11 +74,10 @@ export async function saveAssetDid(
       };
       break;
 
-    default:
-      //  'Bip122'
+    case "Bip122":
       chain = {
-        namespace: chainId.type.toLowerCase(),
-        reference: chainId.value.toHex().split("x")[1],
+        namespace: "bip122",
+        reference: chainId.asBip122.toHex().split("x")[1],
       };
       break;
   }
