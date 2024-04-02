@@ -1,10 +1,11 @@
 import type { AssetDidUri, DidUri, HexString } from "@kiltprotocol/types";
+import { PublicCredentialsCredentialsCredential } from "@kiltprotocol/augment-api";
 import type { Vec } from "@polkadot/types";
 import { Codec } from "@polkadot/types-codec/types";
 import type { GenericExtrinsic } from "@polkadot/types/extrinsic";
-import { u8aConcat } from "@polkadot/util";
 import { blake2AsHex } from "@polkadot/util-crypto";
 import type { SubstrateExtrinsic } from "@subql/types";
+
 import assert from "assert";
 
 interface CredentialOnChain {
@@ -266,7 +267,7 @@ function manageAddPublicCredential(
   );
 
   // the only call argument is the credential object
-  const credential = call.args[0];
+  const credential = call.args[0] as PublicCredentialsCredentialsCredential;
 
   return validateCredentialAgainstHash(
     credential,
@@ -283,7 +284,7 @@ function manageAddPublicCredential(
  * @param targetCredentialHash Hex-string from Event.
  */
 function validateCredentialAgainstHash(
-  credential: Codec,
+  credential: PublicCredentialsCredentialsCredential,
   attesterDidAccount: Codec,
   targetCredentialHash: HexString
 ): CredentialFromChain | false {
@@ -301,11 +302,16 @@ function validateCredentialAgainstHash(
 
   const attesterDid = ("did:kilt:" + attesterDidAccount) as DidUri;
 
-  const credentialHumanized =
-    credential.toHuman() as unknown as CredentialOnChain;
+  const readableCredential: CredentialFromChain = {
+    ctypeHash: credential.ctypeHash.toHex(),
+    subject: credential.subject.toUtf8() as AssetDidUri,
+    claims: credential.claims.toHex(),
+    authorization: credential.authorization.unwrapOr(null)?.toHex() ?? null,
+    attesterDid,
+  };
 
   if (targetCredentialHash === hashedCredential) {
-    return { ...credentialHumanized, attesterDid };
+    return readableCredential;
   }
   return false;
 }
