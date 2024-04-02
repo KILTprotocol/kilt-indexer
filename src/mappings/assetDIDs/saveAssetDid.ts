@@ -67,41 +67,15 @@ export async function saveAssetDid(
       };
       break;
 
-    // TODO: Show this to Antonio
     case "Solana":
-      logger.info(
-        "asSolana: bytes length of chainId reference for solana:" +
-          chainId.asSolana.byteLength
-      );
-      logger.info(
-        "toU8a(false): bytes length of chainId reference for solana:" +
-          chainId.asSolana.toU8a(false).byteLength
-      );
-      logger.info(
-        "toU8a(true) bytes length of chainId reference for solana:" +
-          chainId.asSolana.toU8a(true).byteLength
-      );
-      logger.info(
-        "U8a of chainId reference for solana:" + chainId.asSolana.toU8a()
-      );
-      logger.info(
-        "Hex String of chainId reference for solana:" + chainId.asSolana.toHex()
-      );
       chain = {
         namespace: "solana",
         reference: base58Encode(chainId.asSolana.toHex()),
-
-        // reference: encodeAddress(chainId.asSolana.toU8a(), undefined), // throws error
-
-        // reference: base58Encode(chainId.asSolana.toU8a(), false), // a longer and wrong base58 representation
-        // reference: chainId.asSolana.toUtf8(), // not the base58 representation. comes out as string with characters that do not follow the specifications (like ",")
-        // reference: chainId.asSolana.toString(), // not the base58 representation. comes out as hex
-        // reference: chainId.asSolana.toHuman() as string, // not the base58 representation. comes out as hex
       };
       break;
 
     default:
-      //  'Bip122' | 'Solana'
+      //  'Bip122'
       chain = {
         namespace: chainId.type.toLowerCase(),
         reference: chainId.value.toHex().split("x")[1],
