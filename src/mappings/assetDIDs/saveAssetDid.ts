@@ -26,7 +26,9 @@ export async function saveAssetDid(
 ): Promise<AssetDID["id"]> {
   const { chainId, assetId } = subjectId;
 
-  logger.info("assetObject: " + JSON.stringify(subjectId.toJSON()));
+  logger.trace(
+    "The whole raw subjectId: " + JSON.stringify(subjectId.toJSON())
+  );
 
   let chain: IChain;
   let asset: IAsset;
@@ -67,7 +69,9 @@ export async function saveAssetDid(
       break;
   }
 
-  logger.info(`chain object from subjectId: ${JSON.stringify(chain, null, 2)}`);
+  logger.trace(
+    `chain object from subjectId: ${JSON.stringify(chain, null, 2)}`
+  );
 
   switch (assetId.type) {
     // "Generic" | "Slip44" | "Erc20" | "Erc721" | "Erc1155"
@@ -111,7 +115,9 @@ export async function saveAssetDid(
       break;
   }
 
-  logger.info(`asset object from subjectId: ${JSON.stringify(asset, null, 2)}`);
+  logger.trace(
+    `asset object from subjectId: ${JSON.stringify(asset, null, 2)}`
+  );
 
   const chainComponent = chain.namespace + ":" + chain.reference;
 

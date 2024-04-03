@@ -45,7 +45,7 @@ export function extractCredential(
 
   const usedCall: GenericExtrinsic["method"] = extrinsic.extrinsic.method;
 
-  logger.info("The whole extrinsic: " + JSON.stringify(usedCall, null, 2));
+  logger.trace("The whole extrinsic: " + JSON.stringify(usedCall, null, 2));
 
   let definition: CredentialFromChain | false;
 
@@ -288,7 +288,7 @@ function validateCredentialAgainstHash(
   attesterDidAccount: Codec,
   targetCredentialHash: HexString
 ): CredentialFromChain | false {
-  logger.info(
+  logger.trace(
     "The target CredentialHash from the event: " + targetCredentialHash
   );
 
@@ -298,7 +298,7 @@ function validateCredentialAgainstHash(
     Uint8Array.from([...encodedCredential, ...encodedAttester])
   );
 
-  logger.info("The resulting Credential ID is: " + hashedCredential);
+  logger.trace("The resulting Credential ID is: " + hashedCredential);
 
   const attesterDid = ("did:kilt:" + attesterDidAccount) as DidUri;
 

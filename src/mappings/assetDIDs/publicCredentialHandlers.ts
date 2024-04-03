@@ -26,7 +26,7 @@ export async function handlePublicCredentialStored(
     `New Public Credential registered at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole CredentialStored event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -94,7 +94,7 @@ export async function handlePublicCredentialRemoved(
     `Public Credential removed from chain state at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole CredentialRemoved event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -160,7 +160,7 @@ export async function handlePublicCredentialRevoked(
     `Public Credential revoked at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole CredentialRevoked event: ${JSON.stringify(
       event.toHuman(),
       null,
@@ -219,7 +219,7 @@ export async function handlePublicCredentialUnrevoked(
     `Public Credential unrevoked at block ${block.block.header.number}`
   );
 
-  logger.info(
+  logger.trace(
     `The whole CredentialUnrevoked event: ${JSON.stringify(
       event.toHuman(),
       null,
