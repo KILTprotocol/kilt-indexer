@@ -47,32 +47,37 @@ export function extractCredential(
 
   logger.trace("The whole extrinsic: " + JSON.stringify(usedCall, null, 2));
 
-  let definition: CredentialFromChain | false;
+  let credential: CredentialFromChain | false;
 
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
-      definition = manageSubmitDidCall(usedCall, targetCredentialHash);
+      credential = manageSubmitDidCall(usedCall, targetCredentialHash);
       break;
     case relevantCalls.batchAll.pallet:
-      definition = manageBatchCalls(usedCall, targetCredentialHash);
+      credential = manageBatchCalls(usedCall, targetCredentialHash);
       break;
     case relevantCalls.proxy.pallet:
-      definition = manageProxyCall(usedCall, targetCredentialHash);
+      credential = manageProxyCall(usedCall, targetCredentialHash);
       break;
     default:
-      definition = false;
+      credential = false;
       break;
   }
 
   assert(
-    definition,
+    credential,
     `Could not extract credential from extrinsic in block #${blockNumber}`
   );
 
-  // Print the definition
-  logger.info(`credential on chain: ${JSON.stringify(definition, null, 2)}`);
+  logger.info(
+    `public credential extracted from chain: ${JSON.stringify(
+      credential,
+      null,
+      2
+    )}`
+  );
 
-  return definition;
+  return credential;
 }
 
 // Use "manage" instead of "handle" to differentiate from the handlers on `mappingHandlers.ts`.
