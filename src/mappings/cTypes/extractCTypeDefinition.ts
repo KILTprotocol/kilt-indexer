@@ -231,7 +231,6 @@ function manageDispatchAsCalls(
   call: GenericExtrinsic["method"],
   targetCTypeHash: CTypeHash
 ): string | false {
-  logger.info("DispatchAs Call: " + JSON.stringify(call, null, 2));
   const { section: parentPallet, method: parentMethod } = call;
   assert(
     parentPallet === relevantCalls.dispatchAs.pallet,
@@ -242,16 +241,9 @@ function manageDispatchAsCalls(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
-  logger.info("made it here");
   // second call argument is the inner call
   const childCall = call.args[1] as GenericExtrinsic["method"];
-  logger.info("DispatchAs childCall: " + JSON.stringify(childCall, null, 2));
-
-  const { section: childPallet, method: childMethod } = childCall; // TypeError: Cannot destructure property 'section' of 'u' as it is undefined.
-
-  logger.info(
-    "childPallet: " + childPallet + "\n" + "childMethod: " + childMethod
-  );
+  const { section: childPallet, method: childMethod } = childCall;
 
   if (childPallet === relevantCalls.addCType.pallet) {
     return manageAddCTypeCall(childCall, targetCTypeHash);
