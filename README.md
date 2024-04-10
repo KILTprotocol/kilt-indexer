@@ -105,7 +105,7 @@ _Tip: Commas are irrelevant._
 ### Useful example Fragments
 
 GraphQL provides reusable units called _fragments_.
-Fragments let you construct sets of fields, and then include them in queries where you need to.
+Fragments let you construct sets of fields, and then include them in queries where needed.
 
 ```
 fragment wholeBlock on Block{
@@ -333,7 +333,7 @@ fragment wholeAttestation on Attestation {
 
    ```
 
-8. **Find registered data about banned web3names:** (It has never happend on KILT Spiritnet)
+8. **Find registered data about banned web3names:** (It has never happened on KILT Spiritnet)
 
    ```
    query {
@@ -387,3 +387,28 @@ fragment wholeAttestation on Attestation {
     }
    }
    ```
+
+10. **Get all Public Credentials and its corresponding Updates:**
+    ```
+    query {
+      publicCredentials {
+        totalCount
+        nodes {
+          id
+          subjectId
+          claims
+          cTypeId
+          issuerId
+          valid
+          updates(orderBy: ID_ASC) {
+            totalCount
+            nodes {
+              id
+              nature
+              updateBlockId
+            }
+          }
+        }
+      }
+    }
+    ```
