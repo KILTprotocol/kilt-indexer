@@ -436,11 +436,11 @@ function manageAddPublicCredential(
   );
 }
 
-/** Hashes the `encodedClaims` and compares it to the `targetCredentialHash`.
+/** Hashes the `credential` and compares it to the `targetCredentialHash`.
  *
  * If there is a match, it returns the decoded claims, otherwise `false`.
  *
- * @param encodedClaims
+ * @param credential
  * @param targetCredentialHash Hex-string from Event.
  */
 function validateCredentialAgainstHash(
