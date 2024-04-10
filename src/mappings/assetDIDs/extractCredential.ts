@@ -154,6 +154,13 @@ function manageProxyCall(
       attesterDidAccount
     );
   }
+  if (childMethod === relevantCalls.dispatchAs.method) {
+    return manageDispatchAsCalls(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
+  }
 
   if (childMethod === relevantCalls.proxy.method) {
     // Is this possible?
@@ -200,8 +207,15 @@ function manageBatchCalls(
           attesterDidAccount
         );
       }
-      if (childPallet === relevantCalls.submitDidCall.pallet) {
+      if (childPallet === relevantCalls.submitDidCall.method) {
         return manageSubmitDidCall(
+          childCall,
+          targetCredentialHash,
+          attesterDidAccount
+        );
+      }
+      if (childMethod === relevantCalls.dispatchAs.method) {
+        return manageDispatchAsCalls(
           childCall,
           targetCredentialHash,
           attesterDidAccount
@@ -301,8 +315,14 @@ function manageSubmitDidCall(
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
-    // Is this possible?
     return manageSubmitDidCall(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
+  }
+  if (childMethod === relevantCalls.dispatchAs.method) {
+    return manageDispatchAsCalls(
       childCall,
       targetCredentialHash,
       attesterDidAccount
