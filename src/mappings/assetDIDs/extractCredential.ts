@@ -46,6 +46,14 @@ export function extractCredential(
 
   const usedCall: GenericExtrinsic["method"] = extrinsic.extrinsic.method;
 
+  logger.info(
+    "On extractCredential: " +
+      "GrandParent Call passed is of pallet: " +
+      usedCall.section +
+      " and of this method: " +
+      usedCall.method
+  );
+
   logger.info("The whole extrinsic: " + JSON.stringify(usedCall, null, 2));
 
   let credential: CredentialFromChain | false;
@@ -63,6 +71,7 @@ export function extractCredential(
           credential = false;
           break;
       }
+      break;
     case relevantCalls.batchAll.pallet:
       credential = manageBatchCalls(usedCall, targetCredentialHash);
       break;
@@ -236,6 +245,15 @@ function manageSubmitDidCall(
   attesterDidAccount?: Codec
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
+
+  logger.info(
+    "On manageSubmitDidCall: " +
+      "Parent Call passed is of pallet: " +
+      parentPallet +
+      " and of this method: " +
+      parentMethod
+  );
+
   assert(
     parentPallet === relevantCalls.submitDidCall.pallet,
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
@@ -250,6 +268,13 @@ function manageSubmitDidCall(
   const didAccountId = (call.args[0] as any).did as Codec;
   const { section: childPallet, method: childMethod } = childCall;
 
+  logger.info(
+    "On manageSubmitDidCall: " +
+      "Child  Call extracted is of pallet: " +
+      childPallet +
+      " and of this method: " +
+      childMethod
+  );
   if (attesterDidAccount) {
     assert(
       attesterDidAccount === didAccountId,
