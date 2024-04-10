@@ -21,6 +21,7 @@ export interface CredentialFromChain extends CredentialOnChain {
 
 const relevantCalls = {
   submitDidCall: { pallet: "did", method: "submitDidCall" },
+  dispatchAs: { pallet: "did", method: "dispatchAs" },
   batch: { pallet: "utility", method: "batch" },
   batchAll: { pallet: "utility", method: "batchAll" },
   forceBatch: { pallet: "utility", method: "forceBatch" },
@@ -51,14 +52,24 @@ export function extractCredential(
 
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
-      credential = manageSubmitDidCall(usedCall, targetCredentialHash);
-      break;
+      switch (usedCall.method) {
+        case relevantCalls.submitDidCall.method:
+          credential = manageSubmitDidCall(usedCall, targetCredentialHash);
+          break;
+        case relevantCalls.dispatchAs.method:
+          credential = manageDispatchAsCalls(usedCall, targetCredentialHash);
+          break;
+        default:
+          credential = false;
+          break;
+      }
     case relevantCalls.batchAll.pallet:
       credential = manageBatchCalls(usedCall, targetCredentialHash);
       break;
     case relevantCalls.proxy.pallet:
       credential = manageProxyCall(usedCall, targetCredentialHash);
       break;
+
     default:
       credential = false;
       break;
@@ -87,12 +98,12 @@ export function extractCredential(
  * @param call Call of this type:
  *  Pallet: Proxy.
  *  Method: proxy.
- * @param targetCTypeHash Hex-string from Event.
+ * @param targetCredentialHash Hex-string from Event.
  *
  */
 function manageProxyCall(
   call: GenericExtrinsic["method"],
-  targetCTypeHash: HexString,
+  targetCredentialHash: HexString,
   attesterDidAccount?: Codec
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
@@ -116,20 +127,28 @@ function manageProxyCall(
     );
     return manageAddPublicCredential(
       childCall,
-      targetCTypeHash,
+      targetCredentialHash,
       attesterDidAccount
     );
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return manageBatchCalls(childCall, targetCTypeHash, attesterDidAccount);
+    return manageBatchCalls(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
   }
   if (childMethod === relevantCalls.submitDidCall.method) {
-    return manageSubmitDidCall(childCall, targetCTypeHash, attesterDidAccount);
+    return manageSubmitDidCall(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
   }
 
   if (childMethod === relevantCalls.proxy.method) {
     // Is this possible?
-    return manageProxyCall(childCall, targetCTypeHash, attesterDidAccount);
+    return manageProxyCall(childCall, targetCredentialHash, attesterDidAccount);
   }
 
   return false;
@@ -140,12 +159,12 @@ function manageProxyCall(
  * @param call Calls of this type:
  *  Pallet: Utility.
  *  Method: batch | batch_all | force_batch.
- * @param targetCTypeHash Hex-string from Event.
+ * @param targetCredentialHash Hex-string from Event.
  *
  */
 function manageBatchCalls(
   call: GenericExtrinsic["method"],
-  targetCTypeHash: HexString,
+  targetCredentialHash: HexString,
   attesterDidAccount?: Codec
 ): false | CredentialFromChain {
   const { section: parentPallet } = call;
@@ -168,22 +187,30 @@ function manageBatchCalls(
         );
         return manageAddPublicCredential(
           childCall,
-          targetCTypeHash,
+          targetCredentialHash,
           attesterDidAccount
         );
       }
       if (childPallet === relevantCalls.submitDidCall.pallet) {
         return manageSubmitDidCall(
           childCall,
-          targetCTypeHash,
+          targetCredentialHash,
           attesterDidAccount
         );
       }
       if (childPallet === relevantCalls.batchAll.pallet) {
-        return manageBatchCalls(childCall, targetCTypeHash, attesterDidAccount);
+        return manageBatchCalls(
+          childCall,
+          targetCredentialHash,
+          attesterDidAccount
+        );
       }
       if (childMethod === relevantCalls.proxy.method) {
-        return manageProxyCall(childCall, targetCTypeHash, attesterDidAccount);
+        return manageProxyCall(
+          childCall,
+          targetCredentialHash,
+          attesterDidAccount
+        );
       }
       return false;
     })
@@ -200,12 +227,12 @@ function manageBatchCalls(
  * @param call Call of this type:
  *  Pallet: DID.
  *  Method: submit_did_call.
- * @param targetCTypeHash Hex-string from Event.
+ * @param targetCredentialHash Hex-string from Event.
  *
  */
 function manageSubmitDidCall(
   call: GenericExtrinsic["method"],
-  targetCTypeHash: HexString,
+  targetCredentialHash: HexString,
   attesterDidAccount?: Codec
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
@@ -231,18 +258,101 @@ function manageSubmitDidCall(
   }
 
   if (childPallet === relevantCalls.addCredential.pallet) {
-    return manageAddPublicCredential(childCall, targetCTypeHash, didAccountId);
+    return manageAddPublicCredential(
+      childCall,
+      targetCredentialHash,
+      didAccountId
+    );
   }
   if (childPallet === relevantCalls.batchAll.pallet) {
-    return manageBatchCalls(childCall, targetCTypeHash, attesterDidAccount);
+    return manageBatchCalls(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
   }
   if (childMethod === relevantCalls.proxy.method) {
-    return manageProxyCall(childCall, targetCTypeHash, attesterDidAccount);
+    return manageProxyCall(childCall, targetCredentialHash, attesterDidAccount);
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
     // Is this possible?
-    return manageSubmitDidCall(childCall, targetCTypeHash, attesterDidAccount);
+    return manageSubmitDidCall(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
+  }
+
+  return false;
+}
+
+/** Process extrinsic call and extracts credential that matches `targetCredentialHash`.
+ *
+ * @param call Call of this type:
+ *  Pallet: DID.
+ *  Method: dispatch_as.
+ * @param targetCredentialHash Hex-string from Event.
+ *
+ */
+function manageDispatchAsCalls(
+  call: GenericExtrinsic["method"],
+  targetCredentialHash: HexString,
+  attesterDidAccount?: Codec
+): CredentialFromChain | false {
+  const { section: parentPallet, method: parentMethod } = call;
+  assert(
+    parentPallet === relevantCalls.dispatchAs.pallet,
+    "Erroneous extrinsic passed to this function. Wrong Pallet!"
+  );
+  assert(
+    parentMethod === relevantCalls.dispatchAs.method,
+    "Erroneous extrinsic passed to this function. Wrong Method!"
+  );
+
+  // second call argument is the inner call
+  const childCall = call.args[1] as GenericExtrinsic["method"];
+  const didAccountId = (call.args[0] as any).did as Codec;
+  const { section: childPallet, method: childMethod } = childCall;
+
+  if (attesterDidAccount) {
+    assert(
+      attesterDidAccount === didAccountId,
+      `Found nested Submit-DID-Calls with different DIDs. Who is the real attester? \n Outer-DID: ${attesterDidAccount}. \n Inner-DID: ${didAccountId}.`
+    );
+  }
+
+  if (childPallet === relevantCalls.addCredential.pallet) {
+    return manageAddPublicCredential(
+      childCall,
+      targetCredentialHash,
+      didAccountId
+    );
+  }
+  if (childPallet === relevantCalls.batchAll.pallet) {
+    return manageBatchCalls(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
+  }
+  if (childMethod === relevantCalls.proxy.method) {
+    return manageProxyCall(childCall, targetCredentialHash, attesterDidAccount);
+  }
+
+  if (childMethod === relevantCalls.submitDidCall.method) {
+    return manageSubmitDidCall(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
+  }
+  if (childMethod === relevantCalls.dispatchAs.method) {
+    return manageDispatchAsCalls(
+      childCall,
+      targetCredentialHash,
+      attesterDidAccount
+    );
   }
 
   return false;
