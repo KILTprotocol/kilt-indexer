@@ -22,11 +22,13 @@
   "author": "Botlabs GmbH",
   "license": "MIT",
   "dependencies": {
+    "@kiltprotocol/sdk-js": "^0.35.0",
     "@polkadot/api": "^10.11.2",
     "dotenv": "^16.3.1",
     "jsonabc": "^2.3.1"
   },
   "devDependencies": {
+    "@kiltprotocol/augment-api": "^0.35.0",
     "@kiltprotocol/type-definitions": "latest",
     "@kiltprotocol/types": "^0.34.0",
     "@subql/cli": "latest",

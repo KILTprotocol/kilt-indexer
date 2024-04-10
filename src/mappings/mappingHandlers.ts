@@ -20,3 +20,10 @@ export {
   handleWeb3NameBanned,
   handleWeb3NameUnbanned,
 } from "./web3names/w3nHandlers";
+
+export {
+  handlePublicCredentialStored,
+  handlePublicCredentialRemoved,
+  handlePublicCredentialRevoked,
+  handlePublicCredentialUnrevoked,
+} from "./assetDIDs/publicCredentialHandlers";
