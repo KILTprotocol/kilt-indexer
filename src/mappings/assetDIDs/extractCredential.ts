@@ -252,14 +252,6 @@ function manageSubmitDidCall(
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
 
-  logger.info(
-    "On manageSubmitDidCall: " +
-      "Parent Call passed is of pallet: " +
-      parentPallet +
-      " and of this method: " +
-      parentMethod
-  );
-
   assert(
     parentPallet === relevantCalls.submitDidCall.pallet,
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
@@ -274,13 +266,6 @@ function manageSubmitDidCall(
   const didAccountId = (call.args[0] as any).did as Codec;
   const { section: childPallet, method: childMethod } = childCall;
 
-  logger.info(
-    "On manageSubmitDidCall: " +
-      "Child  Call extracted is of pallet: " +
-      childPallet +
-      " and of this method: " +
-      childMethod
-  );
   if (attesterDidAccount) {
     assert(
       attesterDidAccount === didAccountId,
@@ -339,13 +324,6 @@ function manageDispatchAsCalls(
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
 
-  logger.info(
-    "On manageDispatchAsCalls: " +
-      "Parent Call passed is of pallet: " +
-      parentPallet +
-      " and of this method: " +
-      parentMethod
-  );
   assert(
     parentPallet === relevantCalls.dispatchAs.pallet,
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
@@ -453,9 +431,6 @@ function validateCredentialAgainstHash(
   logger.trace(
     "The target CredentialHash from the event: " + targetCredentialHash
   );
-
-  logger.info("credential to validate: " + credential);
-  logger.info("attesterDidAccount to validate: " + attesterDidAccount);
 
   const encodedCredential = credential.toU8a();
   const encodedAttester = attesterDidAccount.toU8a();
