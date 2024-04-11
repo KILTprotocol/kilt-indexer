@@ -7,6 +7,7 @@ import type { GenericExtrinsic } from "@polkadot/types/extrinsic";
 
 const relevantCalls = {
   submitDidCall: { pallet: "did", method: "submitDidCall" },
+  dispatchAs: { pallet: "did", method: "dispatchAs" },
   batch: { pallet: "utility", method: "batch" },
   batchAll: { pallet: "utility", method: "batchAll" },
   forceBatch: { pallet: "utility", method: "forceBatch" },
@@ -37,7 +38,17 @@ export function extractCTypeDefinition(
 
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
-      definition = manageSubmitDidCall(usedCall, targetCTypeHash);
+      switch (usedCall.method) {
+        case relevantCalls.submitDidCall.method:
+          definition = manageSubmitDidCall(usedCall, targetCTypeHash);
+          break;
+        case relevantCalls.dispatchAs.method:
+          definition = manageDispatchAsCalls(usedCall, targetCTypeHash);
+          break;
+        default:
+          definition = false;
+          break;
+      }
       break;
     case relevantCalls.batchAll.pallet:
       definition = manageBatchCalls(usedCall, targetCTypeHash);
@@ -45,6 +56,7 @@ export function extractCTypeDefinition(
     case relevantCalls.proxy.pallet:
       definition = manageProxyCall(usedCall, targetCTypeHash);
       break;
+
     default:
       definition = false;
       break;
@@ -98,6 +110,9 @@ function manageProxyCall(
   if (childMethod === relevantCalls.submitDidCall.method) {
     return manageSubmitDidCall(childCall, targetCTypeHash);
   }
+  if (childMethod === relevantCalls.dispatchAs.method) {
+    return manageDispatchAsCalls(childCall, targetCTypeHash);
+  }
 
   if (childMethod === relevantCalls.proxy.method) {
     // Is this possible?
@@ -135,8 +150,11 @@ function manageBatchCalls(
       if (childPallet === relevantCalls.addCType.pallet) {
         return manageAddCTypeCall(childCall, targetCTypeHash);
       }
-      if (childPallet === relevantCalls.submitDidCall.pallet) {
+      if (childMethod === relevantCalls.submitDidCall.method) {
         return manageSubmitDidCall(childCall, targetCTypeHash);
+      }
+      if (childMethod === relevantCalls.dispatchAs.method) {
+        return manageDispatchAsCalls(childCall, targetCTypeHash);
       }
       if (childPallet === relevantCalls.batchAll.pallet) {
         return manageBatchCalls(childCall, targetCTypeHash);
@@ -192,8 +210,56 @@ function manageSubmitDidCall(
   }
 
   if (childMethod === relevantCalls.submitDidCall.method) {
-    // Is this possible?
     return manageSubmitDidCall(childCall, targetCTypeHash);
+  }
+  if (childMethod === relevantCalls.dispatchAs.method) {
+    return manageDispatchAsCalls(childCall, targetCTypeHash);
+  }
+
+  return false;
+}
+
+/** Process extrinsic call and extracts cType definition that matches `targetCTypeHash`.
+ *
+ * @param call Call of this type:
+ *  Pallet: DID.
+ *  Method: dispatch_as.
+ * @param targetCTypeHash Hex-string from Event. Without "kilt:ctype:"
+ *
+ */
+function manageDispatchAsCalls(
+  call: GenericExtrinsic["method"],
+  targetCTypeHash: CTypeHash
+): string | false {
+  const { section: parentPallet, method: parentMethod } = call;
+  assert(
+    parentPallet === relevantCalls.dispatchAs.pallet,
+    "Erroneous extrinsic passed to this function. Wrong Pallet!"
+  );
+  assert(
+    parentMethod === relevantCalls.dispatchAs.method,
+    "Erroneous extrinsic passed to this function. Wrong Method!"
+  );
+
+  // second call argument is the inner call
+  const childCall = call.args[1] as GenericExtrinsic["method"];
+  const { section: childPallet, method: childMethod } = childCall;
+
+  if (childPallet === relevantCalls.addCType.pallet) {
+    return manageAddCTypeCall(childCall, targetCTypeHash);
+  }
+  if (childPallet === relevantCalls.batchAll.pallet) {
+    return manageBatchCalls(childCall, targetCTypeHash);
+  }
+  if (childMethod === relevantCalls.proxy.method) {
+    return manageProxyCall(childCall, targetCTypeHash);
+  }
+
+  if (childMethod === relevantCalls.submitDidCall.method) {
+    return manageSubmitDidCall(childCall, targetCTypeHash);
+  }
+  if (childMethod === relevantCalls.dispatchAs.method) {
+    return manageDispatchAsCalls(childCall, targetCTypeHash);
   }
 
   return false;
