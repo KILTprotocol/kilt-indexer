@@ -363,9 +363,11 @@ function manageDispatchAsCalls(
     "Erroneous extrinsic passed to this function. Wrong Method!"
   );
 
+  // first call argument is the didIdentifier (origin)
+  const didAccountId = call.args[0] as Codec;
+
   // second call argument is the inner call
   const childCall = call.args[1] as GenericExtrinsic["method"];
-  const didAccountId = (call.args[0] as any).did as Codec;
   const { section: childPallet, method: childMethod } = childCall;
 
   if (attesterDidAccount) {
@@ -459,6 +461,9 @@ function validateCredentialAgainstHash(
   logger.info(
     "The target CredentialHash from the event: " + targetCredentialHash
   );
+
+  logger.info("credential to validate: " + credential);
+  logger.info("attesterDidAccount to validate: " + attesterDidAccount);
 
   const encodedCredential = credential.toU8a();
   const encodedAttester = attesterDidAccount.toU8a();
