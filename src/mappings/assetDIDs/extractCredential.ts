@@ -346,6 +346,14 @@ function manageDispatchAsCalls(
   attesterDidAccount?: Codec
 ): CredentialFromChain | false {
   const { section: parentPallet, method: parentMethod } = call;
+
+  logger.info(
+    "On manageDispatchAsCalls: " +
+      "Parent Call passed is of pallet: " +
+      parentPallet +
+      " and of this method: " +
+      parentMethod
+  );
   assert(
     parentPallet === relevantCalls.dispatchAs.pallet,
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
