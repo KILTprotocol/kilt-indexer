@@ -220,7 +220,7 @@ function manageBatchCalls(
           attesterDidAccount
         );
       }
-      if (childPallet === relevantCalls.submitDidCall.method) {
+      if (childMethod === relevantCalls.submitDidCall.method) {
         // debugger:
         logger.info("sending it to manageSubmitDidCall");
         return manageSubmitDidCall(
