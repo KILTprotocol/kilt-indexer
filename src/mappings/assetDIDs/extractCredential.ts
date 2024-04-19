@@ -50,6 +50,10 @@ export function extractCredential(
 
   let credential: CredentialFromChain | false;
 
+  // debuggers:
+  logger.info("usedCall.section: " + usedCall.section);
+  logger.info("usedCall.method: " + usedCall.method);
+
   switch (usedCall.section) {
     case relevantCalls.submitDidCall.pallet:
       switch (usedCall.method) {
@@ -181,12 +185,29 @@ function manageBatchCalls(
     "Erroneous extrinsic passed to this function. Wrong Pallet!"
   );
 
+  // debuggers:
+  logger.info(
+    "managing a call of " +
+      "this pallet : " +
+      parentPallet +
+      " and this method : " +
+      call.method
+  );
   // first call argument is a vector of calls:
   const childrenCalls = call.args[0] as Vec<GenericExtrinsic["method"]>;
 
   const matchedDefinitions = childrenCalls
     .map((childCall) => {
       const { section: childPallet, method: childMethod } = childCall;
+
+      // debuggers:
+      logger.info(
+        "children call of " +
+          "this pallet : " +
+          childPallet +
+          " and this method : " +
+          childMethod
+      );
 
       if (childPallet === relevantCalls.addCredential.pallet) {
         assert(
@@ -200,6 +221,8 @@ function manageBatchCalls(
         );
       }
       if (childPallet === relevantCalls.submitDidCall.method) {
+        // debugger:
+        logger.info("sending it to manageSubmitDidCall");
         return manageSubmitDidCall(
           childCall,
           targetCredentialHash,
@@ -230,6 +253,11 @@ function manageBatchCalls(
       return false;
     })
     .filter((element): element is CredentialFromChain => !!element);
+
+  // debuggers:
+  logger.info(
+    "matchedDefinitions: " + JSON.stringify(matchedDefinitions, null, 2)
+  );
   assert(
     matchedDefinitions.length <= 1,
     "More than one add-PublicCredential extrinsic in this utility batch has a credential who's hash that matches credential-id from event."
@@ -266,12 +294,27 @@ function manageSubmitDidCall(
   const didAccountId = (call.args[0] as any).did as Codec;
   const { section: childPallet, method: childMethod } = childCall;
 
+  // debuggers:
+  logger.info(
+    "inside of manageSubmitDidCall:" +
+      "children call of " +
+      "this pallet : " +
+      childPallet +
+      " and this method : " +
+      childMethod
+  );
+
   if (attesterDidAccount) {
     assert(
       attesterDidAccount === didAccountId,
       `Found nested Submit-DID-Calls with different DIDs. Who is the real attester? \n Outer-DID: ${attesterDidAccount}. \n Inner-DID: ${didAccountId}.`
     );
   }
+
+  // debuggers:
+  logger.info(
+    "inside of manageSubmitDidCall:" + " didAccountId: " + didAccountId
+  );
 
   if (childPallet === relevantCalls.addCredential.pallet) {
     return manageAddPublicCredential(
