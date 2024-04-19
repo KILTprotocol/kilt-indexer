@@ -212,7 +212,7 @@ function manageBatchCalls(
       if (childPallet === relevantCalls.addCredential.pallet) {
         assert(
           attesterDidAccount,
-          "Attester DID missing. Can not very credential without it."
+          "Attester DID missing. Can not verify credential without it."
         );
         return manageAddPublicCredential(
           childCall,
@@ -260,7 +260,7 @@ function manageBatchCalls(
   );
   assert(
     matchedDefinitions.length <= 1,
-    "More than one add-PublicCredential extrinsic in this utility batch has a credential who's hash that matches credential-id from event."
+    "More than one add-PublicCredential extrinsic in this utility batch has a credential who's hash matches credential-id from event."
   );
 
   return matchedDefinitions[0] ?? false;
