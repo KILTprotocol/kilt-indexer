@@ -68,13 +68,13 @@ export async function createPrehistoricCredential(
     await prehistoricDID.save();
   }
 
-  const prehistoricCTypeId = await createPrehistoricCType(blockNumber);
+  const prehistoricCType = await createPrehistoricCType(blockNumber);
 
   const prehistoricCredential = PublicCredential.create({
     id: credentialHash,
     subjectId: assetDidUri,
     valid: true,
-    cTypeId: prehistoricCTypeId,
+    cTypeId: prehistoricCType.id,
     claims: UNKNOWN,
     issuerId: prehistoricDID.id,
     delegationID: UNKNOWN,
