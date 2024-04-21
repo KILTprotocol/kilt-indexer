@@ -58,7 +58,7 @@ export async function handleAttestationCreated(
     id: `${blockNumber}-${eventIndex}`,
     claimHash: claimHash.toHex(),
     cTypeId: cTypeId,
-    attester: "did:kilt:" + attesterDID.toString(),
+    issuer: "did:kilt:" + attesterDID.toString(),
     payer: payer,
     valid: true,
     creationBlockId: blockNumber,

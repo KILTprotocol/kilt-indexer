@@ -120,7 +120,7 @@ fragment wholeAttestation on Attestation {
   id,
   claimHash,
   cTypeId,
-  attester,
+  issuer,
   payer,
   delegationID,
   valid,
@@ -156,7 +156,7 @@ fragment wholeAttestation on Attestation {
          id
          claimHash
          cTypeId
-         attester
+         issuer
          payer
          delegationID
          valid
@@ -219,7 +219,7 @@ fragment wholeAttestation on Attestation {
              id
              cTypeId
              claimHash
-             attester
+             issuer
            }
          }
        }
