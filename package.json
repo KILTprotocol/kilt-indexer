@@ -28,6 +28,7 @@
     "jsonabc": "~2.3.1"
   },
   "devDependencies": {
+    "@apollo/client": "~3.9.11",
     "@kiltprotocol/augment-api": "~0.35.0",
     "@kiltprotocol/type-definitions": "~0.35.0",
     "@kiltprotocol/types": "~0.35.0",
@@ -36,6 +37,8 @@
     "@subql/testing": "~2.1.0",
     "@subql/types": "~3.4.0",
     "@types/jsonabc": "~2.3.3",
+    "@types/node": "~20.12.7",
+    "graphql": "~16.8.1",
     "ts-node": "~10.9.2",
     "typescript": "~5.4.5"
   },
