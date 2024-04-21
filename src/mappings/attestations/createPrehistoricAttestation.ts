@@ -3,6 +3,7 @@ import { CType, Attestation } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
 import { UNKNOWN } from "../mappingHandlers";
+import { createPrehistoricDID } from "../dids/createPrehistoricDID";
 
 /**
  * Solves problems while trying to start Data Base from higher block.
@@ -39,6 +40,7 @@ export async function createPrehistoricAttestation(
   const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + UNKNOWN;
   const payer = UNKNOWN;
+  const issuer = await createPrehistoricDID(event);
 
   // craft my event ordinal index:
   const attestations = await Attestation.getByFields([
@@ -53,7 +55,7 @@ export async function createPrehistoricAttestation(
     id: `${blockNumber}-${eventIndex}`,
     claimHash: claimHash.toHex(),
     cTypeId: cTypeId,
-    attester: "did:kilt:" + attesterDID.toString(),
+    issuerId: issuer.id,
     payer: payer,
     valid: true,
     creationBlockId: blockNumber,
