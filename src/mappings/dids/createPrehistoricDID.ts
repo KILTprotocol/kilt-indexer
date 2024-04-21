@@ -19,6 +19,9 @@ export async function createPrehistoricDID(
   // A DID has been deleted. \[DID identifier\]
   // A new name has been claimed. \[owner, name\]
   // A name has been released. \[owner, name\]
+  // A new attestation has been created.\[attester DID, claim hash, CType hash, (optional) delegation ID\]
+  // An attestation has been revoked.\[attester DID, claim hash\]
+  // An attestation has been removed.\[attester DID, claim hash\]
   const {
     block,
     event: {

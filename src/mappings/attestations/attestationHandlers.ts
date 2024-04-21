@@ -1,9 +1,10 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Attestation } from "../../types";
+import { Attestation, Did } from "../../types";
 import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { createPrehistoricAttestation } from "./createPrehistoricAttestation";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
+import { createPrehistoricDID } from "../dids/createPrehistoricDID";
 
 export async function handleAttestationCreated(
   event: SubstrateEvent
@@ -34,6 +35,18 @@ export async function handleAttestationCreated(
   const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const payer = event.extrinsic!.extrinsic.signer.toString();
+  const issuerId = "did:kilt:" + attesterDID.toString();
+
+  const issuerDID = await Did.get(issuerId);
+
+  // the did (creation) could have happened before the Data base's starting block
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment.
+    assert(issuerDID, `Can't find this DID on the data base: ${issuerId}.`);
+  } catch (error) {
+    logger.info(error);
+    await createPrehistoricDID(event);
+  }
 
   // craft my event ordinal index:
   const attestations = await Attestation.getByFields([
@@ -58,7 +71,7 @@ export async function handleAttestationCreated(
     id: `${blockNumber}-${eventIndex}`,
     claimHash: claimHash.toHex(),
     cTypeId: cTypeId,
-    issuer: "did:kilt:" + attesterDID.toString(),
+    issuerId: issuerId,
     payer: payer,
     valid: true,
     creationBlockId: blockNumber,

@@ -14,7 +14,7 @@ type Attestation @entity {
   id: ID! # <Block number> + "-" + <ordinal number within block>
   claimHash: String! @index # hash of the credential claims. Can be duplicated
   cType: CType! @index # id of the CType used in this attestation. A.k.a.: cTypeHash
-  issuer: String! @index # DID of credential issuer and on-chain attester
+  issuer: Did! @index # DID of credential issuer and on-chain attester
   payer: String! # account address
   delegationID: String
   valid: Boolean!
