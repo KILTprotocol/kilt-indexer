@@ -1,11 +1,14 @@
 import type { SubstrateEvent } from "@subql/types";
-import { CType, Attestation } from "../../types";
+import { CType, Attestation, Did } from "../../types";
 import { extractCTypeDefinition } from "./extractCTypeDefinition";
 import { saveBlock } from "../blocks/saveBlock";
 import { UNKNOWN } from "../mappingHandlers";
+import { createPrehistoricCType } from "./createPrehistoricCType";
+import assert from "assert";
+import { createPrehistoricDID } from "../dids/createPrehistoricDID";
 
 export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
-  // A new CType has been created.\[creator identifier, CType hash\]"
+  // A new CType has been created.\[creator identifier, CType hash\]
   const {
     block,
     event: {
@@ -22,14 +25,25 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 
   const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
-  const author = "did:kilt:" + authorDID.toString();
+  const authorId = "did:kilt:" + authorDID.toString();
+
+  const authorDid = await Did.get(authorId);
+
+  // the did (creation) could have happened before the Data base's starting block
+  try {
+    // TODO: Unwrap the 'assert' and delete the try-catch before deployment.
+    assert(authorDid, `Can't find this DID on the data base: ${authorId}.`);
+  } catch (error) {
+    logger.info(error);
+    await createPrehistoricDID(event);
+  }
 
   const definition = extractCTypeDefinition(extrinsic, cTypeHash.toHex());
 
   const newCType = CType.create({
     id: cTypeId,
     registrationBlockId: blockNumber,
-    author: author,
+    authorId: authorId,
     definition: definition,
     attestationsCreated: 0,
     attestationsRevoked: 0,
@@ -49,16 +63,7 @@ export async function handleCTypeAggregations(
   // TODO: Remove this if-statement before deployment!
   if (!aggregation) {
     // this happens when the DB starts later than the creation of the cType
-    aggregation = CType.create({
-      id: cTypeId,
-      attestationsCreated: 0,
-      attestationsRevoked: 0,
-      attestationsRemoved: 0,
-      validAttestations: 0,
-      author: UNKNOWN,
-      registrationBlockId: UNKNOWN,
-      definition: UNKNOWN,
-    });
+    aggregation = await createPrehistoricCType(UNKNOWN);
   }
 
   const attestationsOfThisCType =

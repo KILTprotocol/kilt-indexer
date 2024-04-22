@@ -12,10 +12,10 @@ type Block @entity {
 
 type Attestation @entity {
   id: ID! # <Block number> + "-" + <ordinal number within block>
-  claimHash: String! @index # ClaimHashOf, can be duplicated
-  cType: CType! @index # Id of the CType used in this attestation. A.k.a.: cTypeHash
-  attester: String! @index # DID of the attester
-  payer: String! # Account address
+  claimHash: String! @index # hash of the credential claims. Can be duplicated
+  cType: CType! @index # id of the CType used in this attestation. A.k.a.: cTypeHash
+  issuer: Did! @index # DID of credential issuer and on-chain attester
+  payer: String! # account address
   delegationID: String
   valid: Boolean!
   creationBlock: Block!
@@ -27,7 +27,7 @@ type CType @entity {
   # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
   id: ID! # "kilt:ctype:" + <CType hash>
   registrationBlock: Block!
-  author: String! @index # DID of the creator
+  author: Did! @index # DID of the creator
   definition: String! # cType Schema
   attestationsCreated: Int!
   attestationsRevoked: Int!
@@ -39,7 +39,7 @@ type CType @entity {
 
 type Did @entity {
   id: ID! # "did:kilt:" + <identifier (encoded as KILT address)>
-  payer: String! @index
+  payer: String! @index # owner account address
   creationBlock: Block!
   deletionBlock: Block
   web3name: Web3Name # w3n:user , only the current one
