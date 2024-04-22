@@ -28,7 +28,7 @@ services:
       DB_PASS: postgres
       DB_DATABASE: postgres
       DB_HOST: postgres
-      DB_PORT: ${POSTGRES_HOST_PORT:-5432}
+      DB_PORT: 5432
     volumes:
       - ./:/app
     networks:
@@ -58,7 +58,7 @@ services:
   graphql-engine:
     image: onfinality/subql-query:latest
     ports:
-      - 127.0.0.1:3000:3000
+      - 127.0.0.1:${GRAPHQL_HOST_PORT:-3000}:3000
     depends_on:
       "postgres":
         condition: service_healthy
@@ -70,7 +70,7 @@ services:
       DB_PASS: postgres
       DB_DATABASE: postgres
       DB_HOST: postgres
-      DB_PORT: ${POSTGRES_HOST_PORT:-5432}
+      DB_PORT: 5432
     command:
       - --name=app
       - --playground
