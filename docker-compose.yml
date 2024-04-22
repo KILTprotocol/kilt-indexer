@@ -30,7 +30,9 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
     volumes:
-      - ./:/app
+      - ./dist/:/app/dist
+      - ./project.yaml/:/app/project.yaml
+      - ./schema.graphql/:/app/schema.graphql
     networks:
       - default
       - private-peregrine-rpc-node-net
