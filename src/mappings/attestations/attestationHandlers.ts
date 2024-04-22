@@ -1,8 +1,7 @@
 import type { SubstrateEvent } from "@subql/types";
-import { Attestation } from "../../types";
+import { Attestation, Did } from "../../types";
 import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
-import { createPrehistoricAttestation } from "./createPrehistoricAttestation";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
 
 export async function handleAttestationCreated(
@@ -34,6 +33,10 @@ export async function handleAttestationCreated(
   const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
   const payer = event.extrinsic!.extrinsic.signer.toString();
+  const issuerId = "did:kilt:" + attesterDID.toString();
+
+  const issuerDID = await Did.get(issuerId);
+  assert(issuerDID, `Can't find this DID on the data base: ${issuerId}.`);
 
   // craft my event ordinal index:
   const attestations = await Attestation.getByFields([
@@ -58,7 +61,7 @@ export async function handleAttestationCreated(
     id: `${blockNumber}-${eventIndex}`,
     claimHash: claimHash.toHex(),
     cTypeId: cTypeId,
-    attester: "did:kilt:" + attesterDID.toString(),
+    issuerId: issuerId,
     payer: payer,
     valid: true,
     creationBlockId: blockNumber,
@@ -103,16 +106,8 @@ export async function handleAttestationRevoked(
   // );
 
   // Get the attestation that is still valid
-  let attestation = attestations.find((atty) => atty.valid);
-
-  // the attestation (creation) could have happened before the DB start block
-  try {
-    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'attestation' a constant.
-    assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
-  } catch (error) {
-    logger.info(error);
-    attestation = await createPrehistoricAttestation(event);
-  }
+  const attestation = attestations.find((atty) => atty.valid);
+  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
 
   attestation.revocationBlockId = await saveBlock(block);
   attestation.valid = false;
@@ -157,16 +152,8 @@ export async function handleAttestationRemoved(
   });
 
   // Get the attestation that has still not been removed yet:
-  let attestation = attestations.find((atty) => !atty.removalBlockId);
-
-  // the attestation (creation) could have happened before the DB start block
-  try {
-    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'attestation' a constant.
-    assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
-  } catch (error) {
-    logger.info(error);
-    attestation = await createPrehistoricAttestation(event);
-  }
+  const attestation = attestations.find((atty) => !atty.removalBlockId);
+  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
 
   attestation.removalBlockId = await saveBlock(block);
   attestation.valid = false;
@@ -214,16 +201,8 @@ export async function handleAttestationDepositReclaimed(
   });
 
   // Get the attestation that has still not been removed yet:
-  let attestation = attestations.find((atty) => !atty.removalBlockId);
-
-  // the attestation (creation) could have happened before the DB start block
-  try {
-    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'attestation' a constant.
-    assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
-  } catch (error) {
-    logger.info(error);
-    attestation = await createPrehistoricAttestation(event);
-  }
+  const attestation = attestations.find((atty) => !atty.removalBlockId);
+  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
 
   attestation.removalBlockId = await saveBlock(block);
   attestation.valid = false;
