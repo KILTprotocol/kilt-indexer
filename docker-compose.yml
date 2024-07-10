@@ -73,4 +73,4 @@ services:
 networks:
   private-peregrine-rpc-node-net:
     external: ${PRIVATE_NODE_ENABLE:-false}
-    name: ${PRIVATE_NODE_NET_NAME:-"none"}
+    name: ${PRIVATE_NODE_NET_NAME:-nonet}
