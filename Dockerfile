@@ -1,5 +1,19 @@
-FROM subquerynetwork/subql-node-substrate:v4.0.1
+FROM subquerynetwork/subql-node-substrate:v4.0.1 AS base
 
-COPY . /app
+WORKDIR /app
 
-ENTRYPOINT ["/bin/sh", "-c"]
+COPY package.json ./
+
+RUN yarn install  --immutable && yarn cache clean --all
+
+COPY tsconfig.json  configuration.ts project.ts schema.graphql ./
+
+RUN yarn codegen
+
+COPY src ./src
+
+RUN yarn build
+
+ENTRYPOINT ["/sbin/tini", "--", "/bin/run"]
+
+CMD ["-f", "/app"]
