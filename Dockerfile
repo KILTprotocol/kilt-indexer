@@ -6,7 +6,7 @@ COPY package.json ./
 
 RUN yarn install  --immutable && yarn cache clean --all
 
-COPY tsconfig.json  configuration.ts project.ts schema.graphql ./
+COPY tsconfig.json  configuration.ts project.ts schema.graphql .env ./
 
 RUN yarn codegen
 
