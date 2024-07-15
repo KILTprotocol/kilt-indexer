@@ -30,6 +30,8 @@ jobs:
         with:
           mask-password: 'true'
       - name: Build image
+        env:
+          CRAWL_PEREGRINE: true
         run: |
           docker build -t indexer:latest .
 

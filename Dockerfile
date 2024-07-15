@@ -17,5 +17,4 @@ RUN yarn build
 ENTRYPOINT ["/sbin/tini", "--", "/bin/run"]
 
 
-CMD ["-c", "${SUB_COMMAND:-}", "-f", "/app", "--targetHeight=${CUTOFF_HEIGHT:-4200000} --db-schema=${DB_SCHEMA:-public} --log-level=${LOG_LEVEL:-} --workers=4 --batch-size=30 --unfinalized-blocks=true"]
-
+CMD ["-f", "/app"]
