@@ -92,5 +92,21 @@ On top of this working SubQuery project, you can add customizations it by changi
 	- Contains typescript functions that handle transformation logic from chain information to database entries.
 	- Defines the mapping handlers listed on the project manifest.
 
+## Need Help?
+
+To get more logs while debugging go to `docker-compose.yml` and uncomment `- --log-level=trace`.
+
+We recommend going through to the documentation of:
+
+* [SubQuery](https://academy.subquery.network)
+* [GraphQl](https://graphql.org/learn/)
+* [KILT](https://docs.kilt.io/)
+
+You can get support from SubQuery, by [joining the SubQuery discord](https://discord.com/invite/subquery) and messaging in the `#technical-support` channel.
+
+For support from KILT, you can [join the KILT Telegram chat](https://t.me/KILTProtocolChat) or [join the Kilt discord](https://discord.com/invite/HztRqvzbhG) and message us.
+
+
+
 
 
