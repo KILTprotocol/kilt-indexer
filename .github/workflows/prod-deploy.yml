@@ -40,8 +40,8 @@ jobs:
           ECR_REPOSITORY: kilt/indexer
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker tag indexer $ECR_REGISTRY/$ECR_REPOSITORY:prod
-          docker tag indexer $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag indexer:prod $ECR_REGISTRY/$ECR_REPOSITORY:prod
+          docker tag indexer:prod $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:prod
       - name: Deploy to kilt cluster
