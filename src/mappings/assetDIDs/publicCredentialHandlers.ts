@@ -2,7 +2,6 @@ import type { SubstrateEvent } from "@subql/types";
 import assert from "assert";
 import { PublicCredential, Update, UpdateNature } from "../../types";
 import { saveBlock } from "../blocks/saveBlock";
-import { createPrehistoricCredential } from "./createPrehistoricCredential";
 import {
   extractCredential,
   type CredentialFromChain,
@@ -106,20 +105,11 @@ export async function handlePublicCredentialRemoved(
   const assetDidUri = await saveAssetDid(subjectID as KiltAssetDidsV1AssetDid);
   const credentialHash = credentialID.toHex();
 
-  let publicCredential = await PublicCredential.get(credentialHash);
-
-  // Prehistoric Case:
-  // the public credential creation could have happened before the Data base's starting block
-  try {
-    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'publicCredential' a constant.
-    assert(
-      publicCredential,
-      `Can't find this Public Credential on the data base. It's ID (hash): ${credentialHash}.`
-    );
-  } catch (error) {
-    logger.info(error);
-    publicCredential = await createPrehistoricCredential(event);
-  }
+  const publicCredential = await PublicCredential.get(credentialHash);
+  assert(
+    publicCredential,
+    `Can't find this Public Credential on the data base. It's ID (hash): ${credentialHash}.`
+  );
 
   assert(
     assetDidUri === publicCredential.subjectId,
@@ -171,20 +161,11 @@ export async function handlePublicCredentialRevoked(
   const blockNumber = await saveBlock(block);
   const credentialHash = credentialID.toHex();
 
-  let publicCredential = await PublicCredential.get(credentialHash);
-
-  // Prehistoric Case:
-  // the public credential creation could have happened before the Data base's starting block
-  try {
-    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'publicCredential' a constant.
-    assert(
-      publicCredential,
-      `Can't find this Public Credential on the data base: ${publicCredential}.`
-    );
-  } catch (error) {
-    logger.info(error);
-    publicCredential = await createPrehistoricCredential(event);
-  }
+  const publicCredential = await PublicCredential.get(credentialHash);
+  assert(
+    publicCredential,
+    `Can't find this Public Credential on the data base: ${publicCredential}.`
+  );
 
   publicCredential.valid = false;
   await publicCredential.save();
@@ -230,20 +211,11 @@ export async function handlePublicCredentialUnrevoked(
   const blockNumber = await saveBlock(block);
   const credentialHash = credentialID.toHex();
 
-  let publicCredential = await PublicCredential.get(credentialHash);
-
-  // Prehistoric Case:
-  // the public credential creation could have happened before the Data base's starting block
-  try {
-    // TODO: Unwrap the 'assert' and delete the try-catch before deployment. And make 'publicCredential' a constant.
-    assert(
-      publicCredential,
-      `Can't find this Public Credential on the data base: ${publicCredential}.`
-    );
-  } catch (error) {
-    logger.info(error);
-    publicCredential = await createPrehistoricCredential(event);
-  }
+  const publicCredential = await PublicCredential.get(credentialHash);
+  assert(
+    publicCredential,
+    `Can't find this Public Credential on the data base: ${publicCredential}.`
+  );
 
   publicCredential.valid = true;
   await publicCredential.save();

@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./docker/pg-Dockerfile
     ports:
-      - 127.0.0.1:5432:5432
+      - 127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432
     volumes:
       - .data/postgres:/var/lib/postgresql/data
     environment:
@@ -58,7 +58,7 @@ services:
   graphql-engine:
     image: onfinality/subql-query:v2.10.0
     ports:
-      - 127.0.0.1:3000:3000
+      - 127.0.0.1:${GRAPHQL_HOST_PORT:-3000}:3000
     depends_on:
       "postgres":
         condition: service_healthy

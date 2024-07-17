@@ -8,6 +8,8 @@ export const ONFINALITY_KEY = loadEnv("ONFINALITY_KEY", false);
 export const CRAWL_PEREGRINE = loadEnv("CRAWL_PEREGRINE", false);
 export const PRIVATE_NODE_ENABLE = loadEnv("PRIVATE_NODE_ENABLE", false);
 export const PRIVATE_NODE_NET_NAME = loadEnv("PRIVATE_NODE_NET_NAME", false);
+export const POSTGRES_HOST_PORT = loadEnv("POSTGRES_HOST_PORT", false);
+export const GRAPHQL_HOST_PORT = loadEnv("GRAPHQL_HOST_PORT", false);
 
 function loadEnv(name: string, compulsory: boolean = true) {
   const envValue = process.env[name];
