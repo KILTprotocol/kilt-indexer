@@ -9,3 +9,10 @@ This includes data related to [decentralized identifiers (DIDs)](https://docs.ki
 
 You can visit our deployed websites to query information.
 It is also possible to run the indexer locally, allowing you to customize it to your needs.
+
+# Deployed Versions
+
+You can interact with our public GraphQL Servers via the Playgrounds deployed under following links:
+
+* To query data from the **KILT production Blockchain**, aliased ***Spiritnet***, visit: https://indexer.kilt.io/
+* To query data from the **KILT development Blockchain**, aliased ***Peregrine***, visit: https://dev-indexer.kilt.io/
