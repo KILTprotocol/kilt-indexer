@@ -1,7 +1,7 @@
 # KILT Indexer
 
 This project builds a customized database with information from the **[KILT Blockchain](https://www.kilt.io/)** , leveraging the robust capabilities of [SubQuery](https://subquery.network) as its backbone.
-[SubQuery](https://subquery.network) provides the generic framework for collecting, processing, and storing data from chain node interactions, which we then tailor specifically for this project.
+We tailor the generic framework provided by SubQuery for **collecting, processing, and storing data from chain node interaction**s.
 The processed data is made available for customers to query via a website or HTTP requests.
 
 The majority of the information collected focuses on **Identity solutions** rather than transactions.
