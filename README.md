@@ -107,6 +107,326 @@ You can get support from SubQuery, by [joining the SubQuery discord](https://dis
 For support from KILT, you can [join the KILT Telegram chat](https://t.me/KILTProtocolChat) or [join the Kilt discord](https://discord.com/invite/HztRqvzbhG) and message us.
 
 
+# For Queries
 
+For this project, you can visit the playground under http://localhost:3000/ and try to query one of the following GraphQL codes to get a taste of how it works.
+
+To help you explore the different possible queries and entities, you can draw the documentation on the right of the GraphQL playground.
+
+Most of the example queries below take advantage of the example fragments.
+You need to add the fragments to the playground as well, if you want to run queries using those fragments.
+
+_Tip: Commas are irrelevant._
+
+## Useful example Fragments
+
+GraphQL provides reusable units called _fragments_.
+Fragments let you construct sets of fields, and then include them in queries where needed.
+
+```
+fragment wholeBlock on Block{
+  id,
+  hash,
+  timeStamp,
+}
+```
+
+```
+fragment wholeAttestation on Attestation {
+  id,
+  claimHash,
+  cTypeId,
+  issuerId,
+  payer,
+  delegationID,
+  valid,
+  creationBlock {
+    ...wholeBlock,
+  },
+  revocationBlock  {
+    ...wholeBlock,
+  },
+  removalBlock {
+    ...wholeBlock,
+  },
+}
+```
+
+## Query Examples:
+
+1. **Find Attestation by its claim hash:**
+
+   - _without using fragments:_
+
+   ```
+   query {
+     attestations(
+       filter: {
+         claimHash: {
+           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+         }
+       }
+     ) {
+       totalCount
+       nodes {
+         id
+         claimHash
+         cTypeId
+         issuerId
+         payer
+         delegationID
+         valid
+         creationBlock {
+           id
+           hash
+           timeStamp
+         }
+       }
+     }
+   }
+
+   ```
+
+   - _taking advantage of fragments:_
+
+   ```
+   query {
+     attestations(
+       filter: {
+         claimHash: {
+           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+         }
+       }
+     ) {
+       totalCount
+       nodes {
+         ...wholeAttestation
+       }
+     }
+   }
+   ```
+
+2. **Find all revoked attestations:**
+
+   ```
+   query {
+     attestations(filter: { revocationBlockId: { isNull: false } }) {
+       totalCount
+       nodes {
+         ...wholeAttestation
+       }
+     }
+   }
+   ```
+
+3. **Find how many attestations were made on a block:**
+
+   ```
+   query {
+     blocks(filter: { id: { equalTo: "3396407" } }) {
+       # Queries can have comments!
+       nodes {
+         id
+         timeStamp
+         hash
+         attestationsByCreationBlockId {
+           totalCount
+           nodes {
+             id
+             cTypeId
+             claimHash
+             issuerId
+           }
+         }
+       }
+     }
+   }
+   ```
+
+4. **Find all cTypes that have been used at least once:**
+
+   ```
+   query {
+     cTypes(
+       filter: { attestations: { some: { id: { isNull: false } } } }
+       orderBy: ATTESTATIONS_COUNT_DESC
+     ) {
+       totalCount
+       nodes {
+         id
+         author
+         registrationBlock {
+           ...wholeBlock
+         }
+         attestationsCreated
+         attestationsRevoked
+         attestationsRemoved
+         validAttestations
+         attestations(orderBy: ID_ASC) {
+           totalCount
+           nodes {
+             ...wholeAttestation
+           }
+         }
+       }
+     }
+   }
+   ```
+
+5. **Find all cTypes created during the second million blocks:**
+
+   ```
+   query {
+     cTypes(
+       filter: {
+         registrationBlockId: {
+           greaterThanOrEqualTo: "1000000"
+           lessThanOrEqualTo: "2000000"
+         }
+       }
+     ) {
+       totalCount
+       nodes {
+         id
+         author
+         registrationBlock {
+           ...wholeBlock
+         }
+         attestationsCreated
+         validAttestations
+       }
+     }
+   }
+   ```
+
+6. **Find all attestation revoked during October 2023:**
+
+   ```
+   query {
+     attestations(
+       filter: {
+         revocationBlock: {
+           timeStamp: { greaterThan: "2023-9-30", lessThan: "2023-11-1" }
+         }
+       }
+       orderBy: ID_ASC
+     ) {
+       totalCount
+       nodes {
+         ...wholeAttestation
+       }
+     }
+   }
+   ```
+
+7. **Find DID bearer of w3n:alice and since when:**
+
+   ```
+   query {
+     dids(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
+       nodes {
+         id
+         payer
+         creationBlock {
+           id
+           timeStamp
+         }
+         deletionBlockId
+         web3NameId
+         ownershipsByBearerId {
+           nodes {
+             id
+             claimBlock {
+               id
+               timeStamp
+             }
+             releaseBlockId
+           }
+         }
+       }
+     }
+   }
+
+   ```
+
+8. **Find registered data about banned web3names:** (It has never happened on KILT Spiritnet)
+
+   ```
+   query {
+     web3Names(filter: { banned: { equalTo: true } }) {
+       totalCount
+       nodes {
+         id
+         banned
+         ownerships {
+           totalCount
+           nodes {
+             id
+             bearerId
+             claimBlockId
+             releaseBlockId
+           }
+         }
+
+         sanctionsByNameId {
+           totalCount
+           nodes {
+             id
+             nameId
+             nature
+             enforcementBlockId
+           }
+         }
+       }
+     }
+   }
+   ```
+
+9. **Find out who has ever owned w3n:john_doe and when:**
+
+   ```
+   query {
+    web3Names(filter: { id: { equalTo: "w3n:john_doe" } }) {
+      nodes {
+        id
+        banned
+        ownerships(orderBy: ID_ASC) {
+          totalCount
+          nodes {
+            id
+            bearerId
+            claimBlockId
+            releaseBlockId
+          }
+        }
+      }
+    }
+   }
+   ```
+
+10. **Get all Public Credentials and its corresponding Updates:**
+    ```
+    query {
+      publicCredentials {
+        totalCount
+        nodes {
+          id
+          subjectId
+          claims
+          cTypeId
+          issuerId
+          valid
+          updates(orderBy: ID_ASC) {
+            totalCount
+            nodes {
+              id
+              nature
+              updateBlockId
+            }
+          }
+        }
+      }
+    }
+    ```
 
 
