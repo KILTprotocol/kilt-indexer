@@ -62,9 +62,9 @@ Each of these steps can also be executed independently using the following comma
     - Generates types from the GraphQL schema definition and saves them in the `/src/types` directory.
     - This must be done after each change to the `schema.graphql` file.
 2.  `yarn build`
-    -     Builds and packages the SubQuery project into the `/dist` directory
+    - Builds and packages the SubQuery project into the `/dist` directory
 3.  `yarn start:docker`
-    -     It's an alias to `docker-compose pull && docker-compose up`.
+    - It's an alias to `docker-compose pull && docker-compose up`.
     - **Fetches and runs** three Docker containers: an **indexer**, a **PostgeSQL DataBase**, and a **query service**.
     - The `docker-compose.yml` file manages this Docker Compose application, orchestrating the various containers needed for the project.
       It specifies wich images to pull and configures how to (re)start the services.
