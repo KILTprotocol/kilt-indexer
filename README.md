@@ -102,7 +102,7 @@ To get more logs while debugging go to `docker-compose.yml` and uncomment `- --l
 We recommend going through to the documentation of:
 
 - [SubQuery](https://academy.subquery.network)
-- [GraphQl](https://graphql.org/learn/)
+- [GraphQL](https://graphql.org/learn/)
 - [KILT](https://docs.kilt.io/)
 
 You can get support from SubQuery, by [joining the SubQuery discord](https://discord.com/invite/subquery) and messaging in the `#technical-support` channel.
