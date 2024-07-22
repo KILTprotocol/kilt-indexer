@@ -19,6 +19,12 @@ You can interact with our public GraphQL Servers via the Playgrounds deployed un
 
 # Getting started
 
+## Steps to launch locally
+
+1. [Clone repository and **install** all necessary modules.](#Installation)
+2. [Define your **environment variables**](#Environment-Variables)
+3. [**Run the Indexer**](#Run-the-Project)
+
 ## Prerequisites
 
 Make sure you installed these requiered software before running this project:
