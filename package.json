@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "indexing of attestations and CTypes",
   "main": "dist/index.js",
+  "packageManager": "yarn@3.6.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "codegen": "subql codegen",
     "build": "subql build",
@@ -47,6 +51,5 @@
   },
   "exports": {
     "chaintypes": "./src/chaintypes.ts"
-  },
-  "packageManager": "yarn@3.6.0"
+  }
 }
