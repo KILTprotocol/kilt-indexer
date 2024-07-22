@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@kiltprotocol/sdk-js": "^0.35.2",
-    "@polkadot/api": "^10.13.1",
+    "@polkadot/api": "^12.2.1",
     "dotenv": "^16.4.5",
     "jsonabc": "^2.3.1"
   },
