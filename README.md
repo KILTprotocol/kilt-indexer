@@ -31,7 +31,6 @@ Make sure you installed these required software before running this project:
 
 - [Node.js](https://nodejs.org/en/download/prebuilt-installer)
 - [Yarn](https://yarnpkg.com/getting-started/install)
-- [PostgreSQL](https://www.postgresql.org/download/)
 - [Docker](https://docs.docker.com/engine/install/)
 
 ### Installation
