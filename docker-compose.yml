@@ -12,7 +12,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -44,13 +44,7 @@ services:
       - --unfinalized-blocks=true
       # - --log-level=trace # uncomment for debugging
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://subquery-node:3000/ready"
-        ]
+      test: ["CMD", "curl", "-f", "http://subquery-node:3000/ready"]
       interval: 3s
       timeout: 5s
       retries: 50
@@ -79,4 +73,4 @@ services:
 networks:
   private-peregrine-rpc-node-net:
     external: ${PRIVATE_NODE_ENABLE:-false}
-    name: ${PRIVATE_NODE_NET_NAME:-}
+    name: ${PRIVATE_NODE_NET_NAME:-nonet}
