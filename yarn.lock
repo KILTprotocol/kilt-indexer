@@ -15,6 +15,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/client@npm:^3.10.8":
+  version: 3.10.8
+  resolution: "@apollo/client@npm:3.10.8"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@wry/caches": "npm:^1.0.0"
+    "@wry/equality": "npm:^0.5.6"
+    "@wry/trie": "npm:^0.5.0"
+    graphql-tag: "npm:^2.12.6"
+    hoist-non-react-statics: "npm:^3.3.2"
+    optimism: "npm:^0.18.0"
+    prop-types: "npm:^15.7.2"
+    rehackt: "npm:^0.1.0"
+    response-iterator: "npm:^0.2.6"
+    symbol-observable: "npm:^4.0.0"
+    ts-invariant: "npm:^0.10.3"
+    tslib: "npm:^2.3.0"
+    zen-observable-ts: "npm:^1.2.5"
+  peerDependencies:
+    graphql: ^15.0.0 || ^16.0.0
+    graphql-ws: ^5.5.5
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+  peerDependenciesMeta:
+    graphql-ws:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+    subscriptions-transport-ws:
+      optional: true
+  checksum: 10/c5e16747f4b11e3e7994cf5b44e68b51fd2ab5ac4a3721344d421c0f58dd8d6c65854ff1178a2bf7c8f42e59b7d053e73ef64ea365c3f6f2b0d1a10fcbf9124c
+  languageName: node
+  linkType: hard
+
 "@apollo/client@npm:^3.8.8":
   version: 3.9.11
   resolution: "@apollo/client@npm:3.9.11"
@@ -49,43 +86,6 @@ __metadata:
     subscriptions-transport-ws:
       optional: true
   checksum: 10/d16a334c9675955c79388bbb8b0b7ebf702bb6a24cb907a723be7e08ed878891ab6bfb37e46c6a4568a4f254f511405962896f06dd766c1cb01af41bc39566cf
-  languageName: node
-  linkType: hard
-
-"@apollo/client@npm:^3.9.11":
-  version: 3.10.8
-  resolution: "@apollo/client@npm:3.10.8"
-  dependencies:
-    "@graphql-typed-document-node/core": "npm:^3.1.1"
-    "@wry/caches": "npm:^1.0.0"
-    "@wry/equality": "npm:^0.5.6"
-    "@wry/trie": "npm:^0.5.0"
-    graphql-tag: "npm:^2.12.6"
-    hoist-non-react-statics: "npm:^3.3.2"
-    optimism: "npm:^0.18.0"
-    prop-types: "npm:^15.7.2"
-    rehackt: "npm:^0.1.0"
-    response-iterator: "npm:^0.2.6"
-    symbol-observable: "npm:^4.0.0"
-    ts-invariant: "npm:^0.10.3"
-    tslib: "npm:^2.3.0"
-    zen-observable-ts: "npm:^1.2.5"
-  peerDependencies:
-    graphql: ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-    subscriptions-transport-ws:
-      optional: true
-  checksum: 10/c5e16747f4b11e3e7994cf5b44e68b51fd2ab5ac4a3721344d421c0f58dd8d6c65854ff1178a2bf7c8f42e59b7d053e73ef64ea365c3f6f2b0d1a10fcbf9124c
   languageName: node
   linkType: hard
 
@@ -3949,7 +3949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/cli@npm:^4.5.2":
+"@subql/cli@npm:^4.15.0":
   version: 4.15.0
   resolution: "@subql/cli@npm:4.15.0"
   dependencies:
@@ -4205,7 +4205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/node@npm:^4.1.0":
+"@subql/node@npm:^4.9.0":
   version: 4.9.0
   resolution: "@subql/node@npm:4.9.0"
   dependencies:
@@ -4233,7 +4233,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/testing@npm:2.2.1, @subql/testing@npm:^2.1.0":
+"@subql/testing@npm:2.2.1, @subql/testing@npm:^2.2.1":
   version: 2.2.1
   resolution: "@subql/testing@npm:2.2.1"
   dependencies:
@@ -4354,7 +4354,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/types@npm:3.9.0, @subql/types@npm:^3.4.0":
+"@subql/types@npm:3.9.0, @subql/types@npm:^3.9.0":
   version: 3.9.0
   resolution: "@subql/types@npm:3.9.0"
   dependencies:
@@ -4845,7 +4845,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.12.7":
+"@types/node@npm:^20.14.11":
   version: 20.14.11
   resolution: "@types/node@npm:20.14.11"
   dependencies:
@@ -8000,7 +8000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.1":
+"graphql@npm:^16.9.0":
   version: 16.9.0
   resolution: "graphql@npm:16.9.0"
   checksum: 10/5833f82bb6c31bec120bbf9cd400eda873e1bb7ef5c17974fa262cd82dc68728fda5d4cb859dc8aaa4c4fe4f6fe1103a9c47efc01a12c02ae5cb581d8e4029e2
@@ -9263,23 +9263,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "kilt-indexer@workspace:."
   dependencies:
-    "@apollo/client": "npm:^3.9.11"
+    "@apollo/client": "npm:^3.10.8"
     "@kiltprotocol/augment-api": "npm:^0.35.2"
     "@kiltprotocol/sdk-js": "npm:^0.35.2"
     "@kiltprotocol/type-definitions": "npm:^0.35.2"
     "@kiltprotocol/types": "npm:^0.35.2"
     "@polkadot/api": "npm:^10.13.1"
-    "@subql/cli": "npm:^4.5.2"
-    "@subql/node": "npm:^4.1.0"
-    "@subql/testing": "npm:^2.1.0"
-    "@subql/types": "npm:^3.4.0"
+    "@subql/cli": "npm:^4.15.0"
+    "@subql/node": "npm:^4.9.0"
+    "@subql/testing": "npm:^2.2.1"
+    "@subql/types": "npm:^3.9.0"
     "@types/jsonabc": "npm:^2.3.3"
-    "@types/node": "npm:^20.12.7"
+    "@types/node": "npm:^20.14.11"
     dotenv: "npm:^16.4.5"
-    graphql: "npm:^16.8.1"
+    graphql: "npm:^16.9.0"
     jsonabc: "npm:^2.3.1"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:^5.4.5"
+    typescript: "npm:^5.5.3"
   languageName: unknown
   linkType: soft
 
@@ -12369,7 +12369,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.4.5":
+"typescript@npm:^5.5.3":
   version: 5.5.3
   resolution: "typescript@npm:5.5.3"
   bin:
@@ -12389,7 +12389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.5.3#optional!builtin<compat/typescript>":
   version: 5.5.3
   resolution: "typescript@patch:typescript@npm%3A5.5.3#optional!builtin<compat/typescript>::version=5.5.3&hash=379a07"
   bin:

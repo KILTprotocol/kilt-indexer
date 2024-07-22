@@ -32,19 +32,19 @@
     "jsonabc": "^2.3.1"
   },
   "devDependencies": {
-    "@apollo/client": "^3.9.11",
+    "@apollo/client": "^3.10.8",
     "@kiltprotocol/augment-api": "^0.35.2",
     "@kiltprotocol/type-definitions": "^0.35.2",
     "@kiltprotocol/types": "^0.35.2",
-    "@subql/cli": "^4.5.2",
-    "@subql/node": "^4.1.0",
-    "@subql/testing": "^2.1.0",
-    "@subql/types": "^3.4.0",
+    "@subql/cli": "^4.15.0",
+    "@subql/node": "^4.9.0",
+    "@subql/testing": "^2.2.1",
+    "@subql/types": "^3.9.0",
     "@types/jsonabc": "^2.3.3",
-    "@types/node": "^20.12.7",
-    "graphql": "^16.8.1",
+    "@types/node": "^20.14.11",
+    "graphql": "^16.9.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.3"
   },
   "resolutions": {
     "ipfs-unixfs": "6.0.6"
