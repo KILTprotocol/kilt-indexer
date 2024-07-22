@@ -2495,7 +2495,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kiltprotocol/augment-api@npm:0.35.2, @kiltprotocol/augment-api@npm:^0.35.0":
+"@kiltprotocol/augment-api@npm:0.35.2, @kiltprotocol/augment-api@npm:^0.35.2":
   version: 0.35.2
   resolution: "@kiltprotocol/augment-api@npm:0.35.2"
   dependencies:
@@ -2580,7 +2580,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kiltprotocol/sdk-js@npm:^0.35.0":
+"@kiltprotocol/sdk-js@npm:^0.35.2":
   version: 0.35.2
   resolution: "@kiltprotocol/sdk-js@npm:0.35.2"
   dependencies:
@@ -2595,14 +2595,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kiltprotocol/type-definitions@npm:0.35.2, @kiltprotocol/type-definitions@npm:^0.35.0":
+"@kiltprotocol/type-definitions@npm:0.35.2, @kiltprotocol/type-definitions@npm:^0.35.2":
   version: 0.35.2
   resolution: "@kiltprotocol/type-definitions@npm:0.35.2"
   checksum: 10/0aab6d592766f5487f90be8bc6de910617f4301f198e540b7b56602967317f8ee7215c0acd0eb0313ae43c2ba71cb361fcf4a89fb9f4f1f9cf7cfcb269ffcc68
   languageName: node
   linkType: hard
 
-"@kiltprotocol/types@npm:0.35.2, @kiltprotocol/types@npm:^0.35.0":
+"@kiltprotocol/types@npm:0.35.2, @kiltprotocol/types@npm:^0.35.2":
   version: 0.35.2
   resolution: "@kiltprotocol/types@npm:0.35.2"
   dependencies:
@@ -9264,10 +9264,10 @@ __metadata:
   resolution: "kilt-indexer@workspace:."
   dependencies:
     "@apollo/client": "npm:^3.9.11"
-    "@kiltprotocol/augment-api": "npm:^0.35.0"
-    "@kiltprotocol/sdk-js": "npm:^0.35.0"
-    "@kiltprotocol/type-definitions": "npm:^0.35.0"
-    "@kiltprotocol/types": "npm:^0.35.0"
+    "@kiltprotocol/augment-api": "npm:^0.35.2"
+    "@kiltprotocol/sdk-js": "npm:^0.35.2"
+    "@kiltprotocol/type-definitions": "npm:^0.35.2"
+    "@kiltprotocol/types": "npm:^0.35.2"
     "@polkadot/api": "npm:^10.13.1"
     "@subql/cli": "npm:^4.5.2"
     "@subql/node": "npm:^4.1.0"
