@@ -7,8 +7,8 @@ The processed data is made available for customers to query via a website or HTT
 The majority of the information collected focuses on **Identity solutions** rather than transactions.
 This includes data related to [decentralized identifiers (DIDs)](https://docs.kilt.io/docs/concepts/did) and [verifiable credentials (VCs)](https://docs.kilt.io/docs/concepts/credentials/overview).
 
-You can visit our deployed websites to query information.
-It is also possible to run the indexer locally, allowing you to customize it to your needs.
+You can [visit our deployed websites to query information](#deployed-versions).
+It is also possible to [run the indexer locally](#steps-to-launch-locally), allowing you to customize it to your needs.
 
 ## Deployed Versions
 
