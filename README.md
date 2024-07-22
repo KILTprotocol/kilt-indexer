@@ -1,7 +1,7 @@
 # KILT Indexer
 
-This project builds a customized database with information from the **[KILT Blockchain](https://www.kilt.io/)** , leveraging the robust capabilities of [SubQuery](https://subquery.network) as its backbone.
-We tailor the generic framework provided by SubQuery for **collecting, processing, and storing data from chain node interaction**s.
+This KILT Indexer project builds a customized database with information from the **[KILT Blockchain](https://www.kilt.io/)** , leveraging the robust capabilities of [SubQuery](https://subquery.network) as its backbone.
+This Indexer tailors the generic framework provided by SubQuery for **collecting, processing, and storing data from chain node interaction**s.
 The processed data is made available for customers to query via a website or HTTP requests.
 
 The majority of the information collected focuses on **Identity solutions** rather than transactions.
@@ -14,17 +14,17 @@ It is also possible to run the indexer locally, allowing you to customize it to 
 
 You can interact with our public GraphQL Servers via the Playgrounds deployed under following links:
 
-* To query data from the **KILT production Blockchain**, aliased ***Spiritnet***, visit: https://indexer.kilt.io/
-* To query data from the **KILT development Blockchain**, aliased ***Peregrine***, visit: https://dev-indexer.kilt.io/
+- To query data from the **KILT production Blockchain**, aliased **_Spiritnet_**, visit: https://indexer.kilt.io/
+- To query data from the **KILT development Blockchain**, aliased **_Peregrine_**, visit: https://dev-indexer.kilt.io/
 
 # Getting started
 
 ## Prerequisites
 
-Make sure you installed these requiered software before running this project: 
+Make sure you installed these requiered software before running this project:
 
 - [Node.js](https://nodejs.org/en/download/prebuilt-installer)
-- [Yarn](https://yarnpkg.com/getting-started/install) 
+- [Yarn](https://yarnpkg.com/getting-started/install)
 - [PostgreSQL](https://www.postgresql.org/download/)
 - [Docker](https://docs.docker.com/engine/install/)
 
@@ -38,7 +38,7 @@ After [cloning the repository](https://docs.github.com/en/repositories/creating-
 
 **You actually do not need to define any environment variables to run this project.**
 
-There are default values for all of the environment variables. 
+There are default values for all of the environment variables.
 Nevertheless, you can use other values by assigning them inside the `.env`-file.
 
 On the root directory of this repository, there is an `.env.example`-file that list how your variables should be named and what is their use.
@@ -46,24 +46,23 @@ The `.env`-file should be added to the same level (directory) where `.env.exampl
 
 ## Run the Project
 
-*First make sure your docker daemon is running.*
+_First make sure your docker daemon is running._
 
-The simplest way to run your project is by running `yarn dev` or `npm run-script dev`. 
+The simplest way to run your project is by running `yarn dev` or `npm run-script dev`.
 This command sequentially executes three steps in a row.
 Each of these steps can also be executed independently using the following commands:
 
-1. `yarn codegen` 
-	*  Generates types from the GraphQL schema definition and saves them in the `/src/types` directory.
-	*  This must be done after each change to the `schema.graphql` file.
-2. `yarn build` 
-	* 	Builds and packages the SubQuery project into the `/dist` directory
-3. `yarn start:docker`
-	* 	It's an alias to `docker-compose pull && docker-compose up`.
-	*  **Fetches and runs** three Docker containers: an **indexer**, a **PostgeSQL DataBase**, and a **query service**.
-	*  The `docker-compose.yml` file manages this Docker Compose application, orchestrating the various containers needed for the project.
-		It specifies wich images to pull and configures how to (re)start the services. 
-	*  This [requires](#Prerequisites) Docker to be running locally.
-
+1.  `yarn codegen`
+    - Generates types from the GraphQL schema definition and saves them in the `/src/types` directory.
+    - This must be done after each change to the `schema.graphql` file.
+2.  `yarn build`
+    -     Builds and packages the SubQuery project into the `/dist` directory
+3.  `yarn start:docker`
+    -     It's an alias to `docker-compose pull && docker-compose up`.
+    - **Fetches and runs** three Docker containers: an **indexer**, a **PostgeSQL DataBase**, and a **query service**.
+    - The `docker-compose.yml` file manages this Docker Compose application, orchestrating the various containers needed for the project.
+      It specifies wich images to pull and configures how to (re)start the services.
+    - This [requires](#Prerequisites) Docker to be running locally.
 
 You can observe the three services start (it may take a few minutes on your first start). Once all are running, you can head to http://localhost:3000 on your browser and you should see a [GraphQL Playground](https://academy.subquery.network/indexer/run_publish/query/graphql.html) showing with the schemas ready to query.
 
@@ -73,24 +72,22 @@ After making changes to `schema.graphql` you definitely need to renew your datab
 
 Additionally, you can run `yarn slash` to delete all autogenerated files at once, including the database.
 
-
-
 # Editing your Indexer
 
-*We recommend you to fork this repository to your personal 'git' before doing any changes.*
-*We would love to see any improvemet suggestions comming from the community in the form of Pull Requests.* 
+_We recommend you to fork this repository to your personal 'git' before doing any changes._
+_We would love to see any improvemet suggestions comming from the community in the form of Pull Requests._
 
 On top of this working SubQuery project, you can add customizations it by changing the following files:
 
 - The project manifest `project.yaml`:
-	- This defines the key project configuration and mapping handler filters.
-	- `project.yaml` is autogenerated from `project.ts` wich consumes the environment variables. 
+  - This defines the key project configuration and mapping handler filters.
+  - `project.yaml` is autogenerated from `project.ts` wich consumes the environment variables.
 - The GraphQL Schema `schema.graphql`:
-	- That defines the shape of the resulting data being indexed.
-	- It defines the data models for the database.
+  - That defines the shape of the resulting data being indexed.
+  - It defines the data models for the database.
 - The Mapping directory `src/mappings/`:
-	- Contains typescript functions that handle transformation logic from chain information to database entries.
-	- Defines the mapping handlers listed on the project manifest.
+  - Contains typescript functions that handle transformation logic from chain information to database entries.
+  - Defines the mapping handlers listed on the project manifest.
 
 ## Need Help?
 
@@ -98,14 +95,13 @@ To get more logs while debugging go to `docker-compose.yml` and uncomment `- --l
 
 We recommend going through to the documentation of:
 
-* [SubQuery](https://academy.subquery.network)
-* [GraphQl](https://graphql.org/learn/)
-* [KILT](https://docs.kilt.io/)
+- [SubQuery](https://academy.subquery.network)
+- [GraphQl](https://graphql.org/learn/)
+- [KILT](https://docs.kilt.io/)
 
 You can get support from SubQuery, by [joining the SubQuery discord](https://discord.com/invite/subquery) and messaging in the `#technical-support` channel.
 
 For support from KILT, you can [join the KILT Telegram chat](https://t.me/KILTProtocolChat) or [join the Kilt discord](https://discord.com/invite/HztRqvzbhG) and message us.
-
 
 # For Queries
 
@@ -428,5 +424,3 @@ fragment wholeAttestation on Attestation {
       }
     }
     ```
-
-
