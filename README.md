@@ -41,7 +41,7 @@ After [cloning the repository](https://docs.github.com/en/repositories/creating-
 
 ### Environment Variables
 
-**You actually do not need to define any environment variables to run this project.**
+**You do not need to define any environment variables to run this project.**
 
 There are default values for all of the environment variables.
 Nevertheless, you can use other values by assigning them inside the `.env`-file.
