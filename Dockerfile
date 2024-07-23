@@ -2,7 +2,7 @@ FROM subquerynetwork/subql-node-substrate:v4.0.1 AS base
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 RUN yarn install  --immutable && yarn cache clean --all
 
