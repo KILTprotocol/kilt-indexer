@@ -1,6 +1,5 @@
 on:
   workflow_dispatch:
-    types: [ created ]
   push:
     branches:
       - develop
@@ -28,7 +27,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          mask-password: 'true'
+          mask-password: "true"
       - name: Build image
         run: |
           echo "CRAWL_PEREGRINE=true" > .env
