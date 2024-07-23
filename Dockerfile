@@ -2,7 +2,7 @@ FROM subquerynetwork/subql-node-substrate:v4.0.1 AS base
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json yarn.lock ./
 
 # Check if yarn.lock exists before running yarn install
 RUN if [ -f yarn.lock ]; then echo "yarn.lock exists"; else echo "yarn.lock does not exist"; fi
