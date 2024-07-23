@@ -44,7 +44,7 @@ After [cloning the repository](https://docs.github.com/en/repositories/creating-
 **You do not need to define any environment variables to run this project.**
 
 There are default values for all of the environment variables.
-Nevertheless, you can use other values by assigning them inside the `.env`-file.
+You can use other values by assigning them inside an `.env`-file.
 
 In the root directory of this repository, is an `.env.example`-file that lists how to name environment variables and what is their use.
 Add the `.env` file to the same directory level as the `.env.example` file.
@@ -53,7 +53,7 @@ Add the `.env` file to the same directory level as the `.env.example` file.
 
 _First make sure the docker daemon is running._
 
-The simplest way to run your project is by running `yarn dev` or `npm run-script dev`.
+The easiest way to run your project is by running `yarn dev` or `npm run-script dev`.
 This command sequentially executes three steps.
 Each of these steps can also be executed independently using the following commands:
 
