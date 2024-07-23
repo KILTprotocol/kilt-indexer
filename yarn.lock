@@ -15,7 +15,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.10.8":
+"@apollo/client@npm:^3.10.8, @apollo/client@npm:^3.8.8":
   version: 3.10.8
   resolution: "@apollo/client@npm:3.10.8"
   dependencies:
@@ -49,43 +49,6 @@ __metadata:
     subscriptions-transport-ws:
       optional: true
   checksum: 10/c5e16747f4b11e3e7994cf5b44e68b51fd2ab5ac4a3721344d421c0f58dd8d6c65854ff1178a2bf7c8f42e59b7d053e73ef64ea365c3f6f2b0d1a10fcbf9124c
-  languageName: node
-  linkType: hard
-
-"@apollo/client@npm:^3.8.8":
-  version: 3.9.11
-  resolution: "@apollo/client@npm:3.9.11"
-  dependencies:
-    "@graphql-typed-document-node/core": "npm:^3.1.1"
-    "@wry/caches": "npm:^1.0.0"
-    "@wry/equality": "npm:^0.5.6"
-    "@wry/trie": "npm:^0.5.0"
-    graphql-tag: "npm:^2.12.6"
-    hoist-non-react-statics: "npm:^3.3.2"
-    optimism: "npm:^0.18.0"
-    prop-types: "npm:^15.7.2"
-    rehackt: "npm:0.0.6"
-    response-iterator: "npm:^0.2.6"
-    symbol-observable: "npm:^4.0.0"
-    ts-invariant: "npm:^0.10.3"
-    tslib: "npm:^2.3.0"
-    zen-observable-ts: "npm:^1.2.5"
-  peerDependencies:
-    graphql: ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-    subscriptions-transport-ws:
-      optional: true
-  checksum: 10/d16a334c9675955c79388bbb8b0b7ebf702bb6a24cb907a723be7e08ed878891ab6bfb37e46c6a4568a4f254f511405962896f06dd766c1cb01af41bc39566cf
   languageName: node
   linkType: hard
 
@@ -4871,14 +4834,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@substrate/connect-known-chains@npm:^1.1.1":
-  version: 1.1.2
-  resolution: "@substrate/connect-known-chains@npm:1.1.2"
-  checksum: 10/9aff94053ee3c5e9c38529258774337716d35ca1b386cc10f1d4ecc1fdc56574d7a233bfb5fe1a9cee9aa6551d6f18c777342607c83dff7d220e0576e63b4098
-  languageName: node
-  linkType: hard
-
-"@substrate/connect-known-chains@npm:^1.1.4":
+"@substrate/connect-known-chains@npm:^1.1.1, @substrate/connect-known-chains@npm:^1.1.4":
   version: 1.1.11
   resolution: "@substrate/connect-known-chains@npm:1.1.11"
   checksum: 10/b113cf7c1c562e6c726738ae41065038c19ff77f96e86280e55d91bcb197e8412f2de855cf9bdd12e5dbe9a130d10022959f783308647d360a9aa494ed8d2287
@@ -4943,14 +4899,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@substrate/ss58-registry@npm:^1.44.0":
-  version: 1.47.0
-  resolution: "@substrate/ss58-registry@npm:1.47.0"
-  checksum: 10/f78edac6ad88a3063bc0474b2ae2394b5af60cf61f474f4c4ad171346f8debba9fc8b047f0046ccb1abddeb7c13377a5fcf2046c0496a26a1a192cc7a4224ff4
-  languageName: node
-  linkType: hard
-
-"@substrate/ss58-registry@npm:^1.46.0":
+"@substrate/ss58-registry@npm:^1.44.0, @substrate/ss58-registry@npm:^1.46.0":
   version: 1.49.0
   resolution: "@substrate/ss58-registry@npm:1.49.0"
   checksum: 10/6214c8f8586aefbb67b70bd2f02a9d133cfb15f360d691f1164c192036b59d1e282495e884b7da80a32e54eed1bd2bcc421f571e548a29410a5a50be7b2daa10
@@ -5173,16 +5122,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0":
-  version: 20.12.7
-  resolution: "@types/node@npm:20.12.7"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10/b4a28a3b593a9bdca5650880b6a9acef46911d58cf7cfa57268f048e9a7157a7c3196421b96cea576850ddb732e3b54bc982c8eb5e1e5ef0635d4424c2fce801
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.14.11":
+"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^20.14.11":
   version: 20.14.11
   resolution: "@types/node@npm:20.14.11"
   dependencies:
@@ -7226,7 +7166,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ejs@npm:^3.1.10":
+"ejs@npm:^3.1.10, ejs@npm:^3.1.6, ejs@npm:^3.1.8":
   version: 3.1.10
   resolution: "ejs@npm:3.1.10"
   dependencies:
@@ -7234,17 +7174,6 @@ __metadata:
   bin:
     ejs: bin/cli.js
   checksum: 10/a9cb7d7cd13b7b1cd0be5c4788e44dd10d92f7285d2f65b942f33e127230c054f99a42db4d99f766d8dbc6c57e94799593ee66a14efd7c8dd70c4812bf6aa384
-  languageName: node
-  linkType: hard
-
-"ejs@npm:^3.1.6, ejs@npm:^3.1.8":
-  version: 3.1.9
-  resolution: "ejs@npm:3.1.9"
-  dependencies:
-    jake: "npm:^10.8.5"
-  bin:
-    ejs: bin/cli.js
-  checksum: 10/71f56d37540d2c2d71701f0116710c676f75314a3e997ef8b83515d5d4d2b111c5a72725377caeecb928671bacb84a0d38135f345904812e989847057d59f21a
   languageName: node
   linkType: hard
 
@@ -11377,21 +11306,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rehackt@npm:0.0.6":
-  version: 0.0.6
-  resolution: "rehackt@npm:0.0.6"
-  peerDependencies:
-    "@types/react": "*"
-    react: "*"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 10/3897c93270836159406529e0fa983bf4a11c07d2efc5c8f6bdfd7f6821d3b84a30d911c3f3b9c689948739e6955c5835c8dd9d91579150bec5092f356c0d91df
-  languageName: node
-  linkType: hard
-
 "rehackt@npm:^0.1.0":
   version: 0.1.0
   resolution: "rehackt@npm:0.1.0"
@@ -12696,17 +12610,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:>=5.2.2":
-  version: 5.4.5
-  resolution: "typescript@npm:5.4.5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10/d04a9e27e6d83861f2126665aa8d84847e8ebabcea9125b9ebc30370b98cb38b5dff2508d74e2326a744938191a83a69aa9fddab41f193ffa43eabfdf3f190a5
-  languageName: node
-  linkType: hard
-
-"typescript@npm:^5.5.3":
+"typescript@npm:>=5.2.2, typescript@npm:^5.5.3":
   version: 5.5.3
   resolution: "typescript@npm:5.5.3"
   bin:
@@ -12716,17 +12620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A>=5.2.2#optional!builtin<compat/typescript>":
-  version: 5.4.5
-  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=5adc0c"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10/760f7d92fb383dbf7dee2443bf902f4365db2117f96f875cf809167f6103d55064de973db9f78fe8f31ec08fff52b2c969aee0d310939c0a3798ec75d0bca2e1
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A^5.5.3#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A>=5.2.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.3#optional!builtin<compat/typescript>":
   version: 5.5.3
   resolution: "typescript@patch:typescript@npm%3A5.5.3#optional!builtin<compat/typescript>::version=5.5.3&hash=379a07"
   bin:
@@ -13342,22 +13236,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.15.1, ws@npm:^8.8.1":
-  version: 8.16.0
-  resolution: "ws@npm:8.16.0"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10/7c511c59e979bd37b63c3aea4a8e4d4163204f00bd5633c053b05ed67835481995f61a523b0ad2b603566f9a89b34cb4965cb9fab9649fbfebd8f740cea57f17
-  languageName: node
-  linkType: hard
-
-"ws@npm:^8.16.0":
+"ws@npm:^8.15.1, ws@npm:^8.16.0, ws@npm:^8.8.1":
   version: 8.18.0
   resolution: "ws@npm:8.18.0"
   peerDependencies:
