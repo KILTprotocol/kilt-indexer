@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY package.json ./
 
+# Check if yarn.lock exists before running yarn install
+RUN if [ -f yarn.lock ]; then echo "yarn.lock exists"; else echo "yarn.lock does not exist"; fi
+
 RUN yarn install  --immutable && yarn cache clean --all
 
 COPY tsconfig.json  configuration.ts project.ts schema.graphql .env ./
