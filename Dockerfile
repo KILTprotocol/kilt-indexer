@@ -1,5 +1,7 @@
 FROM subquerynetwork/subql-node-substrate:v4.0.1 AS base
 
+ENV NODE_VERSION=20.15.1
+
 WORKDIR /app
 
 COPY package.json ./
