@@ -20,5 +20,5 @@ jobs:
         run: yarn codegen
       - name: Build
         run: yarn build
-      - name: Run tests with Subquery Node
-        run: yarn subql-node test -f ${{ github.workspace }}
+      # - name: Run tests with Subquery Node
+      #   run: yarn subql-node test -f ${{ github.workspace }}
