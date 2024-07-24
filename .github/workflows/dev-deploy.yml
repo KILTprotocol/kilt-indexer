@@ -50,6 +50,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: kilt/indexer
           IMAGE_TAG: ${{ github.sha }}
+          IAM_VERSION: "0.5.9"
 
         with:
           args: rollout restart deployment subquery-node -n indexer-dev
