@@ -44,6 +44,7 @@ After [cloning the repository](https://docs.github.com/en/repositories/creating-
 **You do not need to define any environment variables to run this project.**
 
 There are default values for all of the environment variables.
+By default the production **KILT Blockchain, _Spiritnet_,** will be indexed.
 You can use other values by assigning them inside an `.env`-file.
 
 In the root directory of this repository, is an `.env.example`-file that lists how to name environment variables and what is their use.
