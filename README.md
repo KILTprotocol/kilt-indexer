@@ -155,6 +155,13 @@ fragment wholeAttestation on Attestation {
 }
 ```
 
+```
+fragment DidNames on Did {
+  id
+  web3NameId
+}
+```
+
 ### Query examples:
 
 1. **Find Attestation by its claim hash:**
@@ -257,7 +264,9 @@ fragment wholeAttestation on Attestation {
        totalCount
        nodes {
          id
-         author
+         author {
+        ...DidNames
+      }
          registrationBlock {
            ...wholeBlock
          }
@@ -291,7 +300,9 @@ fragment wholeAttestation on Attestation {
        totalCount
        nodes {
          id
-         author
+         author {
+        ...DidNames
+      }
          registrationBlock {
            ...wholeBlock
          }
