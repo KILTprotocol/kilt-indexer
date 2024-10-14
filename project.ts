@@ -15,10 +15,10 @@ import {
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
   specVersion: "1.0.0",
-  version: "0.0.1",
+  version: "0.0.2",
   name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
   description:
-    "This projects registers (with custom aggregations) all claim types and credential attestations from the KILT network.",
+    "This projects registers and aggregates all identity related events from the KILT network.",
   runner: {
     node: {
       name: "@subql/node",
