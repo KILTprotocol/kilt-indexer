@@ -7,9 +7,8 @@ import {
 import {
   START_BLOCK,
   CRAWL_PEREGRINE,
-  DWELLIR_KEY,
-  ONFINALITY_KEY,
   PRIVATE_NODE_ENABLE,
+  SPIRITNET_ENDPOINTS,
 } from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
@@ -50,14 +49,7 @@ const project: SubstrateProject = {
             ? "ws://peregrine-rpc-node:9944"
             : "wss://peregrine.kilt.io",
         ]
-      : [
-          DWELLIR_KEY
-            ? `wss://kilt-rpc.dwellir.com/${DWELLIR_KEY}`
-            : "wss://kilt-rpc.dwellir.com",
-          ONFINALITY_KEY
-            ? `wss://spiritnet.api.onfinality.io/ws?apikey=${ONFINALITY_KEY}`
-            : "wss://spiritnet.api.onfinality.io/public-ws",
-        ],
+      : [...SPIRITNET_ENDPOINTS.split(",")],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
       "https://api.subquery.network/sq/subquery/kilt-spiritnet-dictionary",
