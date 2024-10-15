@@ -7,7 +7,6 @@ import {
 import {
   START_BLOCK,
   CRAWL_PEREGRINE,
-  PRIVATE_NODE_ENABLE,
   SPIRITNET_ENDPOINTS,
 } from "./configuration";
 
@@ -40,16 +39,8 @@ const project: SubstrateProject = {
      * This endpoint must be a public non-pruned archive node
      * Public nodes may be rate limited, which can affect indexing speed
      * When developing your project we suggest getting a private API key
-     * You can get them from OnFinality for free https://app.onfinality.io
-     * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
-    endpoint: CRAWL_PEREGRINE
-      ? [
-          PRIVATE_NODE_ENABLE
-            ? "ws://peregrine-rpc-node:9944"
-            : "wss://peregrine.kilt.io",
-        ]
-      : [...SPIRITNET_ENDPOINTS.split(",")],
+    endpoint: [...SPIRITNET_ENDPOINTS.split(",")],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
       "https://api.subquery.network/sq/subquery/kilt-spiritnet-dictionary",
