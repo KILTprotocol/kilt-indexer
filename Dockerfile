@@ -9,7 +9,7 @@ RUN if [ -f yarn.lock ]; then echo "yarn.lock exists"; else echo "yarn.lock does
 
 RUN yarn install  --immutable && yarn cache clean --all
 
-COPY tsconfig.json  configuration.ts project.ts schema.graphql .env ./
+COPY tsconfig.json  configuration.ts project.ts schema.graphql ./
 
 RUN yarn codegen
 
