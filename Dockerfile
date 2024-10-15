@@ -7,7 +7,7 @@ ARG RPC_ENDPOINTS
 ENV RPC_ENDPOINTS=${RPC_ENDPOINTS}
 
 # Print out the values used for this image
-RUN echo "Building docker image with:  \n CRAWL_PEREGRINE=${API_KEY} \n RPC_ENDPOINTS=${RPC_ENDPOINTS}"
+RUN echo "Building docker image with: CRAWL_PEREGRINE=${CRAWL_PEREGRINE} & RPC_ENDPOINTS=${RPC_ENDPOINTS}"
 
 WORKDIR /app
 
