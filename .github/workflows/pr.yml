@@ -8,6 +8,7 @@ jobs:
   pr:
     name: pr
     runs-on: ubuntu-latest
+    environment: production
     env:
       RPC_ENDPOINTS: ${{ vars.RPC_ENDPOINTS }}
     steps:
