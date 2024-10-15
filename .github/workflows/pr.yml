@@ -3,10 +3,14 @@ on:
   pull_request:
     paths-ignore:
       - ".github/workflows/**"
+
 jobs:
   pr:
     name: pr
     runs-on: ubuntu-latest
+    environment: production
+    env:
+      RPC_ENDPOINTS: ${{ vars.RPC_ENDPOINTS }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js environment
