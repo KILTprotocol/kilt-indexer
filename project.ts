@@ -4,11 +4,7 @@ import {
   SubstrateProject,
 } from "@subql/types";
 
-import {
-  START_BLOCK,
-  CRAWL_PEREGRINE,
-  SPIRITNET_ENDPOINTS,
-} from "./configuration";
+import { START_BLOCK, CRAWL_PEREGRINE, RPC_ENDPOINTS } from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
@@ -40,7 +36,7 @@ const project: SubstrateProject = {
      * Public nodes may be rate limited, which can affect indexing speed
      * When developing your project we suggest getting a private API key
      */
-    endpoint: [...SPIRITNET_ENDPOINTS.split(",")],
+    endpoint: [...RPC_ENDPOINTS.split(",")],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
       "https://api.subquery.network/sq/subquery/kilt-spiritnet-dictionary",

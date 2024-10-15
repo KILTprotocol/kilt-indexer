@@ -3,10 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const START_BLOCK = parseInt(loadEnv("START_BLOCK", false) ?? "1");
-export const SPIRITNET_ENDPOINTS = loadEnv(
-  "SPIRITNET_ENDPOINTS",
-  true
-) as string;
+export const RPC_ENDPOINTS = loadEnv("RPC_ENDPOINTS") as string;
 export const CRAWL_PEREGRINE = isTrue(loadEnv("CRAWL_PEREGRINE", false));
 export const PRIVATE_NODE_ENABLE = isTrue(
   loadEnv("PRIVATE_NODE_ENABLE", false)
