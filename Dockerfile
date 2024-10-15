@@ -2,9 +2,8 @@ FROM subquerynetwork/subql-node-substrate:v4.0.1 AS base
 
 # Save the passed evironment variables
 ARG CRAWL_PEREGRINE
-ENV CRAWL_PEREGRINE=${CRAWL_PEREGRINE}
 ARG RPC_ENDPOINTS
-ENV RPC_ENDPOINTS=${RPC_ENDPOINTS}
+
 
 # Print out the values used for this image
 RUN echo "Building docker image with: CRAWL_PEREGRINE=${CRAWL_PEREGRINE} & RPC_ENDPOINTS=${RPC_ENDPOINTS}"
