@@ -4,21 +4,15 @@ import {
   SubstrateProject,
 } from "@subql/types";
 
-import {
-  START_BLOCK,
-  CRAWL_PEREGRINE,
-  DWELLIR_KEY,
-  ONFINALITY_KEY,
-  PRIVATE_NODE_ENABLE,
-} from "./configuration";
+import { START_BLOCK, CRAWL_PEREGRINE, RPC_ENDPOINTS } from "./configuration";
 
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
   specVersion: "1.0.0",
-  version: "0.0.1",
+  version: "0.0.2",
   name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
   description:
-    "This projects registers (with custom aggregations) all claim types and credential attestations from the KILT network.",
+    "This projects registers and aggregates all identity related events from the KILT network.",
   runner: {
     node: {
       name: "@subql/node",
@@ -41,23 +35,8 @@ const project: SubstrateProject = {
      * This endpoint must be a public non-pruned archive node
      * Public nodes may be rate limited, which can affect indexing speed
      * When developing your project we suggest getting a private API key
-     * You can get them from OnFinality for free https://app.onfinality.io
-     * https://documentation.onfinality.io/support/the-enhanced-api-service
      */
-    endpoint: CRAWL_PEREGRINE
-      ? [
-          PRIVATE_NODE_ENABLE
-            ? "ws://peregrine-rpc-node:9944"
-            : "wss://peregrine.kilt.io",
-        ]
-      : [
-          DWELLIR_KEY
-            ? `wss://kilt-rpc.dwellir.com/${DWELLIR_KEY}`
-            : "wss://kilt-rpc.dwellir.com",
-          ONFINALITY_KEY
-            ? `wss://spiritnet.api.onfinality.io/ws?apikey=${ONFINALITY_KEY}`
-            : "wss://spiritnet.api.onfinality.io/public-ws",
-        ],
+    endpoint: [...RPC_ENDPOINTS.replaceAll(" ", "").split(",")],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
       "https://api.subquery.network/sq/subquery/kilt-spiritnet-dictionary",
