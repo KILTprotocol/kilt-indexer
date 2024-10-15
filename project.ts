@@ -36,7 +36,7 @@ const project: SubstrateProject = {
      * Public nodes may be rate limited, which can affect indexing speed
      * When developing your project we suggest getting a private API key
      */
-    endpoint: [...RPC_ENDPOINTS.split(",")],
+    endpoint: [...RPC_ENDPOINTS.replaceAll(" ", "").split(",")],
     // Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
     dictionary:
       "https://api.subquery.network/sq/subquery/kilt-spiritnet-dictionary",
