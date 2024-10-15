@@ -30,7 +30,7 @@ jobs:
           mask-password: "true"
       - name: Build image
         run: |
-          docker build \ 
+          docker build \
             --build-arg CRAWL_PEREGRINE=true \
             --build-arg RPC_ENDPOINTS=${{ vars.RPC_ENDPOINTS }} \
             -t indexer:dev .
