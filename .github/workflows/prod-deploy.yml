@@ -11,8 +11,6 @@ jobs:
     name: Build image and push to Amazon ECR
     runs-on: ubuntu-latest
     environment: production
-    env:
-      RPC_ENDPOINTS: ${{ vars.RPC_ENDPOINTS }}
 
     steps:
       - name: Checkout
@@ -33,6 +31,7 @@ jobs:
       - name: Build image
         run: |
           echo "CRAWL_PEREGRINE=false" > .env
+          echo "RPC_ENDPOINTS=${{ vars.RPC_ENDPOINTS }}" >> .env
           docker build -t indexer:prod .
 
       - name: Tag, and push image to Amazon ECR
