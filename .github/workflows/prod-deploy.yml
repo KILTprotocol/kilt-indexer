@@ -33,7 +33,7 @@ jobs:
           docker build \
             --build-arg CRAWL_PEREGRINE=false \
             --build-arg RPC_ENDPOINTS=${{ vars.RPC_ENDPOINTS }} \
-            -t indexer:dev .
+            -t indexer:prod .
 
       - name: Tag, and push image to Amazon ECR
         env:
