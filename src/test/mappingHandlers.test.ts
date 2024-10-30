@@ -1,7 +1,43 @@
 import { subqlTest } from "@subql/testing";
-import { Block } from "../types";
+import { Block, Did } from "../types";
 
-// See https://academy.subquery.network/build/testing.html
+// See documentation here: https://academy.subquery.network/build/testing.html
+
+/* Template:
+
+subqlTest(
+  "testName", // test name
+  1000003, // block height to process
+  [], // dependent entities
+  [], // expected entities
+  "handleEvent" //handler name
+);
+*/
+
+subqlTest(
+  "handle creation of socialKYC DID", // test name
+  578009, // block height to process
+
+  [], // dependent entities
+  // [
+  //   Block.create({
+  //     id: "578009",
+  //     hash: "0x05582a62360a194e2a2d64d7ca7fb96f11a46c9d9dbc5d2f4adec41cf6f0e525",
+  //     timeStamp: new Date("2021-12-09T13:21:12.464"),
+  //   }),
+  // ], // I don't think this is necessary
+  [
+    Did.create({
+      id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      creationBlockId: "578009",
+      active: true,
+    }),
+  ], // expected entities
+  "handleDidCreated" //handler name
+);
+//   "deletionBlock": null,
+//   "web3NameId": "w3n:socialkyc",
 
 /** This cannot be tested because "saveBlock" is not a listed handler. See:
  *
@@ -20,14 +56,3 @@ import { Block } from "../types";
 //   ], // Expected entities
 //   "saveBlock" // not really a handler, it is only triggered by other handlers
 // );
-
-/*
-// https://academy.subquery.network/build/testing.html
-subqlTest(
-  "testName", // test name
-  1000003, // block height to process
-  [], // dependent entities
-  [], // expected entities
-  "handleEvent" //handler name
-);
-*/
