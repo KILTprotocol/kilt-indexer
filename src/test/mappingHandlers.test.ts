@@ -25,7 +25,7 @@ subqlTest(
   //     hash: "0x05582a62360a194e2a2d64d7ca7fb96f11a46c9d9dbc5d2f4adec41cf6f0e525",
   //     timeStamp: new Date("2021-12-09T13:21:12.464"),
   //   }),
-  // ], // I don't think this is necessary
+  // ], // I don't think this is necessary, it gets created by the handler function.
   [
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
@@ -39,9 +39,37 @@ subqlTest(
 //   "deletionBlock": null,
 //   "web3NameId": "w3n:socialkyc",
 
+subqlTest(
+  "handle DID deletion", // test name
+  1038890, // block height to process
+  [
+    Block.create({
+      id: "1038495",
+      hash: "0xcf259c39be26fc12b5015094c15f887f5e04723bc70cf2add223398fa7ae4cd5",
+      timeStamp: new Date("2022-02-17T10:52:00.211"),
+    }),
+    Did.create({
+      id: "did:kilt:4sddCVdkFajMKtG5unJmquP5Fcrw4A5bfbEkrCEQvkCp7iCx",
+      payer: "4tAV8xD2id6EC5V7CaHAiix3mAFzvkCHKa26BykAxaAhGu4y",
+      creationBlockId: "1038495",
+      active: true,
+    }),
+  ], // dependent entities
+  [
+    Did.create({
+      id: "did:kilt:4sddCVdkFajMKtG5unJmquP5Fcrw4A5bfbEkrCEQvkCp7iCx",
+      payer: "4tAV8xD2id6EC5V7CaHAiix3mAFzvkCHKa26BykAxaAhGu4y",
+      creationBlockId: "1038495",
+      deletionBlockId: "1038890",
+      active: false,
+    }),
+  ], // expected entities
+  "handleDidDeleted" //handler name
+);
+
 /** This cannot be tested because "saveBlock" is not a listed handler. See:
  *
- *  `Error: Unable to find any datasources that match handler "saveBlock". Please check your project.yaml file.`
+ *  `Error: Unable to find any data sources that match handler "saveBlock". Please check your project.yaml file.`
  */
 // subqlTest(
 //   "Tests saving a block", // Test name
