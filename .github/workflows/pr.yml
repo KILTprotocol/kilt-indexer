@@ -25,4 +25,4 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run tests with Subquery Node
-        run: yarn subql-node test -f https://github.com/${{ github.repository }}#${{ github.head_ref }}
+        run: yarn subql-node test -f ${{ github.workspace }}
