@@ -9,6 +9,8 @@ import {
 import { saveAssetDid } from "./saveAssetDid";
 import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
 
+const getterOptions = { limit: 1000 };
+
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
 ): Promise<void> {
@@ -65,7 +67,7 @@ export async function handlePublicCredentialStored(
 
   // Add a record of when did the creation took place
   const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+    (await Update.getByCredentialId(credentialHash, getterOptions)) || [];
 
   const newUpdate = Update.create({
     id: `§${previousUpdates.length + 1}_${credentialHash}`,
@@ -122,7 +124,7 @@ export async function handlePublicCredentialRemoved(
 
   // Add a record of when did the removal took place
   const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+    (await Update.getByCredentialId(credentialHash, getterOptions)) || [];
 
   const newUpdate = Update.create({
     id: `§${previousUpdates.length + 1}_${credentialHash}`,
@@ -172,7 +174,7 @@ export async function handlePublicCredentialRevoked(
 
   // Add a record of when did the revocation took place
   const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+    (await Update.getByCredentialId(credentialHash, getterOptions)) || [];
 
   const newUpdate = Update.create({
     id: `§${previousUpdates.length + 1}_${credentialHash}`,
@@ -222,7 +224,7 @@ export async function handlePublicCredentialUnrevoked(
 
   // Add a record of when did the restoration (un-revocation) took place
   const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+    (await Update.getByCredentialId(credentialHash, getterOptions)) || [];
 
   const newUpdate = Update.create({
     id: `§${previousUpdates.length + 1}_${credentialHash}`,
