@@ -72,7 +72,7 @@ export async function handleAttestationCreated(
   });
 
   await newAttestation.save();
-  await handleCTypeAggregations(cTypeId, "CREATED");
+  await handleCTypeAggregations(newAttestation, "CREATED");
 }
 
 export async function handleAttestationRevoked(
@@ -118,7 +118,7 @@ export async function handleAttestationRevoked(
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cTypeId, "REVOKED");
+  await handleCTypeAggregations(attestation, "REVOKED");
 }
 
 export async function handleAttestationRemoved(
@@ -165,7 +165,7 @@ export async function handleAttestationRemoved(
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
+  await handleCTypeAggregations(attestation, "REMOVED");
 }
 
 export async function handleAttestationDepositReclaimed(
@@ -215,7 +215,7 @@ export async function handleAttestationDepositReclaimed(
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
+  await handleCTypeAggregations(attestation, "REMOVED");
 }
 
 // TODO: Add a handler for the (future) Event emitted when the deposit owner is changed
