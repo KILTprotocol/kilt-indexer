@@ -4,6 +4,8 @@ import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
 
+const getterOptions = { limit: 1000 };
+
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
@@ -39,9 +41,10 @@ export async function handleAttestationCreated(
   assert(issuerDID, `Can't find this DID on the data base: ${issuerId}.`);
 
   // craft my event ordinal index:
-  const attestations = await Attestation.getByFields([
-    ["creationBlockId", "=", blockNumber],
-  ]);
+  const attestations = await Attestation.getByFields(
+    [["creationBlockId", "=", blockNumber]],
+    getterOptions
+  );
   /** Only counts the number of attestations created on one block.
    * It will not match with the event index from subscan that count all kinds of events.
    */
@@ -95,9 +98,10 @@ export async function handleAttestationRevoked(
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields([
-    ["claimHash", "=", claimHash.toHex()],
-  ]);
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    getterOptions
+  );
   // another way of doing it:
   // const attestations = await store.getByField(
   //   "Attestation",
@@ -140,9 +144,10 @@ export async function handleAttestationRemoved(
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields([
-    ["claimHash", "=", claimHash.toHex()],
-  ]);
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    getterOptions
+  );
 
   logger.trace(`printing the attestations array:`);
   attestations.forEach((atty, index) => {
@@ -189,9 +194,10 @@ export async function handleAttestationDepositReclaimed(
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields([
-    ["claimHash", "=", claimHash.toHex()],
-  ]);
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    getterOptions
+  );
 
   logger.trace(`printing the attestations array:`);
   attestations.forEach((atty, index) => {
