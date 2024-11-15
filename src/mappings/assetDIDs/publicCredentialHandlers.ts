@@ -9,7 +9,8 @@ import {
 import { saveAssetDid } from "./saveAssetDid";
 import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
 
-const getterOptions = { limit: 1000 };
+const getterOptions = { limit: 100 };
+// TODO: handle case of surpassing limit
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent

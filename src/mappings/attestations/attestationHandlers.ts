@@ -4,7 +4,8 @@ import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
 
-const getterOptions = { limit: 1000 };
+const getterOptions = { limit: 100 };
+// TODO: handle case of surpassing limit
 
 export async function handleAttestationCreated(
   event: SubstrateEvent

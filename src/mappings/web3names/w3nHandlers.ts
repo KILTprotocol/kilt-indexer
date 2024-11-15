@@ -10,7 +10,8 @@ import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
 
-const getterOptions = { limit: 1000 };
+const getterOptions = { limit: 100 };
+// TODO: handle case of surpassing limit
 
 export async function handleWeb3NameClaimed(
   event: SubstrateEvent
