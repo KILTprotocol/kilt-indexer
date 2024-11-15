@@ -10,6 +10,8 @@ import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
 
+const getterOptions = { limit: 1000 };
+
 export async function handleWeb3NameClaimed(
   event: SubstrateEvent
 ): Promise<void> {
@@ -53,7 +55,8 @@ export async function handleWeb3NameClaimed(
     });
   }
   // craft bearers ordinal index:
-  const previousBearers = (await Ownership.getByNameId(w3n)) || [];
+  const previousBearers =
+    (await Ownership.getByNameId(w3n, getterOptions)) || [];
 
   const bearingData = Ownership.create({
     id: `#${previousBearers.length + 1}_${w3n}`,
@@ -104,7 +107,7 @@ export async function handleWeb3NameReleased(
   const web3Name = await Web3Name.get(w3n);
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
-  const allBearers = (await Ownership.getByNameId(w3n)) || [];
+  const allBearers = (await Ownership.getByNameId(w3n, getterOptions)) || [];
 
   // Find the bearing title that has not been released yet
   const bearer = allBearers.find((teddy) => !teddy.releaseBlockId);
@@ -156,7 +159,8 @@ export async function handleWeb3NameBanned(
     });
   }
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
+  const previousSanctions =
+    (await Sanction.getByNameId(w3n, getterOptions)) || [];
 
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
@@ -207,7 +211,8 @@ export async function handleWeb3NameUnbanned(
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
+  const previousSanctions =
+    (await Sanction.getByNameId(w3n, getterOptions)) || [];
 
   const newSanction = Sanction.create({
     id: `§${previousSanctions.length + 1}_${w3n}`,
