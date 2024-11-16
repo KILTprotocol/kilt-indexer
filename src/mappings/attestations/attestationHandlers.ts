@@ -99,19 +99,21 @@ export async function handleAttestationRevoked(
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields(
-    [["claimHash", "=", claimHash.toHex()]],
-    getterOptions
-  );
-  // another way of doing it:
-  // const attestations = await store.getByField(
-  //   "Attestation",
-  //   "claimHash",
-  //   claimHash.toHex()
-  // );
 
   // Get the attestation that is still valid
-  const attestation = attestations.find((atty) => atty.valid);
+  const attestations = await Attestation.getByFields(
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      ["valid", "=", true],
+    ],
+    getterOptions
+  );
+  assert(
+    attestations.length < 2,
+    `Found more the one valid attestation with Claim hash: ${claimHash}.`
+  );
+
+  const attestation = attestations[0];
   assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
 
   attestation.revocationBlockId = await saveBlock(block);
