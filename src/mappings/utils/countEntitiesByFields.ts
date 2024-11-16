@@ -1,6 +1,6 @@
 import { Entity, FieldsExpression } from "@subql/types-core";
 
-export async function countEntitiesByField<T extends Entity>(
+export async function countEntitiesByFields<T extends Entity>(
   entity: string,
   filters: FieldsExpression<T>[]
 ): Promise<number> {
