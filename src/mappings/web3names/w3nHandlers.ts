@@ -9,6 +9,7 @@ import {
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
+import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
 const getterOptions = { limit: 100 };
 // TODO: handle case of surpassing limit
@@ -56,11 +57,16 @@ export async function handleWeb3NameClaimed(
     });
   }
   // craft bearers ordinal index:
-  const previousBearers =
-    (await Ownership.getByNameId(w3n, getterOptions)) || [];
+  // const previousBearers =
+  //   (await Ownership.getByNameId(w3n, getterOptions)) || [];
+
+  const numberOfPreviousBearers = await countEntitiesByFields<Ownership>(
+    "Ownership",
+    [["nameId", "=", w3n]]
+  );
 
   const bearingData = Ownership.create({
-    id: `#${previousBearers.length + 1}_${w3n}`,
+    id: `#${numberOfPreviousBearers + 1}_${w3n}`,
     nameId: w3n,
     bearerId: owner,
     claimBlockId: blockNumber,
