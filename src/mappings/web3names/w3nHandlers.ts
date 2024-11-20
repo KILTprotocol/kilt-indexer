@@ -114,23 +114,31 @@ export async function handleWeb3NameReleased(
   const web3Name = await Web3Name.get(w3n);
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
+  // Find the bearing title that has not been released yet
+
   const lastBearers =
     (await Ownership.getByNameId(w3n, {
       limit: 10,
-      orderBy: "claimBlockId",
+      orderBy: "id", // they format like #2_w3n:john
       orderDirection: "DESC",
     })) || [];
 
-  // Find the bearing title that has not been released yet
-  const currentBearers = lastBearers.filter((teddy) => !teddy.releaseBlockId);
+  // Alternative:
+  // const lastBearers =
+  //   (await Ownership.getByNameId(w3n, {
+  //     limit: 10,
+  //     orderBy: "claimBlockId",
+  //     orderDirection: "DESC",
+  //   })) || [];
 
+  // With enough trust, this filter and assertion could be skipped, by setting limit=1 in the search options.
+  const currentBearers = lastBearers.filter((teddy) => !teddy.releaseBlockId);
   assert(
     currentBearers.length < 2,
     `${w3n} concurrently has several unreleased Ownerships on the data base.`
   );
 
   const bearer = currentBearers[0];
-
   assert(bearer, `Can't find the bearer of ${w3n} on the data base.`);
 
   bearer.releaseBlockId = blockNumber;
