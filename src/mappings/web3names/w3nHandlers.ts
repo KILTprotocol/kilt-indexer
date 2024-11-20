@@ -53,6 +53,28 @@ export async function handleWeb3NameClaimed(
       banned: false,
     });
   }
+
+  const unreleasedOwnerships = await Ownership.getByFields(
+    [
+      ["nameId", "=", w3n],
+      ["releaseBlockId", "=", undefined],
+    ],
+    { limit: 100 }
+  );
+
+  // Some extra logs for the debugging mode. Could be useful for chain development as well.
+  logger.trace(`printing the unreleased Ownerships:`);
+  unreleasedOwnerships.forEach((ownership, index) => {
+    logger.trace(
+      `Index: ${index}, Ownership: ${JSON.stringify(ownership, null, 2)}`
+    );
+  });
+
+  assert(
+    unreleasedOwnerships.length == 0,
+    `${w3n} can't be claimed because it is still being owned.`
+  );
+
   // craft bearers ordinal index:
   const numberOfPreviousBearers = await countEntitiesByFields<Ownership>(
     "Ownership",
