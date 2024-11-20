@@ -166,11 +166,16 @@ export async function handleWeb3NameBanned(
     });
   }
   // craft sanction ordinal index:
-  const previousSanctions =
-    (await Sanction.getByNameId(w3n, getterOptions)) || [];
+  // const previousSanctions =
+  //   (await Sanction.getByNameId(w3n, getterOptions)) || [];
+
+  const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
+    "Sanction",
+    [["nameId", "=", w3n]]
+  );
 
   const newSanction = Sanction.create({
-    id: `§${previousSanctions.length + 1}_${w3n}`,
+    id: `§${numberOfPreviousSanctions + 1}_${w3n}`,
     nameId: w3n,
     nature: SanctionNature.prohibition,
     enforcementBlockId: blockNumber,
@@ -218,11 +223,16 @@ export async function handleWeb3NameUnbanned(
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
   // craft sanction ordinal index:
-  const previousSanctions =
-    (await Sanction.getByNameId(w3n, getterOptions)) || [];
+  // const previousSanctions =
+  //   (await Sanction.getByNameId(w3n, getterOptions)) || [];
+
+  const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
+    "Sanction",
+    [["nameId", "=", w3n]]
+  );
 
   const newSanction = Sanction.create({
-    id: `§${previousSanctions.length + 1}_${w3n}`,
+    id: `§${numberOfPreviousSanctions + 1}_${w3n}`,
     nameId: w3n,
     nature: SanctionNature.permission,
     enforcementBlockId: blockNumber,
