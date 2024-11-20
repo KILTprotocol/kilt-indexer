@@ -11,9 +11,6 @@ import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
-const getterOptions = { limit: 100 };
-// TODO: handle case of surpassing limit
-
 export async function handleWeb3NameClaimed(
   event: SubstrateEvent
 ): Promise<void> {
@@ -57,9 +54,6 @@ export async function handleWeb3NameClaimed(
     });
   }
   // craft bearers ordinal index:
-  // const previousBearers =
-  //   (await Ownership.getByNameId(w3n, getterOptions)) || [];
-
   const numberOfPreviousBearers = await countEntitiesByFields<Ownership>(
     "Ownership",
     [["nameId", "=", w3n]]
@@ -186,9 +180,6 @@ export async function handleWeb3NameBanned(
     });
   }
   // craft sanction ordinal index:
-  // const previousSanctions =
-  //   (await Sanction.getByNameId(w3n, getterOptions)) || [];
-
   const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
     "Sanction",
     [["nameId", "=", w3n]]
@@ -243,9 +234,6 @@ export async function handleWeb3NameUnbanned(
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
   // craft sanction ordinal index:
-  // const previousSanctions =
-  //   (await Sanction.getByNameId(w3n, getterOptions)) || [];
-
   const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
     "Sanction",
     [["nameId", "=", w3n]]
