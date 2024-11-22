@@ -140,7 +140,7 @@ export async function handleWeb3NameReleased(
     })
   )[0];
 
-  // Alternative:
+  // Alternative, that would work with normalized block numbers:
   // const lastBearer = (
   //   await Ownership.getByNameId(w3n, {
   //     limit: 1,
