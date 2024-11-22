@@ -124,6 +124,7 @@ export async function handleAttestationRevoked(
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
+  // But only one should be valid
 
   // Get the attestation that is still valid
   const attestations = await Attestation.getByFields(
