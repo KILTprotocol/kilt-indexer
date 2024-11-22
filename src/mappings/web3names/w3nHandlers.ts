@@ -131,6 +131,7 @@ export async function handleWeb3NameReleased(
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
   // Find the bearing title that has not been released yet
+  // there should only be one in the data base
 
   const lastBearers =
     (await Ownership.getByNameId(w3n, {
