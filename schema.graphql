@@ -6,8 +6,8 @@ type Block @entity {
   id: ID! # <Block ordinal number from genesis block> fixed length of 9 digits, prefixed with insignificant zeros
   # The biggest possible block number on chain has 20 places (=u64).
   # To allow ordering by block number (=id), we need to prefix them with insignificant zeros, because IDs are always strings.
-  # Currently (~7.5M), only 7 significant places are being used. It would take more than 380 years to produce 1 billion blocks.
-  # Normalizing numbers to 9 digits, we are set up for the next 377 years.
+  # Currently (at ~7.5M blocks), only 7 significant places are being used. It would take more than 380 years to produce 1 billion blocks.
+  # By normalizing block numbers to 9 digits, we are set up for the next 377 years.
   hash: String! @index(unique: true) # Block Hash as hex-string
   timeStamp: Date! # Date of creation of this block
 }
