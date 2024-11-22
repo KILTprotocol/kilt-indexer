@@ -5,9 +5,6 @@ import { saveBlock } from "../blocks/saveBlock";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
 import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
-const getterOptions = { limit: 100 };
-// TODO: handle case of surpassing limit
-
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
@@ -132,7 +129,7 @@ export async function handleAttestationRevoked(
       ["claimHash", "=", claimHash.toHex()],
       ["valid", "=", true],
     ],
-    getterOptions
+    { limit: 100 }
   );
   assert(
     attestations.length < 2,
