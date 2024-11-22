@@ -171,23 +171,22 @@ export async function handleAttestationRemoved(
     )}`
   );
 
-  // There could be several attestations with the same claim hash.
-  // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields(
-    [["claimHash", "=", claimHash.toHex()]],
-    getterOptions
+  // Find the attestation of this claim hash that has not been removed yet.
+  // There should only be one in the data base.
+  const attestation = (
+    await Attestation.getByFields(
+      [
+        ["claimHash", "=", claimHash.toHex()],
+        ["removalBlockId", "=", undefined],
+      ],
+      { limit: 1 }
+    )
+  )[0];
+
+  assert(
+    attestation,
+    `Can't find unremoved attestation of Claim hash: ${claimHash}.`
   );
-
-  logger.trace(`printing the attestations array:`);
-  attestations.forEach((atty, index) => {
-    logger.trace(
-      `Index: ${index}, attestation: ${JSON.stringify(atty, null, 2)}`
-    );
-  });
-
-  // Get the attestation that has still not been removed yet:
-  const attestation = attestations.find((atty) => !atty.removalBlockId);
-  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
 
   attestation.removalBlockId = await saveBlock(block);
   attestation.valid = false;
