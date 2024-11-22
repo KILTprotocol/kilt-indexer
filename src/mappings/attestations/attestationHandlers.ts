@@ -3,6 +3,7 @@ import { Attestation, Did } from "../../types";
 import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
+import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
 const getterOptions = { limit: 100 };
 // TODO: handle case of surpassing limit
@@ -42,14 +43,14 @@ export async function handleAttestationCreated(
   assert(issuerDID, `Can't find this DID on the data base: ${issuerId}.`);
 
   // craft my event ordinal index:
-  const attestations = await Attestation.getByFields(
-    [["creationBlockId", "=", blockNumber]],
-    getterOptions
-  );
+  const numberOfPreviousAttestationsOnSameBlock =
+    await countEntitiesByFields<Attestation>("Attestation", [
+      ["creationBlockId", "=", blockNumber],
+    ]);
   /** Only counts the number of attestations created on one block.
    * It will not match with the event index from subscan that count all kinds of events.
    */
-  const eventIndex = attestations.length;
+  const eventIndex = numberOfPreviousAttestationsOnSameBlock + 1;
 
   // unpack delegation, which has changed between runtimes
   // old runtime: "type_name":"Option<DelegationNodeIdOf>" --> was never used XD
