@@ -41,10 +41,13 @@ After [cloning the repository](https://docs.github.com/en/repositories/creating-
 
 ### Environment Variables
 
-**You do not need to define any environment variables to run this project.**
+**You only need to define one environment variable to run this project, namely `RPC_ENDPOINTS`**
 
-There are default values for all of the environment variables.
-By default the production **KILT Blockchain, _Spiritnet_,** will be indexed.
+By default, it will be assumed that the production **KILT Blockchain, _Spiritnet_,** will be indexed.
+Please assign a _Spiritnet_ endpoint node to `RPC_ENDPOINTS`.
+You can find some them on [our documentation](https://docs.kilt.io/docs/develop/chain/deployments).
+
+There are default values for all other the environment variables.
 You can use other values by assigning them inside an `.env`-file.
 
 In the root directory of this repository, is an `.env.example`-file that lists how to name environment variables and what is their use.
