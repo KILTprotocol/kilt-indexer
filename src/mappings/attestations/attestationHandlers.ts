@@ -174,7 +174,7 @@ export async function handleAttestationRemoved(
     await Attestation.getByFields(
       [
         ["claimHash", "=", claimHash.toHex()],
-        ["removalBlockId", "=", undefined],
+        ["removalBlockId", "=", undefined], // does not work
       ],
       { limit: 1 }
     )
@@ -223,7 +223,7 @@ export async function handleAttestationDepositReclaimed(
     await Attestation.getByFields(
       [
         ["claimHash", "=", claimHash.toHex()],
-        ["removalBlockId", "=", undefined],
+        ["removalBlockId", "=", undefined], // does not work
       ],
       { limit: 1 }
     )
