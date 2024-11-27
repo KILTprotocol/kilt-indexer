@@ -44,6 +44,7 @@ After [cloning the repository](https://docs.github.com/en/repositories/creating-
 **You only need to define one environment variable to run this project, namely `RPC_ENDPOINTS`**
 
 By default, it will be assumed that the production **KILT Blockchain, _Spiritnet_,** will be indexed.
+
 Please, assign a _Spiritnet_ endpoint node to `RPC_ENDPOINTS`.
 You can find some of them on [our documentation](https://docs.kilt.io/docs/develop/chain/deployments).
 
