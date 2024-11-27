@@ -170,16 +170,19 @@ export async function handleAttestationRemoved(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestation = (
-    await Attestation.getByFields(
-      [
-        ["claimHash", "=", claimHash.toHex()],
-        ["removalBlockId", "=", undefined], // does not work
-      ],
-      { limit: 1 }
-    )
-  )[0];
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    { limit: 100 }
+  );
+  // TODO: change getter options to the ones below and delete assertion about matching array length
+  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
 
+  assert(
+    attestations.length < 100,
+    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+  );
+
+  const attestation = attestations.find((atty) => atty.removalBlockId == null);
   assert(
     attestation,
     `Can't find unremoved attestation of Claim hash: ${claimHash}.`
@@ -219,15 +222,19 @@ export async function handleAttestationDepositReclaimed(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestation = (
-    await Attestation.getByFields(
-      [
-        ["claimHash", "=", claimHash.toHex()],
-        ["removalBlockId", "=", undefined], // does not work
-      ],
-      { limit: 1 }
-    )
-  )[0];
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    { limit: 100 }
+  );
+  // TODO: change getter options to the ones below and delete assertion about matching array length
+  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
+
+  assert(
+    attestations.length < 100,
+    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+  );
+
+  const attestation = attestations.find((atty) => atty.removalBlockId == null);
 
   assert(
     attestation,
