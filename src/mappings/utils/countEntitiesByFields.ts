@@ -4,13 +4,15 @@ export async function countEntitiesByFields<T extends Entity>(
   entity: string,
   filters: FieldsExpression<T>[]
 ): Promise<number> {
-  // Initialize variables
   let count = 0;
   let offset = 0;
   const limit = 100;
   // "By default ordering is done by id in ascending order."
 
-  while (true) {
+  /** Are there still entities to be query? */
+  let remaining = true;
+
+  while (remaining) {
     // Retrieve a batch of entities
     const entities = await store.getByFields(
       entity,
@@ -23,7 +25,7 @@ export async function countEntitiesByFields<T extends Entity>(
 
     // If fewer entities than the limit were retrieved, we've reached the end
     if (entities.length < limit) {
-      break;
+      remaining = false;
     }
 
     // Increment the offset for the next batch
