@@ -28,6 +28,7 @@ jobs:
       DB_DATABASE: postgres
       DB_HOST: localhost
       DB_PORT: 5432
+      TZ: "UTC"
     steps:
       - uses: actions/checkout@v4
       - name: Enable btree btree_gist on postgres database
