@@ -17,7 +17,7 @@ type Attestation @entity {
   issuer: Did! @index # DID of credential issuer and on-chain attester
   payer: String! # account address
   delegationID: String
-  valid: Boolean!
+  valid: Boolean! @index
   creationBlock: Block!
   revocationBlock: Block
   removalBlock: Block

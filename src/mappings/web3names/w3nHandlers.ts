@@ -9,6 +9,7 @@ import {
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
+import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
 export async function handleWeb3NameClaimed(
   event: SubstrateEvent
@@ -52,11 +53,36 @@ export async function handleWeb3NameClaimed(
       banned: false,
     });
   }
+
+  const unreleasedOwnerships = await Ownership.getByFields(
+    [
+      ["nameId", "=", w3n],
+      ["releaseBlockId", "=", undefined],
+    ],
+    { limit: 100 }
+  );
+
+  // Some extra logs for the debugging mode. Could be useful for chain development as well.
+  logger.trace(`printing the unreleased Ownerships:`);
+  unreleasedOwnerships.forEach((ownership, index) => {
+    logger.trace(
+      `Index: ${index}, Ownership: ${JSON.stringify(ownership, null, 2)}`
+    );
+  });
+
+  assert(
+    unreleasedOwnerships.length == 0,
+    `${w3n} can't be claimed because it is still being owned.`
+  );
+
   // craft bearers ordinal index:
-  const previousBearers = (await Ownership.getByNameId(w3n)) || [];
+  const numberOfPreviousBearers = await countEntitiesByFields<Ownership>(
+    "Ownership",
+    [["nameId", "=", w3n]]
+  );
 
   const bearingData = Ownership.create({
-    id: `#${previousBearers.length + 1}_${w3n}`,
+    id: `#${numberOfPreviousBearers + 1}_${w3n}`,
     nameId: w3n,
     bearerId: owner,
     claimBlockId: blockNumber,
@@ -104,16 +130,30 @@ export async function handleWeb3NameReleased(
   const web3Name = await Web3Name.get(w3n);
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
-  const allBearers = (await Ownership.getByNameId(w3n)) || [];
+  // Find the bearing title (ownership) that has not been released yet
+  // there should only be one in the data base
+  const lastBearer = (
+    await Ownership.getByNameId(w3n, {
+      limit: 1,
+      orderBy: "id", // they are formatted like #2_w3n:john
+      orderDirection: "DESC",
+    })
+  )[0];
 
-  // Find the bearing title that has not been released yet
-  const bearer = allBearers.find((teddy) => !teddy.releaseBlockId);
+  // Alternative, that would work with normalized block numbers:
+  // const lastBearer = (
+  //   await Ownership.getByNameId(w3n, {
+  //     limit: 1,
+  //     orderBy: "claimBlockId",
+  //     orderDirection: "DESC",
+  //   })
+  // )[0];
 
-  assert(bearer, `Can't find the bearer of ${w3n} on the data base.`);
+  assert(lastBearer, `Can't find the bearer of ${w3n} on the data base.`);
 
-  bearer.releaseBlockId = blockNumber;
+  lastBearer.releaseBlockId = blockNumber;
 
-  await bearer.save();
+  await lastBearer.save();
 
   await web3Name.save();
 }
@@ -156,10 +196,13 @@ export async function handleWeb3NameBanned(
     });
   }
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
+  const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
+    "Sanction",
+    [["nameId", "=", w3n]]
+  );
 
   const newSanction = Sanction.create({
-    id: `§${previousSanctions.length + 1}_${w3n}`,
+    id: `§${numberOfPreviousSanctions + 1}_${w3n}`,
     nameId: w3n,
     nature: SanctionNature.prohibition,
     enforcementBlockId: blockNumber,
@@ -207,10 +250,13 @@ export async function handleWeb3NameUnbanned(
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
+  const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
+    "Sanction",
+    [["nameId", "=", w3n]]
+  );
 
   const newSanction = Sanction.create({
-    id: `§${previousSanctions.length + 1}_${w3n}`,
+    id: `§${numberOfPreviousSanctions + 1}_${w3n}`,
     nameId: w3n,
     nature: SanctionNature.permission,
     enforcementBlockId: blockNumber,

@@ -13,6 +13,8 @@ export async function saveBlock(block: SubstrateBlock): Promise<Block["id"]> {
   const blockHash = block.block.hash.toHex();
   const issuanceDate = block.timestamp;
 
+  assert(issuanceDate, `Block #${blockNumber} is missing its time stamp.`);
+
   const exists = await Block.get(blockNumber);
   // Existence check not really necessary if we trust the chain
   // If you create the same block twice, it just get overwritten with the same info

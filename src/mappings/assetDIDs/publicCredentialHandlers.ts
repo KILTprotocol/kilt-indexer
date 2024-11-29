@@ -8,6 +8,7 @@ import {
 } from "./extractCredential";
 import { saveAssetDid } from "./saveAssetDid";
 import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
+import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -64,11 +65,13 @@ export async function handlePublicCredentialStored(
   await newPublicCredential.save();
 
   // Add a record of when did the creation took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     nature: UpdateNature.creation,
     updateBlockId: blockNumber,
@@ -121,11 +124,13 @@ export async function handlePublicCredentialRemoved(
   await publicCredential.save();
 
   // Add a record of when did the removal took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     nature: UpdateNature.removal,
     updateBlockId: blockNumber,
@@ -171,11 +176,13 @@ export async function handlePublicCredentialRevoked(
   await publicCredential.save();
 
   // Add a record of when did the revocation took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     updateBlockId: blockNumber,
     nature: UpdateNature.revocation,
@@ -221,11 +228,13 @@ export async function handlePublicCredentialUnrevoked(
   await publicCredential.save();
 
   // Add a record of when did the restoration (un-revocation) took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     updateBlockId: blockNumber,
     nature: UpdateNature.restoration,
