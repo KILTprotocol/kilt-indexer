@@ -3,6 +3,7 @@ import { Attestation, Did } from "../../types";
 import assert from "assert";
 import { saveBlock } from "../blocks/saveBlock";
 import { handleCTypeAggregations } from "../cTypes/cTypeHandlers";
+import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
 export async function handleAttestationCreated(
   event: SubstrateEvent
@@ -39,13 +40,14 @@ export async function handleAttestationCreated(
   assert(issuerDID, `Can't find this DID on the data base: ${issuerId}.`);
 
   // craft my event ordinal index:
-  const attestations = await Attestation.getByFields([
-    ["creationBlockId", "=", blockNumber],
-  ]);
+  const numberOfPreviousAttestationsOnSameBlock =
+    await countEntitiesByFields<Attestation>("Attestation", [
+      ["creationBlockId", "=", blockNumber],
+    ]);
   /** Only counts the number of attestations created on one block.
    * It will not match with the event index from subscan that count all kinds of events.
    */
-  const eventIndex = attestations.length;
+  const eventIndex = numberOfPreviousAttestationsOnSameBlock + 1;
 
   // unpack delegation, which has changed between runtimes
   // old runtime: "type_name":"Option<DelegationNodeIdOf>" --> was never used XD
@@ -56,6 +58,30 @@ export async function handleAttestationCreated(
   if (delegation?.toRawType().startsWith('{"_enum":')) {
     delegation = (delegation as any).value;
   }
+
+  // Make sure that any other attestations of same hash have been previously removed
+  const stillExistingAttestations = await Attestation.getByFields(
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      ["removalBlockId", "=", undefined],
+    ],
+    { limit: 100 }
+  );
+
+  // Some extra logs for the debugging mode. Could be useful for chain development as well.
+  logger.trace(
+    `printing the Attestations with the same hash that have not been removed:`
+  );
+  stillExistingAttestations.forEach((ownership, index) => {
+    logger.trace(
+      `Index: ${index}, Attestation: ${JSON.stringify(ownership, null, 2)}`
+    );
+  });
+
+  assert(
+    stillExistingAttestations.length == 0,
+    `Can't save attestation ${claimHash} because it is still registered as existing on chain state.`
+  );
 
   const newAttestation = Attestation.create({
     id: `${blockNumber}-${eventIndex}`,
@@ -69,7 +95,7 @@ export async function handleAttestationCreated(
   });
 
   await newAttestation.save();
-  await handleCTypeAggregations(cTypeId, "CREATED");
+  await handleCTypeAggregations(newAttestation, "CREATED");
 }
 
 export async function handleAttestationRevoked(
@@ -95,18 +121,22 @@ export async function handleAttestationRevoked(
 
   // There could be several attestations with the same claim hash.
   // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields([
-    ["claimHash", "=", claimHash.toHex()],
-  ]);
-  // another way of doing it:
-  // const attestations = await store.getByField(
-  //   "Attestation",
-  //   "claimHash",
-  //   claimHash.toHex()
-  // );
+  // But only one should be valid
 
   // Get the attestation that is still valid
-  const attestation = attestations.find((atty) => atty.valid);
+  const attestations = await Attestation.getByFields(
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      ["valid", "=", true],
+    ],
+    { limit: 100 }
+  );
+  assert(
+    attestations.length < 2,
+    `Found more the one valid attestation with Claim hash: ${claimHash}.`
+  );
+
+  const attestation = attestations[0];
   assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
 
   attestation.revocationBlockId = await saveBlock(block);
@@ -114,7 +144,7 @@ export async function handleAttestationRevoked(
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cTypeId, "REVOKED");
+  await handleCTypeAggregations(attestation, "REVOKED");
 }
 
 export async function handleAttestationRemoved(
@@ -138,29 +168,32 @@ export async function handleAttestationRemoved(
     )}`
   );
 
-  // There could be several attestations with the same claim hash.
-  // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields([
-    ["claimHash", "=", claimHash.toHex()],
-  ]);
+  // Find the attestation of this claim hash that has not been removed yet.
+  // There should only be one in the data base.
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    { limit: 100 }
+  );
+  // TODO: change getter options to the ones below and delete assertion about matching array length
+  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
 
-  logger.trace(`printing the attestations array:`);
-  attestations.forEach((atty, index) => {
-    logger.trace(
-      `Index: ${index}, attestation: ${JSON.stringify(atty, null, 2)}`
-    );
-  });
+  assert(
+    attestations.length < 100,
+    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+  );
 
-  // Get the attestation that has still not been removed yet:
-  const attestation = attestations.find((atty) => !atty.removalBlockId);
-  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  const attestation = attestations.find((atty) => atty.removalBlockId == null);
+  assert(
+    attestation,
+    `Can't find unremoved attestation of Claim hash: ${claimHash}.`
+  );
 
   attestation.removalBlockId = await saveBlock(block);
   attestation.valid = false;
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
+  await handleCTypeAggregations(attestation, "REMOVED");
 }
 
 export async function handleAttestationDepositReclaimed(
@@ -187,29 +220,33 @@ export async function handleAttestationDepositReclaimed(
     )}`
   );
 
-  // There could be several attestations with the same claim hash.
-  // Given that the older ones has been previously removed from the chain state
-  const attestations = await Attestation.getByFields([
-    ["claimHash", "=", claimHash.toHex()],
-  ]);
+  // Find the attestation of this claim hash that has not been removed yet.
+  // There should only be one in the data base.
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    { limit: 100 }
+  );
+  // TODO: change getter options to the ones below and delete assertion about matching array length
+  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
 
-  logger.trace(`printing the attestations array:`);
-  attestations.forEach((atty, index) => {
-    logger.trace(
-      `Index: ${index}, attestation: ${JSON.stringify(atty, null, 2)}`
-    );
-  });
+  assert(
+    attestations.length < 100,
+    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+  );
 
-  // Get the attestation that has still not been removed yet:
-  const attestation = attestations.find((atty) => !atty.removalBlockId);
-  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  const attestation = attestations.find((atty) => atty.removalBlockId == null);
+
+  assert(
+    attestation,
+    `Can't find unremoved attestation of Claim hash: ${claimHash}.`
+  );
 
   attestation.removalBlockId = await saveBlock(block);
   attestation.valid = false;
 
   await attestation.save();
 
-  await handleCTypeAggregations(attestation.cTypeId, "REMOVED");
+  await handleCTypeAggregations(attestation, "REMOVED");
 }
 
 // TODO: Add a handler for the (future) Event emitted when the deposit owner is changed
