@@ -1,5 +1,17 @@
 FROM subquerynetwork/subql-node-substrate:v4.0.1 AS base
 
+# change user to root to have permission to install dependencies
+USER root
+
+# Install dependencies like Python
+RUN apk add --update --no-cache python3 make g++
+
+# Set Python alias
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
+# change back to the user used by subquery
+USER 1000
+
 # Save the passed evironment variables
 ARG CRAWL_PEREGRINE
 ARG RPC_ENDPOINTS
