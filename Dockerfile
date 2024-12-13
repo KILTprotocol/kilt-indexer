@@ -12,10 +12,9 @@ RUN ln -sf /usr/bin/python3 /usr/bin/python
 # change back to the user used by subquery
 USER 1000
 
-# Save the passed evironment variables
+# Save the passed environment variables
 ARG CRAWL_PEREGRINE
 ARG RPC_ENDPOINTS
-
 
 # Print out the values used for this image
 RUN echo "Building docker image with: CRAWL_PEREGRINE=${CRAWL_PEREGRINE} & RPC_ENDPOINTS=${RPC_ENDPOINTS}"
