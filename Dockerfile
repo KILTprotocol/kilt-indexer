@@ -40,3 +40,7 @@ ENTRYPOINT ["/sbin/tini", "--", "/bin/run"]
 
 
 CMD ["-f", "/kilt_indexer"]
+
+
+## To build this docker image on your local machine run:
+## docker build --debug -t local_indexer --build-arg RPC_ENDPOINTS=https://your-rpc-endpoint.com .
