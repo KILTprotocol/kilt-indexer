@@ -8,7 +8,7 @@ ARG RPC_ENDPOINTS
 # Print out the values used for this image
 RUN echo "Building docker image with: CRAWL_PEREGRINE=${CRAWL_PEREGRINE} & RPC_ENDPOINTS=${RPC_ENDPOINTS}"
 
-WORKDIR /app
+WORKDIR /kilt_indexer
 
 COPY package.json yarn.lock ./
 
@@ -28,4 +28,4 @@ RUN yarn build
 ENTRYPOINT ["/sbin/tini", "--", "/bin/run"]
 
 
-CMD ["-f", "/app"]
+CMD ["-f", "/kilt_indexer"]
