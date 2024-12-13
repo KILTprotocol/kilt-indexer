@@ -6,9 +6,6 @@ USER root
 # Install dependencies like Python
 RUN apk add --update --no-cache python3 make g++
 
-# Set Python alias
-RUN ln -sf /usr/bin/python3 /usr/bin/python
-
 # change back to the user used by subquery
 USER 1000
 
