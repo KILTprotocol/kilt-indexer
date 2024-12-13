@@ -15,7 +15,7 @@
     "prepack": "rm -rf dist && npm run build",
     "test": "subql build && TZ=UTC subql-node test",
     "slash": "yarn ts-node src/slash.ts",
-    "local:test": "subql codegen && subql build && docker compose pull && SUB_COMMAND=test docker compose up --build --remove-orphans"
+    "contained:test": "subql codegen && subql build && docker compose pull && SUB_COMMAND=test docker compose up --build --remove-orphans"
   },
   "homepage": "https://github.com/KILTprotocol/attestation-indexer",
   "repository": "github:KILTprotocol/attestation-indexer",
