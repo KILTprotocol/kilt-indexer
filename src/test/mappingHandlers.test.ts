@@ -30,7 +30,7 @@ subqlTest(
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
-      creationBlockId: "578009",
+      creationBlockId: "000578009",
       active: true,
     }),
   ], // expected entities
@@ -51,7 +51,7 @@ subqlTest(
     Did.create({
       id: "did:kilt:4sddCVdkFajMKtG5unJmquP5Fcrw4A5bfbEkrCEQvkCp7iCx",
       payer: "4tAV8xD2id6EC5V7CaHAiix3mAFzvkCHKa26BykAxaAhGu4y",
-      creationBlockId: "1038495",
+      creationBlockId: "001038495",
       active: true,
     }),
   ], // dependent entities
@@ -59,8 +59,8 @@ subqlTest(
     Did.create({
       id: "did:kilt:4sddCVdkFajMKtG5unJmquP5Fcrw4A5bfbEkrCEQvkCp7iCx",
       payer: "4tAV8xD2id6EC5V7CaHAiix3mAFzvkCHKa26BykAxaAhGu4y",
-      creationBlockId: "1038495",
-      deletionBlockId: "1038890",
+      creationBlockId: "001038495",
+      deletionBlockId: "001038890",
       active: false,
     }),
   ], // expected entities
