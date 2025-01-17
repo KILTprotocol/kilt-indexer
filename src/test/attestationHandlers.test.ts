@@ -52,3 +52,66 @@ subqlTest(
   ], // expected entities
   "handleAttestationCreated" // handler name
 );
+
+subqlTest(
+  "handle first revocation of attested Email credential", // test name
+  3467881, // block height to process
+  [
+    Did.create({
+      id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      creationBlockId: "000578009",
+      active: true,
+    }),
+    CType.create({
+      id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      registrationBlockId: "000578015",
+      authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      definition:
+        '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
+      attestationsCreated: 42,
+      attestationsRevoked: 0,
+      attestationsRemoved: 0,
+      validAttestations: 42,
+    }),
+    Attestation.create({
+      id: "003453935-1",
+      claimHash:
+        "0xb7b2b2d0c6b93e0072e3fec2eb3aebd01cc129b28390cac049ca26052185235f",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: true,
+      creationBlockId: "003453935",
+      delegationID: undefined,
+    }),
+  ], // dependent entities
+  [
+    Attestation.create({
+      id: "003453935-1",
+      claimHash:
+        "0xb7b2b2d0c6b93e0072e3fec2eb3aebd01cc129b28390cac049ca26052185235f",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: false,
+      creationBlockId: "003453935",
+      revocationBlockId: "003467881",
+      delegationID: undefined,
+    }),
+    CType.create({
+      id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      registrationBlockId: "000578015",
+      authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      definition:
+        '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
+      attestationsCreated: 42,
+      attestationsRevoked: 1,
+      attestationsRemoved: 0,
+      validAttestations: 41,
+    }),
+  ], // expected entities
+  "handleAttestationRevoked" // handler name
+);
