@@ -243,3 +243,144 @@ subqlTest(
   ], // expected entities
   "handleAttestationRemoved" // handler name
 );
+
+subqlTest(
+  "handle removal of credentials by reclaiming the deposit ", // test name
+  1843373, // block height to process
+  [
+    Did.create({
+      id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      creationBlockId: "000578009",
+      active: true,
+    }),
+    CType.create({
+      id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      registrationBlockId: "000578015",
+      authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      definition:
+        '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
+      attestationsCreated: 42, // mocked numbers
+      attestationsRevoked: 0,
+      attestationsRemoved: 0,
+      validAttestations: 42,
+    }),
+    Attestation.create({
+      id: "001831761-1",
+      claimHash:
+        "0xd5b324433e490315e62dd90dbdc003a0fff693014d76566a2f30543a6672825e",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: true,
+      creationBlockId: "001831761",
+      delegationID: undefined,
+    }),
+
+    Attestation.create({
+      id: "001831753-1",
+      claimHash:
+        "0xeacd5f8bd3950861b0477962a1780289cd05f017e9ed2cc482aa18610027cd7c",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: true,
+      creationBlockId: "001831753",
+      delegationID: undefined,
+    }),
+    Attestation.create({
+      id: "001831726-1",
+      claimHash:
+        "0xd29f8295e227407868953e8818a8c80dbddc0851bfdf3c57d4d54caf3aa3048e",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: true,
+      creationBlockId: "001831726",
+      delegationID: undefined,
+    }),
+    Attestation.create({
+      id: "001832597-1",
+      claimHash:
+        "0x8f03f7e7e1782ec29291ae9d5250792efc5456a3f24c5b9dda4c782a17609b64",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: true,
+      creationBlockId: "001832597",
+      delegationID: undefined,
+    }),
+  ], // dependent entities
+  [
+    CType.create({
+      id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      registrationBlockId: "000578015",
+      authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      definition:
+        '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
+      attestationsCreated: 42,
+      attestationsRevoked: 0,
+      attestationsRemoved: 4,
+      validAttestations: 38,
+    }),
+
+    Attestation.create({
+      id: "001831761-1",
+      claimHash:
+        "0xd5b324433e490315e62dd90dbdc003a0fff693014d76566a2f30543a6672825e",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: false,
+      creationBlockId: "001831761",
+      removalBlockId: "001843373",
+      delegationID: undefined,
+    }),
+
+    Attestation.create({
+      id: "001831753-1",
+      claimHash:
+        "0xeacd5f8bd3950861b0477962a1780289cd05f017e9ed2cc482aa18610027cd7c",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: false,
+      creationBlockId: "001831753",
+      removalBlockId: "001843373",
+      delegationID: undefined,
+    }),
+    Attestation.create({
+      id: "001831726-1",
+      claimHash:
+        "0xd29f8295e227407868953e8818a8c80dbddc0851bfdf3c57d4d54caf3aa3048e",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: false,
+      creationBlockId: "001831726",
+      removalBlockId: "001843373",
+      delegationID: undefined,
+    }),
+    Attestation.create({
+      id: "001832597-1",
+      claimHash:
+        "0x8f03f7e7e1782ec29291ae9d5250792efc5456a3f24c5b9dda4c782a17609b64",
+      cTypeId:
+        "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
+      issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
+      payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
+      valid: false,
+      creationBlockId: "001832597",
+      removalBlockId: "001843373",
+      delegationID: undefined,
+    }),
+  ], // expected entities
+  "handleAttestationDepositReclaimed" // handler name
+);
