@@ -54,7 +54,7 @@ subqlTest(
 );
 
 subqlTest(
-  "handle first revocation of attested Email credential", // test name
+  "handle first revocation of an attested Email credential", // test name
   3467881, // block height to process
   [
     Did.create({
