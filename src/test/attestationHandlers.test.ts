@@ -5,7 +5,7 @@ import { Attestation, Block, CType, Did } from "../types";
 
 subqlTest(
   "handle attestation of first Twitter credential", // test name
-  1004586, // block height to process
+  578060, // block height to process
   [
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
@@ -27,15 +27,15 @@ subqlTest(
   ], // dependent entities
   [
     Attestation.create({
-      id: "001004586-1",
+      id: "000578060-1",
       claimHash:
-        "0xbd12e7068a0b85feda9cc917da710e54d77395af4b1127c99e9efe143c54c9f4",
+        "0x5aa39186774b04dbc7fd71106dfbaf6a9552d751bd7bcbb13848cbdab879daed",
       cTypeId:
         "kilt:ctype:0x47d04c42bdf7fdd3fc5a194bcaa367b2f4766a6b16ae3df628927656d818f420",
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "001004586",
+      creationBlockId: "000578060",
       delegationID: undefined,
     }),
     CType.create({
