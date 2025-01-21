@@ -29,6 +29,33 @@ subqlTest(
 );
 
 subqlTest(
+  "handle storing only a Public Credential and it's Update", // test name
+  3282040, // block height to process
+  [], // dependent entities
+  [
+    PublicCredential.create({
+      id: "0x9d54d4a7ee436b862ea0479a9472ef11901f566691abdf52193e2ad77490fcb8",
+      subjectId:
+        "did:asset:eip155:5.erc721:0x317a8fe0f1c7102e7674ab231441e485c64c178a:110166",
+      valid: true,
+      cTypeId:
+        "kilt:ctype:0x6f20af20bbae5b280fb4a4768963236730ad7e8213f36d6f3899871cb04c9ae6",
+      claims: "0xa1646c696b65f5",
+      issuerId: "did:kilt:4qp1t66kuBFMDBxAoJdYAfxPb1XEhMss9QV7gysNx5CUJtTB",
+      delegationID: undefined,
+    }),
+    Update.create({
+      id: "§1_0x9d54d4a7ee436b862ea0479a9472ef11901f566691abdf52193e2ad77490fcb8",
+      credentialId:
+        "0x9d54d4a7ee436b862ea0479a9472ef11901f566691abdf52193e2ad77490fcb8",
+      nature: UpdateNature.creation,
+      updateBlockId: "003282040",
+    }),
+  ], // expected entities
+  "handlePublicCredentialStored" // handler name
+);
+
+subqlTest(
   "handle storing first Public Credential and related (Ethereum) AssetDID, Chain, Asset and Update ", // test name
   3209405, // block height to process
   [], // dependent entities
