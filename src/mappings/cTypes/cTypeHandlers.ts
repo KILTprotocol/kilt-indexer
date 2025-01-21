@@ -66,6 +66,7 @@ export async function handleCTypeAggregations(
       aggregation.attestationsRemoved++;
 
       if (attestation.revocationBlockId == undefined) {
+
         aggregation.validAttestations--;
       }
 
