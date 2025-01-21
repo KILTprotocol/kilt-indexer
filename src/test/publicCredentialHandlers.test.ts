@@ -142,3 +142,5 @@ subqlTest(
   ], // expected entities
   "handlePublicCredentialStored" // handler name
 );
+
+// TODO: Add tests for "handlePublicCredentialRemoved", "handlePublicCredentialRevoked" and "handlePublicCredentialUnrevoked" after they happen on the production chain
