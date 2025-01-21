@@ -115,6 +115,7 @@ enum UpdateNature {
   removal
 }
 
+# TODO: change symbol of Updates differentiate from Sanctions. Maybe to "+" or "*".
 type Update @entity {
   id: ID! # "§" + <ordinal number> + "_" + <credential-hash>
   credential: PublicCredential!
