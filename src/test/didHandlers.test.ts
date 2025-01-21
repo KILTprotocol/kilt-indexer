@@ -2,6 +2,20 @@ import { subqlTest } from "@subql/testing";
 import { Block, Did } from "../types";
 
 subqlTest(
+  "handle saving first block related to Identity", // Test name
+  312677, // Block height to test at
+  [], // It does not dependent on any entities
+  [
+    Block.create({
+      id: "000312677",
+      hash: "0x76389b4bf519b14df346755133906e8b7e29587cbde7f729b47d9ad7f94979af",
+      timeStamp: new Date("2021-10-28T14:30:24.37"),
+    }),
+  ], // Expected entities
+  "handleDidCreated" // handler name that triggers it
+);
+
+subqlTest(
   "handle creation of socialKYC DID", // test name
   578009, // block height to process
 
