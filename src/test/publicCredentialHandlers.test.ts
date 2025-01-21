@@ -29,7 +29,7 @@ subqlTest(
 );
 
 subqlTest(
-  "handle storing first Public Credential and related AssetDID, Chain, Asset and Update ", // test name
+  "handle storing first Public Credential and related (Ethereum) AssetDID, Chain, Asset and Update ", // test name
   3209405, // block height to process
   [], // dependent entities
   [
@@ -66,6 +66,51 @@ subqlTest(
         "0x8e723085fadccc58e959f984a46d7c1487c3eceb7d73bf76803223c9efafa660",
       nature: UpdateNature.creation,
       updateBlockId: "003209405",
+    }),
+  ], // expected entities
+  "handlePublicCredentialStored" // handler name
+);
+
+subqlTest(
+  "handle storing first Public Credential and related (Polkadot) AssetDID, Chain, Asset and Update ", // test name
+  3350575, // block height to process
+  [], // dependent entities
+  [
+    PublicCredential.create({
+      id: "0x0a7930eb76f0231b5fe286fb0174c37f5a8d33974ab407cf8a11e045c47665e3",
+      subjectId:
+        "did:asset:polkadot:411f057b9107718c9624d6aa4a3f23c1.att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+      valid: true,
+      cTypeId:
+        "kilt:ctype:0x6f20af20bbae5b280fb4a4768963236730ad7e8213f36d6f3899871cb04c9ae6",
+      claims: "0xa1646c696b65f5",
+      issuerId: "did:kilt:4spSZH48eW2czvqyNQoh9jNajRPrTUyJph1FZaYoFP23D7qd",
+      delegationID: undefined,
+    }),
+    Chain.create({
+      id: "polkadot:411f057b9107718c9624d6aa4a3f23c1",
+      namespace: "polkadot",
+      reference: "411f057b9107718c9624d6aa4a3f23c1",
+    }),
+    Asset.create({
+      id: "att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+      namespace: "att",
+      reference: "kilt-public-credential-v1",
+      identifier:
+        "0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+    }),
+    AssetDID.create({
+      id: "did:asset:polkadot:411f057b9107718c9624d6aa4a3f23c1.att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+      chainId: "polkadot:411f057b9107718c9624d6aa4a3f23c1",
+      assetId:
+        "att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+    }),
+    Update.create({
+      id: "§1_0x0a7930eb76f0231b5fe286fb0174c37f5a8d33974ab407cf8a11e045c47665e3",
+      credentialId:
+        "0x0a7930eb76f0231b5fe286fb0174c37f5a8d33974ab407cf8a11e045c47665e3",
+      nature: UpdateNature.creation,
+      updateBlockId: "003350575",
     }),
   ], // expected entities
   "handlePublicCredentialStored" // handler name
