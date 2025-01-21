@@ -115,3 +115,30 @@ subqlTest(
   ], // expected entities
   "handlePublicCredentialStored" // handler name
 );
+
+subqlTest(
+  "handle saving a (Polkadot) AssetDID, Chain and Asset ", // test name
+  3350575, // block height to process
+  [], // dependent entities
+  [
+    Chain.create({
+      id: "polkadot:411f057b9107718c9624d6aa4a3f23c1",
+      namespace: "polkadot",
+      reference: "411f057b9107718c9624d6aa4a3f23c1",
+    }),
+    Asset.create({
+      id: "att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+      namespace: "att",
+      reference: "kilt-public-credential-v1",
+      identifier:
+        "0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+    }),
+    AssetDID.create({
+      id: "did:asset:polkadot:411f057b9107718c9624d6aa4a3f23c1.att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+      chainId: "polkadot:411f057b9107718c9624d6aa4a3f23c1",
+      assetId:
+        "att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
+    }),
+  ], // expected entities
+  "handlePublicCredentialStored" // handler name
+);
