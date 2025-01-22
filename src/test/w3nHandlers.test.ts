@@ -68,4 +68,37 @@ subqlTest(
   "handleWeb3NameReleased" // handler name
 );
 
+subqlTest(
+  "handle Antonio's web3name being re-claimed", // test name
+  2775722, // block height to process
+  [
+    Ownership.create({
+      id: "#1_w3n:ntn_x2",
+      nameId: "w3n:ntn_x2",
+      bearerId: "did:kilt:4tV2uXwJo2pHg4YS4dpmPJpMKryTK5KUauHoH18BjUBBadLr",
+      claimBlockId: "001189457",
+      releaseBlockId: "002775720",
+    }),
+    Did.create({
+      id: "did:kilt:4on8NUmPXDrQo5bvyx23hdWSiqgNbaCe3UZLXd5vJQnnqT22",
+      payer: "4nvZhWv71x8reD9gq7BUGYQQVvTiThnLpTTanyru9XckaeWa",
+      creationBlockId: "002775697",
+      active: true,
+    }),
+  ], // dependent entities
+  [
+    Web3Name.create({
+      id: "w3n:ntn_x2",
+      banned: false,
+    }),
+    Ownership.create({
+      id: "#2_w3n:ntn_x2",
+      nameId: "w3n:ntn_x2",
+      bearerId: "did:kilt:4on8NUmPXDrQo5bvyx23hdWSiqgNbaCe3UZLXd5vJQnnqT22",
+      claimBlockId: "002775722",
+    }),
+  ], // expected entities
+  "handleWeb3NameClaimed" // handler name
+);
+
 // TODO: Add tests for "handleWeb3NameBanned" and "handleWeb3NameUnbanned" after they happen on the production chain
