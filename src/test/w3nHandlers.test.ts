@@ -67,3 +67,5 @@ subqlTest(
   ], // expected entities
   "handleWeb3NameReleased" // handler name
 );
+
+// TODO: Add tests for "handleWeb3NameBanned" and "handleWeb3NameUnbanned" after they happen on the production chain
