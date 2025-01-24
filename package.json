@@ -17,7 +17,7 @@
     "slash": "yarn ts-node src/slash.ts"
   },
   "homepage": "https://github.com/KILTprotocol/attestation-indexer",
-  "repository": "github:KILTprotocol/attestation-indexer",
+  "repository": "github:KILTprotocol/kilt-indexer",
   "files": [
     "dist",
     "schema.graphql",
