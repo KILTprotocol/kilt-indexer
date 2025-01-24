@@ -23,7 +23,7 @@
     "schema.graphql",
     "project.yaml"
   ],
-  "author": "Botlabs GmbH",
+  "author": "KILT <info@kilt.io>",
   "license": "MIT",
   "dependencies": {
     "@kiltprotocol/sdk-js": "^0.35.2",
