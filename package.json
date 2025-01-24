@@ -1,7 +1,7 @@
 {
   "name": "kilt-indexer",
   "version": "0.0.1",
-  "description": "indexing of attestations and CTypes",
+  "description": "Indexing KILT's blockchain data, mostly related to Identity.",
   "main": "dist/index.js",
   "packageManager": "yarn@1.22.19",
   "engines": {
