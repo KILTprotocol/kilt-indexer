@@ -308,10 +308,10 @@
     eslint "^8.57.0"
     eslint-plugin-unused-imports "^3.1.0"
 
-"@kiltprotocol/type-definitions@^1.11401.1":
-  version "1.11401.1"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/type-definitions/-/type-definitions-1.11401.1.tgz#05d03c78cca480880eb2d0efc9b45ca2e1ebca15"
-  integrity sha512-NlKU8jm/MMCNdxb0WKC/s6rSbwitUkkf+WDMnOcu5yCiBppjnvGArwLsvDr3Z0Ld8HDmad+8316sEVxhtmHaWA==
+"@kiltprotocol/type-definitions@1.11500.0-rc.2":
+  version "1.11500.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/type-definitions/-/type-definitions-1.11500.0-rc.2.tgz#8b9a01784d6ab6ba07167ca0fd7aaacdaefad496"
+  integrity sha512-/vanuHMBJR4fdVooc0yIhl+dVJyIwd+L22PzlAIdDEz7IWTfPK0SY/ptYp3DwZkWDdd9PDnVCwB0hFdAnmzizA==
 
 "@kiltprotocol/types@^0.100.0":
   version "0.100.0"

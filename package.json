@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@kiltprotocol/augment-api": "^1.11405.1",
-    "@kiltprotocol/type-definitions": "^1.11401.1",
+    "@kiltprotocol/type-definitions": "1.11500.0-rc.2",
     "@kiltprotocol/types": "^0.100.0",
     "@subql/cli": "^5.3.0",
     "@subql/node": "^5.2.9",
