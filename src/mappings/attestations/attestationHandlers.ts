@@ -13,6 +13,7 @@ export async function handleAttestationCreated(
     block,
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
+      // data: { attester: attesterDID, claim_hash: claimHash, ctype_hash: cTypeHash, authorization: delegationID },
     },
   } = event;
 
@@ -106,6 +107,7 @@ export async function handleAttestationRevoked(
     block,
     event: {
       data: [attesterDID, claimHash],
+      // data: { attester: attesterDID, claim_hash: claimHash, ctype_hash: cTypeHash, authorized_by: authorizer },
     },
   } = event;
 
@@ -155,6 +157,7 @@ export async function handleAttestationRemoved(
     block,
     event: {
       data: [attesterDID, claimHash],
+      // data: { attester: attesterDID, claim_hash: claimHash, ctype_hash: cTypeHash, authorized_by: authorizer },
     },
   } = event;
 
@@ -201,6 +204,9 @@ export async function handleAttestationDepositReclaimed(
 ): Promise<void> {
   // "The deposit owner reclaimed a deposit by removing an attestation." [account id, claim hash]
   // Attestation removed by owner reclaiming his deposit. [account id, claim hash] (rephrased by me)
+
+  // The new runtime (1.15) does not emit "DepositReclaimed" events anymore.
+  // In case of a deposit being reclaimed, either "AttestationRevoked", "AttestationRemoved" or both will be emitted.
   const {
     block,
     event: {
