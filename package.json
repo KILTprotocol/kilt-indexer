@@ -16,7 +16,7 @@
     "test": "subql build && subql-node test",
     "slash": "yarn ts-node src/slash.ts"
   },
-  "homepage": "https://github.com/KILTprotocol/attestation-indexer",
+  "homepage": "https://indexer.kilt.io/",
   "repository": "github:KILTprotocol/kilt-indexer",
   "files": [
     "dist",
