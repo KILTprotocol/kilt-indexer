@@ -261,3 +261,53 @@ export async function handleAttestationDepositReclaimed(
 // #[pallet::call_index(4)]
 // #[pallet::weight(<T as pallet::Config>::WeightInfo::change_deposit_owner())]
 // pub fn change_deposit_owner(origin: OriginFor<T>, claim_hash: ClaimHashOf<T>) -> DispatchResult
+
+export async function handleAttestationDepositOwnerChanged(
+  event: SubstrateEvent
+): Promise<void> {
+  // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  const {
+    block,
+    event: {
+      data: [claimHash, oldOwner, newOwner],
+      // data: { id: claimHash, from: oldOwner, to: newOwner },
+    },
+  } = event;
+
+  logger.info(
+    `Attestation-Deposit changed it's owner at block ${block.block.header.number}`
+  );
+
+  logger.trace(
+    `The whole AttestationDepositOwnerChanged event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  // Find the attestation of this claim hash that has not been removed yet.
+  // There should only be one in the data base.
+  const attestations = await Attestation.getByFields(
+    [["claimHash", "=", claimHash.toHex()]],
+    { limit: 100 }
+  );
+  // TODO: change getter options to the ones below and delete assertion about matching array length
+  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
+
+  assert(
+    attestations.length < 100,
+    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+  );
+
+  const attestation = attestations.find((atty) => atty.removalBlockId == null);
+
+  assert(
+    attestation,
+    `Can't find unremoved attestation of Claim hash: ${claimHash}.`
+  );
+
+  attestation.payer = newOwner.toString();
+
+  await attestation.save();
+}
