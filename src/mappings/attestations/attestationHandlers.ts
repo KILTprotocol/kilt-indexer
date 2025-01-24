@@ -206,7 +206,7 @@ export async function handleAttestationDepositReclaimed(
   // Attestation removed by owner reclaiming his deposit. [account id, claim hash] (rephrased by me)
 
   // The new runtime (1.15) does not emit "DepositReclaimed" events anymore.
-  // In case of a deposit being reclaimed, either "AttestationRevoked", "AttestationRemoved" or both will be emitted.
+  // In case of a deposit being reclaimed, an "AttestationRemoved" event will be emitted, and if it was still valid, it will be preceded by an "AttestationRevoked" event.
   const {
     block,
     event: {
