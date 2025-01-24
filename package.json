@@ -1,6 +1,6 @@
 {
   "name": "kilt-indexer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "indexing of attestations and CTypes",
   "main": "dist/index.js",
   "packageManager": "yarn@1.22.19",
