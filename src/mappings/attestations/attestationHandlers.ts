@@ -8,7 +8,8 @@ import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 export async function handleAttestationCreated(
   event: SubstrateEvent
 ): Promise<void> {
-  // A new attestation has been created.\[attester DID, claim hash, CType hash, (optional) delegation ID\]
+  // A new attestation has been created.
+  // data struct = { attester, claim_hash, ctype_hash, authorized_by} (can be accessed positionally)
   const {
     block,
     event: {
@@ -101,7 +102,8 @@ export async function handleAttestationCreated(
 export async function handleAttestationRevoked(
   event: SubstrateEvent
 ): Promise<void> {
-  // An attestation has been revoked.\[attester DID, claim hash\]
+  // An attestation has been revoked.
+  // data struct = { attester, claim_hash, ctype_hash, authorized_by} (can be accessed positionally)
   const {
     block,
     event: {
@@ -150,7 +152,8 @@ export async function handleAttestationRevoked(
 export async function handleAttestationRemoved(
   event: SubstrateEvent
 ): Promise<void> {
-  // An attestation has been removed.\[attester DID, claim hash\]
+  // An attestation has been removed.
+  // data struct = { attester, claim_hash, ctype_hash, authorized_by} (can be accessed positionally)
   const {
     block,
     event: {
@@ -199,8 +202,12 @@ export async function handleAttestationRemoved(
 export async function handleAttestationDepositReclaimed(
   event: SubstrateEvent
 ): Promise<void> {
-  // "The deposit owner reclaimed a deposit by removing an attestation." [account id, claim hash]
-  // Attestation removed by owner reclaiming his deposit. [account id, claim hash] (rephrased by me)
+  // "The deposit owner reclaimed a deposit by removing an attestation."
+  // Attestation removed by owner reclaiming his deposit. (rephrased by me)
+  // old runtime data tuple = [account id, claim hash]
+
+  // The new runtime (1.15) does not emit "DepositReclaimed" events anymore.
+  // In case of a deposit being reclaimed, an "AttestationRemoved" event will be emitted, and if it was still valid, it will be preceded by an "AttestationRevoked" event.
   const {
     block,
     event: {

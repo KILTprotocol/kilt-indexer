@@ -1,6 +1,6 @@
 {
   "name": "kilt-indexer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "indexing of attestations and CTypes",
   "main": "dist/index.js",
   "packageManager": "yarn@1.22.19",
@@ -26,23 +26,19 @@
   "author": "Botlabs GmbH",
   "license": "MIT",
   "dependencies": {
-    "@kiltprotocol/sdk-js": "^0.35.2",
-    "@polkadot/api": "^12.2.1",
     "dotenv": "^16.4.5",
     "jsonabc": "^2.3.1"
   },
   "devDependencies": {
-    "@apollo/client": "^3.10.8",
-    "@kiltprotocol/augment-api": "^0.35.2",
-    "@kiltprotocol/type-definitions": "^0.35.2",
-    "@kiltprotocol/types": "^0.35.2",
+    "@kiltprotocol/augment-api": "^1.11405.1",
+    "@kiltprotocol/type-definitions": "1.11500.0-rc.2",
+    "@kiltprotocol/types": "^0.100.0",
     "@subql/cli": "^5.3.0",
     "@subql/node": "^5.2.9",
     "@subql/testing": "^2.2.2",
     "@subql/types": "^3.11.3",
     "@types/jsonabc": "^2.3.3",
     "@types/node": "^20.14.11",
-    "graphql": "^16.9.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   },
