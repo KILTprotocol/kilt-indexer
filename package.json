@@ -1,7 +1,7 @@
 {
   "name": "kilt-indexer",
-  "version": "0.0.2",
-  "description": "indexing of attestations and CTypes",
+  "version": "0.0.3",
+  "description": "Indexing KILT's blockchain data, mostly related to Identity.",
   "main": "dist/index.js",
   "packageManager": "yarn@1.22.19",
   "engines": {
@@ -16,14 +16,14 @@
     "test": "subql build && subql-node test",
     "slash": "yarn ts-node src/slash.ts"
   },
-  "homepage": "https://github.com/KILTprotocol/attestation-indexer",
-  "repository": "github:KILTprotocol/attestation-indexer",
+  "homepage": "https://indexer.kilt.io/",
+  "repository": "github:KILTprotocol/kilt-indexer",
   "files": [
     "dist",
     "schema.graphql",
     "project.yaml"
   ],
-  "author": "Botlabs GmbH",
+  "author": "KILT <info@kilt.io>",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.5",
