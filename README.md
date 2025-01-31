@@ -446,3 +446,24 @@ fragment DidNames on Did {
       }
     }
     ```
+
+## Testing
+
+This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
+
+One or more test cases are written for every `handler` and all tests are re-run during every pull request.
+This checks that the data coming from the blockchain is being processed and saved as expected.
+The tests are written with information coming from the KILT production blockchain _Spiritnet_ to ensure perpetuity.
+
+### Run the tests
+
+The easier, but slower version to run the tests is via: `yarn contained:test`.
+
+The recommended and (after setup) faster option is by running `yarn test`, but it has a couple requirements that can be fulfilled just by following these steps:
+
+1. **Install all packages** by running:
+   `yarn install`
+2. Start the **postgres data base container**.
+   Sadly, the tests can only interact with the _postgres_ container if it is available on port **`5432`**
+   The easiest way to set it up, is to run fist the project via `yarn dev` and after a while stop the unnecessary _subquery-node_ and _graphql-engine_ containers.
+3. **Run** the _subquery-node_ container in test mode, by running `yarn test`.
