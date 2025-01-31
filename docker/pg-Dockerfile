@@ -16,9 +16,4 @@ RUN sed -i 's/\r$//' /docker-entrypoint-initdb.d/load-extensions.sh && chmod +x 
 ## docker build -t postgres_findex -f docker/pg-Dockerfile . 
 
 ## To locally run a container with that image, execute:
-## docker run --name manual_postgres \                                                                                                                                                                                                                                                                                                                                                                                                    1 ↵
-##     -e POSTGRES_USER=postgres \
-##     -e POSTGRES_PASSWORD=postgres \
-##     -e POSTGRES_DB=postgres \
-##     -p 5432:5432 \
-##     -d postgres_findex
+## docker run --name manual_postgres -p 5432:5432 -d postgres_findex
