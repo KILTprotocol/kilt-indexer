@@ -175,10 +175,8 @@ export async function handleAttestationRemoved(
   // There should only be one in the data base.
   const attestations = await Attestation.getByFields(
     [["claimHash", "=", claimHash.toHex()]],
-    { limit: 100 }
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
   );
-  // TODO: change getter options to the ones below and delete assertion about matching array length
-  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
 
   assert(
     attestations.length < 100,
@@ -231,10 +229,8 @@ export async function handleAttestationDepositReclaimed(
   // There should only be one in the data base.
   const attestations = await Attestation.getByFields(
     [["claimHash", "=", claimHash.toHex()]],
-    { limit: 100 }
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
   );
-  // TODO: change getter options to the ones below and delete assertion about matching array length
-  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
 
   assert(
     attestations.length < 100,
@@ -290,14 +286,7 @@ export async function handleAttestationDepositOwnerChanged(
   // There should only be one in the data base.
   const attestations = await Attestation.getByFields(
     [["claimHash", "=", claimHash.toHex()]],
-    { limit: 100 }
-  );
-  // TODO: change getter options to the ones below and delete assertion about matching array length
-  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
-
-  assert(
-    attestations.length < 100,
-    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
   );
 
   const attestation = attestations.find((atty) => atty.removalBlockId == null);
