@@ -126,20 +126,20 @@ export async function handleAttestationRevoked(
   // But only one should be valid
 
   // Get the attestation that is still valid
-  const attestations = await Attestation.getByFields(
-    [
-      ["claimHash", "=", claimHash.toHex()],
-      ["valid", "=", true],
-    ],
-    { limit: 100 }
-  );
-  assert(
-    attestations.length < 2,
-    `Found more the one valid attestation with Claim hash: ${claimHash}.`
-  );
+  const attestation = (
+    await Attestation.getByFields(
+      [
+        ["claimHash", "=", claimHash.toHex()],
+        ["valid", "=", true],
+      ],
+      { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+    )
+  )[0];
 
-  const attestation = attestations[0];
-  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  assert(
+    attestation,
+    `Can't find valid attestation of Claim hash: ${claimHash}.`
+  );
 
   attestation.revocationBlockId = await saveBlock(block);
   attestation.valid = false;
@@ -173,17 +173,16 @@ export async function handleAttestationRemoved(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestations = await Attestation.getByFields(
-    [["claimHash", "=", claimHash.toHex()]],
-    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
-  );
+  const attestation = (
+    await Attestation.getByFields(
+      [
+        ["claimHash", "=", claimHash.toHex()],
+        ["removalBlockId", "=", undefined],
+      ],
+      { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+    )
+  )[0];
 
-  assert(
-    attestations.length < 100,
-    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
-  );
-
-  const attestation = attestations.find((atty) => atty.removalBlockId == null);
   assert(
     attestation,
     `Can't find unremoved attestation of Claim hash: ${claimHash}.`
@@ -227,17 +226,19 @@ export async function handleAttestationDepositReclaimed(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestations = await Attestation.getByFields(
-    [["claimHash", "=", claimHash.toHex()]],
-    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
-  );
-
-  assert(
-    attestations.length < 100,
-    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
-  );
-
-  const attestation = attestations.find((atty) => atty.removalBlockId == null);
+  const attestation = (
+    await Attestation.getByFields(
+      [
+        ["claimHash", "=", claimHash.toHex()],
+        ["removalBlockId", "=", undefined],
+      ],
+      {
+        limit: 1,
+        orderBy: "creationBlockId",
+        orderDirection: "DESC",
+      }
+    )
+  )[0];
 
   assert(
     attestation,
@@ -266,7 +267,6 @@ export async function handleAttestationDepositOwnerChanged(
     block,
     event: {
       data: [claimHash, oldOwner, newOwner],
-      // data: { id: claimHash, from: oldOwner, to: newOwner },
     },
   } = event;
 
@@ -284,12 +284,15 @@ export async function handleAttestationDepositOwnerChanged(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestations = await Attestation.getByFields(
-    [["claimHash", "=", claimHash.toHex()]],
-    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
-  );
-
-  const attestation = attestations.find((atty) => atty.removalBlockId == null);
+  const attestation = (
+    await Attestation.getByFields(
+      [
+        ["claimHash", "=", claimHash.toHex()],
+        ["removalBlockId", "=", undefined],
+      ],
+      { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+    )
+  )[0];
 
   assert(
     attestation,
