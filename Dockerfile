@@ -41,3 +41,8 @@ CMD ["-f", "/kilt_indexer"]
 
 ## To build this docker image on your local machine run:
 ## docker build --debug -t local_indexer --build-arg RPC_ENDPOINTS=https://your-rpc-endpoint.com .
+## (or for Peregrine:)
+## docker build --debug -t local_indexer --build-arg RPC_ENDPOINTS=wss://peregrine.kilt.io --build-arg CRAWL_PEREGRINE=True .
+
+## To locally run a container with that image, execute:
+## docker run -it --name Lindexer --network="host" local_indexer
