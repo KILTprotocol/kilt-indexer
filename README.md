@@ -467,3 +467,10 @@ The recommended and (after setup) faster option is by running `yarn test`, but i
    Sadly, the tests can only interact with the _postgres_ container if it is available on port **`5432`**
    The easiest way to set it up, is to run fist the project via `yarn dev` and after a while stop the unnecessary _subquery-node_ and _graphql-engine_ containers.
 3. **Run** the _subquery-node_ container in test mode, by running `yarn test`.
+
+### Writing test cases
+
+Please write new test cases inside the `src/test` directory.
+Please, try to group the tests in files similarly as the `src/mappings` does it; that is based on _Entities_.
+
+For documentation about [writing the tests cases please refer to the official SubQuery documentation](https://academy.subquery.network/indexer/build/testing.html#writing-test-cases).
