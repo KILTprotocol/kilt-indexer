@@ -122,3 +122,14 @@ type Update @entity {
   nature: UpdateNature!
   updateBlock: Block!
 }
+
+
+## Idea:
+
+# To make records of when a deposit was changed: 
+# - Make Enum listing all types of entities that can have their deposit owner changed
+# - Make Entity (maybe call it "Reallocation") that adds a record of this change, compound of:
+      * ID of entity related
+      * Block 
+      * old owner
+      * new owner
