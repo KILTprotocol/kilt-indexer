@@ -89,6 +89,14 @@ const project: SubstrateProject = {
           },
           {
             kind: SubstrateHandlerKind.Event,
+            handler: "handleAttestationDepositOwnerChanged",
+            filter: {
+              module: "attestation",
+              method: "DepositOwnerChanged",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
             handler: "handleCTypeCreated",
             filter: {
               module: "ctype",
