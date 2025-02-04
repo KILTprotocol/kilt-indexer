@@ -263,6 +263,7 @@ export async function handleAttestationDepositOwnerChanged(
   event: SubstrateEvent
 ): Promise<void> {
   // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  // \[id: ClaimHashOf, from: AccountIdOf, to: AccountIdOf\]
   const {
     block,
     event: {
