@@ -61,12 +61,16 @@ export async function handleAttestationCreated(
   }
 
   // Make sure that any other attestations of same hash have been previously removed
-  const stillExistingAttestations = await Attestation.getByFields(
+  let stillExistingAttestations = await Attestation.getByFields(
     [
       ["claimHash", "=", claimHash.toHex()],
-      ["removalBlockId", "=", undefined],
+      // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
     ],
-    { limit: 100 }
+    { limit: 100, orderBy: "creationBlockId", orderDirection: "DESC" }
+  );
+
+  stillExistingAttestations = stillExistingAttestations.filter(
+    (atty) => atty.removalBlockId == undefined
   );
 
   // Some extra logs for the debugging mode. Could be useful for chain development as well.
@@ -173,15 +177,17 @@ export async function handleAttestationRemoved(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestation = (
-    await Attestation.getByFields(
-      [
-        ["claimHash", "=", claimHash.toHex()],
-        ["removalBlockId", "=", undefined],
-      ],
-      { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
-    )
-  )[0];
+  const attestations = await Attestation.getByFields(
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
+    ],
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+  );
+
+  const attestation = attestations.find(
+    (atty) => atty.removalBlockId == undefined
+  );
 
   assert(
     attestation,
@@ -226,20 +232,21 @@ export async function handleAttestationDepositReclaimed(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestation = (
-    await Attestation.getByFields(
-      [
-        ["claimHash", "=", claimHash.toHex()],
-        ["removalBlockId", "=", undefined],
-      ],
-      {
-        limit: 1,
-        orderBy: "creationBlockId",
-        orderDirection: "DESC",
-      }
-    )
-  )[0];
+  const attestations = await Attestation.getByFields(
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
+    ],
+    {
+      limit: 1,
+      orderBy: "creationBlockId",
+      orderDirection: "DESC",
+    }
+  );
 
+  const attestation = attestations.find(
+    (atty) => atty.removalBlockId == undefined
+  );
   assert(
     attestation,
     `Can't find unremoved attestation of Claim hash: ${claimHash}.`
@@ -285,15 +292,17 @@ export async function handleAttestationDepositOwnerChanged(
 
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
-  const attestation = (
-    await Attestation.getByFields(
-      [
-        ["claimHash", "=", claimHash.toHex()],
-        ["removalBlockId", "=", undefined],
-      ],
-      { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
-    )
-  )[0];
+  const attestations = await Attestation.getByFields(
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
+    ],
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+  );
+
+  const attestation = attestations.find(
+    (atty) => atty.removalBlockId == undefined
+  );
 
   assert(
     attestation,
