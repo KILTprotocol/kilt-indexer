@@ -161,6 +161,14 @@ const project: SubstrateProject = {
           },
           {
             kind: SubstrateHandlerKind.Event,
+            handler: "handleDepositOwnerChanged",
+            filter: {
+              module: "web3Names",
+              method: "DepositOwnerChanged",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
             handler: "handlePublicCredentialStored",
             filter: {
               module: "publicCredentials",

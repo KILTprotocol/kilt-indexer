@@ -268,3 +268,37 @@ export async function handleWeb3NameUnbanned(
 
   await web3Name.save();
 }
+
+export async function handleDepositOwnerChanged(
+  event: SubstrateEvent
+): Promise<void> {
+  // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  // \[id: Web3NameOf, from: AccountIdOf, to: AccountIdOf\]
+  const {
+    block,
+    event: {
+      data: [name, oldOwner, newOwner],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `A web3name changed it's deposit owner at block ${block.block.header.number}`
+  );
+
+  logger.trace(
+    `The whole DepositOwnerChanged event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const w3n = "w3n:" + name.toHuman();
+
+  // Entity:
+  const web3Name = await Web3Name.get(w3n);
+  assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
+
+  // There is currently no record of who is the deposit owner.
+}
