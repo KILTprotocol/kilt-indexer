@@ -199,6 +199,14 @@ const project: SubstrateProject = {
               method: "CredentialUnrevoked",
             },
           },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDepositOwnerChanged",
+            filter: {
+              module: "publicCredentials",
+              method: "DepositOwnerChanged",
+            },
+          },
         ],
       },
     },
