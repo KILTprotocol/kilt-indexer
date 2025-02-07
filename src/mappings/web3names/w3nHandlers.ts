@@ -54,12 +54,16 @@ export async function handleWeb3NameClaimed(
     });
   }
 
-  const unreleasedOwnerships = await Ownership.getByFields(
+  let unreleasedOwnerships = await Ownership.getByFields(
     [
       ["nameId", "=", w3n],
-      ["releaseBlockId", "=", undefined],
+      // ["releaseBlockId", "=", undefined],  // unreliable out of unknown reasons
     ],
-    { limit: 100 }
+    { limit: 100, orderBy: "claimBlockId", orderDirection: "DESC" }
+  );
+
+  unreleasedOwnerships = unreleasedOwnerships.filter(
+    (ownny) => ownny.releaseBlockId == undefined
   );
 
   // Some extra logs for the debugging mode. Could be useful for chain development as well.
