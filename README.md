@@ -220,19 +220,6 @@ fragment DidNames on Did {
    }
    ```
 
-2. **Find all revoked attestations:**
-
-   ```
-   query {
-     attestations(filter: { revocationBlockId: { isNull: false } }) {
-       totalCount
-       nodes {
-         ...wholeAttestation
-       }
-     }
-   }
-   ```
-
 ## Testing
 
 This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
