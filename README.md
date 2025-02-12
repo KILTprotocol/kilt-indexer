@@ -233,30 +233,6 @@ fragment DidNames on Did {
    }
    ```
 
-3. **Find how many attestations were made on a block:**
-
-   ```
-   query {
-     blocks(filter: { id: { equalTo: "3396407" } }) {
-       # Queries can have comments!
-       nodes {
-         id
-         timeStamp
-         hash
-         attestationsByCreationBlockId {
-           totalCount
-           nodes {
-             id
-             cTypeId
-             claimHash
-             issuerId
-           }
-         }
-       }
-     }
-   }
-   ```
-
 ## Testing
 
 This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
