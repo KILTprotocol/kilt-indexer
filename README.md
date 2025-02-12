@@ -422,31 +422,6 @@ fragment DidNames on Did {
    }
    ```
 
-10. **Get all Public Credentials and its corresponding Updates:**
-    ```
-    query {
-      publicCredentials {
-        totalCount
-        nodes {
-          id
-          subjectId
-          claims
-          cTypeId
-          issuerId
-          valid
-          updates(orderBy: ID_ASC) {
-            totalCount
-            nodes {
-              id
-              nature
-              updateBlockId
-            }
-          }
-        }
-      }
-    }
-    ```
-
 ## Testing
 
 This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
