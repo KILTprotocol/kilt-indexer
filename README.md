@@ -337,36 +337,6 @@ fragment DidNames on Did {
    }
    ```
 
-7. **Find DID bearer of w3n:alice and since when:**
-
-   ```
-   query {
-     dids(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
-       nodes {
-         id
-         payer
-         creationBlock {
-           id
-           timeStamp
-         }
-         deletionBlockId
-         web3NameId
-         ownershipsByBearerId {
-           nodes {
-             id
-             claimBlock {
-               id
-               timeStamp
-             }
-             releaseBlockId
-           }
-         }
-       }
-     }
-   }
-
-   ```
-
 ## Testing
 
 This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
