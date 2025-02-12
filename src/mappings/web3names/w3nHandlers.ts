@@ -139,19 +139,10 @@ export async function handleWeb3NameReleased(
   const lastBearer = (
     await Ownership.getByNameId(w3n, {
       limit: 1,
-      orderBy: "id", // they are formatted like #2_w3n:john
+      orderBy: "claimBlockId",
       orderDirection: "DESC",
     })
   )[0];
-
-  // Alternative, that would work with normalized block numbers:
-  // const lastBearer = (
-  //   await Ownership.getByNameId(w3n, {
-  //     limit: 1,
-  //     orderBy: "claimBlockId",
-  //     orderDirection: "DESC",
-  //   })
-  // )[0];
 
   assert(lastBearer, `Can't find the bearer of ${w3n} on the data base.`);
 
