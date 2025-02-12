@@ -168,57 +168,62 @@ fragment DidNames on Did {
 
 ### Query examples:
 
-1. **Find Attestation by its claim hash:**
+There is a small collection of query examples for you to get started.
+You can find it in the [exampleQueries folder](exampleQueries).
 
-   - _without using fragments:_
+Most of the examples take advantage of the _fragments_, but they are optional.
+Here are two variants of the same query to show how they work.
 
-   ```
-   query {
-     attestations(
-       filter: {
-         claimHash: {
-           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
-         }
-       }
-     ) {
-       totalCount
-       nodes {
-         id
-         claimHash
-         cTypeId
-         issuerId
-         payer
-         delegationID
-         valid
-         creationBlock {
-           id
-           hash
-           timeStamp
-         }
-       }
-     }
-   }
+- **Find Attestation by its claim hash:**
 
-   ```
+  1.  _without using fragments:_
 
-   - _taking advantage of fragments:_
+  ```
+  query {
+    attestations(
+      filter: {
+        claimHash: {
+          equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+        }
+      }
+    ) {
+      totalCount
+      nodes {
+        id
+        claimHash
+        cTypeId
+        issuerId
+        payer
+        delegationID
+        valid
+        creationBlock {
+          id
+          hash
+          timeStamp
+        }
+      }
+    }
+  }
+  ```
 
-   ```
-   query {
-     attestations(
-       filter: {
-         claimHash: {
-           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
-         }
-       }
-     ) {
-       totalCount
-       nodes {
-         ...wholeAttestation
-       }
-     }
-   }
-   ```
+  2.  _taking advantage of fragments:_
+
+  ```
+  query {
+    attestations(
+      filter: {
+        claimHash: {
+          equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+        }
+      }
+    ) {
+      totalCount
+      nodes {
+        ...wholeAttestation
+      }
+    }
+  }
+  ```
 
 ## Testing
 
