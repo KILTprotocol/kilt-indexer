@@ -367,39 +367,6 @@ fragment DidNames on Did {
 
    ```
 
-8. **Find registered data about banned web3names:** (It has never happened on KILT Spiritnet)
-
-   ```
-   query {
-     web3Names(filter: { banned: { equalTo: true } }) {
-       totalCount
-       nodes {
-         id
-         banned
-         ownerships {
-           totalCount
-           nodes {
-             id
-             bearerId
-             claimBlockId
-             releaseBlockId
-           }
-         }
-
-         sanctionsByNameId {
-           totalCount
-           nodes {
-             id
-             nameId
-             nature
-             enforcementBlockId
-           }
-         }
-       }
-     }
-   }
-   ```
-
 ## Testing
 
 This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
