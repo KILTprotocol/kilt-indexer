@@ -400,28 +400,6 @@ fragment DidNames on Did {
    }
    ```
 
-9. **Find out who has ever owned w3n:john_doe and when:**
-
-   ```
-   query {
-    web3Names(filter: { id: { equalTo: "w3n:john_doe" } }) {
-      nodes {
-        id
-        banned
-        ownerships(orderBy: ID_ASC) {
-          totalCount
-          nodes {
-            id
-            bearerId
-            claimBlockId
-            releaseBlockId
-          }
-        }
-      }
-    }
-   }
-   ```
-
 ## Testing
 
 This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
