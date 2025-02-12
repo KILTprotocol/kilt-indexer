@@ -317,26 +317,6 @@ fragment DidNames on Did {
    }
    ```
 
-6. **Find all attestation revoked during October 2023:**
-
-   ```
-   query {
-     attestations(
-       filter: {
-         revocationBlock: {
-           timeStamp: { greaterThan: "2023-9-30", lessThan: "2023-11-1" }
-         }
-       }
-       orderBy: ID_ASC
-     ) {
-       totalCount
-       nodes {
-         ...wholeAttestation
-       }
-     }
-   }
-   ```
-
 ## Testing
 
 This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
