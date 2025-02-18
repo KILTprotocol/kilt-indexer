@@ -60,6 +60,7 @@ type Ownership @entity {
   id: ID! # "#" + <ordinal number> + "_" + "w3n:" + <user name>
   name: Web3Name! @index
   bearer: Did! @index
+  payer: String! @index # owner account address
   claimBlock: Block!
   releaseBlock: Block
 }

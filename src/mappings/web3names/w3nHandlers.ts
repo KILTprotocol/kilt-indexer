@@ -38,6 +38,7 @@ export async function handleWeb3NameClaimed(
   const blockNumber = await saveBlock(block);
   const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
+  const payer = event.extrinsic!.extrinsic.signer.toString();
 
   const did = await Did.get(owner);
   assert(did, `Can't find this DID on the data base: ${owner}.`);
@@ -89,6 +90,7 @@ export async function handleWeb3NameClaimed(
     id: `#${numberOfPreviousBearers + 1}_${w3n}`,
     nameId: w3n,
     bearerId: owner,
+    payer,
     claimBlockId: blockNumber,
   });
 
@@ -149,8 +151,6 @@ export async function handleWeb3NameReleased(
   lastBearer.releaseBlockId = blockNumber;
 
   await lastBearer.save();
-
-  await web3Name.save();
 }
 
 export async function handleWeb3NameBanned(
@@ -209,7 +209,7 @@ export async function handleWeb3NameBanned(
 
   await web3Name.save();
 
-  // If a did owned this web3Name at the moment of the ban, a Web3NameReleased event would be release.
+  // If a did owned this web3Name at the moment of the ban, a Web3NameReleased event would be emitted.
   // So, no extra logic for the dids inside of this handler is needed.
 }
 
@@ -296,4 +296,20 @@ export async function handleDepositOwnerChanged(
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
   // There is currently no record of who is the deposit owner.
+
+  // Find the bearing title (ownership) that has not been released yet
+  // there should only be one in the data base
+  const bearer = (
+    await Ownership.getByNameId(w3n, {
+      limit: 1,
+      orderBy: "claimBlockId",
+      orderDirection: "DESC",
+    })
+  )[0];
+
+  assert(bearer, `Can't find the bearer of ${w3n} on the data base.`);
+
+  bearer.payer = newOwner.toString();
+
+  await bearer.save();
 }
