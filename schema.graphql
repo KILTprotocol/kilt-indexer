@@ -129,6 +129,23 @@ type Update @entity {
 # - Make Enum listing all types of entities that can have their deposit owner changed
 # - Make Entity (maybe call it "Reallocation") that adds a record of this change, compound of:
 #      * ID of entity related
+#      * for: DepositsReason
 #      * Block
 #      * old owner
 #      * new owner
+#
+
+# enum DepositsReason {
+#  DID
+#  Attestation
+#  PublicCredential
+#  Web3name
+# }
+
+# type Reallocation @entity {
+#  id: ID! #
+#  for: DepositsReason
+#  reallocationBlock: Block!
+#  oldOwner: String! # account address
+#  newOwner: String! # account address
+# }
