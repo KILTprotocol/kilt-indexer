@@ -10,12 +10,12 @@ subqlTest(
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
-      creationBlockId: "000578009",
+      creationBlockId: 578009,
       active: true,
     }),
     CType.create({
       id: "kilt:ctype:0x47d04c42bdf7fdd3fc5a194bcaa367b2f4766a6b16ae3df628927656d818f420",
-      registrationBlockId: "000578018",
+      registrationBlockId: 578018,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Twitter":{"type":"string"}},"title":"Twitter","type":"object"}',
@@ -35,12 +35,12 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "000578060",
+      creationBlockId: 578060,
       delegationID: undefined,
     }),
     CType.create({
       id: "kilt:ctype:0x47d04c42bdf7fdd3fc5a194bcaa367b2f4766a6b16ae3df628927656d818f420",
-      registrationBlockId: "000578018",
+      registrationBlockId: 578018,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Twitter":{"type":"string"}},"title":"Twitter","type":"object"}',
@@ -60,12 +60,12 @@ subqlTest(
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
-      creationBlockId: "000578009",
+      creationBlockId: 578009,
       active: true,
     }),
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -83,7 +83,7 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "003453935",
+      creationBlockId: 3453935,
       delegationID: undefined,
     }),
   ], // dependent entities
@@ -97,13 +97,13 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "003453935",
-      revocationBlockId: "003467881",
+      creationBlockId: 3453935,
+      revocationBlockId: 3467881,
       delegationID: undefined,
     }),
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -123,12 +123,12 @@ subqlTest(
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
-      creationBlockId: "000578009",
+      creationBlockId: 578009,
       active: true,
     }),
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -146,7 +146,7 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "004888710",
+      creationBlockId: 4888710,
       delegationID: undefined,
     }),
   ], // dependent entities
@@ -160,13 +160,13 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "004888710",
-      removalBlockId: "004943775",
+      creationBlockId: 4888710,
+      removalBlockId: 4943775,
       delegationID: undefined,
     }),
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -186,12 +186,12 @@ subqlTest(
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
-      creationBlockId: "000578009",
+      creationBlockId: 578009,
       active: true,
     }),
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -209,8 +209,8 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "004943834",
-      revocationBlockId: "004943869",
+      creationBlockId: 4943834,
+      revocationBlockId: 4943869,
       delegationID: undefined,
     }),
   ], // dependent entities
@@ -224,14 +224,14 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "004943834",
-      revocationBlockId: "004943869",
-      removalBlockId: "004943884",
+      creationBlockId: 4943834,
+      revocationBlockId: 4943869,
+      removalBlockId: 4943884,
       delegationID: undefined,
     }),
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -251,12 +251,12 @@ subqlTest(
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
-      creationBlockId: "000578009",
+      creationBlockId: 578009,
       active: true,
     }),
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -274,7 +274,7 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "001831761",
+      creationBlockId: 1831761,
       delegationID: undefined,
     }),
 
@@ -287,7 +287,7 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "001831753",
+      creationBlockId: 1831753,
       delegationID: undefined,
     }),
     Attestation.create({
@@ -299,7 +299,7 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "001831726",
+      creationBlockId: 1831726,
       delegationID: undefined,
     }),
     Attestation.create({
@@ -311,14 +311,14 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: true,
-      creationBlockId: "001832597",
+      creationBlockId: 1832597,
       delegationID: undefined,
     }),
   ], // dependent entities
   [
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',
@@ -337,8 +337,8 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "001831761",
-      removalBlockId: "001843373",
+      creationBlockId: 1831761,
+      removalBlockId: 1843373,
       delegationID: undefined,
     }),
 
@@ -351,8 +351,8 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "001831753",
-      removalBlockId: "001843373",
+      creationBlockId: 1831753,
+      removalBlockId: 1843373,
       delegationID: undefined,
     }),
     Attestation.create({
@@ -364,8 +364,8 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "001831726",
-      removalBlockId: "001843373",
+      creationBlockId: 1831726,
+      removalBlockId: 1843373,
       delegationID: undefined,
     }),
     Attestation.create({
@@ -377,8 +377,8 @@ subqlTest(
       issuerId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
       valid: false,
-      creationBlockId: "001832597",
-      removalBlockId: "001843373",
+      creationBlockId: 1832597,
+      removalBlockId: 1843373,
       delegationID: undefined,
     }),
   ], // expected entities
