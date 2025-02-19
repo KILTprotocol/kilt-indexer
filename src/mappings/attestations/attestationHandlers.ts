@@ -15,6 +15,7 @@ export async function handleAttestationCreated(
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
     },
+    extrinsic,
   } = event;
 
   logger.info(`New attestation created at block ${block.block.header.number}`);
@@ -34,7 +35,7 @@ export async function handleAttestationCreated(
 
   const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
-  const payer = event.extrinsic!.extrinsic.signer.toString();
+  const payer = extrinsic!.extrinsic.signer.toString();
   const issuerId = "did:kilt:" + attesterDID.toString();
 
   const issuerDID = await Did.get(issuerId);

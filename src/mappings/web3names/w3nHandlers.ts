@@ -38,7 +38,7 @@ export async function handleWeb3NameClaimed(
   const blockNumber = await saveBlock(block);
   const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
-  const payer = event.extrinsic!.extrinsic.signer.toString();
+  const payer = extrinsic!.extrinsic.signer.toString();
 
   const did = await Did.get(owner);
   assert(did, `Can't find this DID on the data base: ${owner}.`);
