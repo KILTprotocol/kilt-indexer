@@ -4,13 +4,11 @@
 
 type Block @entity {
   """
-  <Block ordinal number from genesis block> fixed length of 9 digits, prefixed with insignificant zeros
+  <Block ordinal number from genesis block>
   """
-  id: ID!
-  # The biggest possible block number on chain has 20 places (=u64).
-  # To allow ordering by block number (=id), we need to prefix them with insignificant zeros, because IDs are always strings.
-  # Currently (at ~7.5M blocks), only 7 significant places are being used. It would take more than 380 years to produce 1 billion blocks.
-  # By normalizing block numbers to 9 digits, we are set up for the next 377 years.
+  id: ID! @dbType(type: "Int")
+  # The biggest possible block number on chain has 20 decimal places (=u64), so a `BigInt`.
+  # Nevertheless, using `Int` (=u32) it's enough for the next 19,5 centuries.
   """
   Block Hash as hex-string
   """
