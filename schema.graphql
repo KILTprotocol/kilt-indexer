@@ -3,23 +3,47 @@
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
 type Block @entity {
-  id: ID! # <Block ordinal number from genesis block> fixed length of 9 digits, prefixed with insignificant zeros
+  """
+  <Block ordinal number from genesis block> fixed length of 9 digits, prefixed with insignificant zeros
+  """
+  id: ID!
   # The biggest possible block number on chain has 20 places (=u64).
   # To allow ordering by block number (=id), we need to prefix them with insignificant zeros, because IDs are always strings.
   # Currently (at ~7.5M blocks), only 7 significant places are being used. It would take more than 380 years to produce 1 billion blocks.
   # By normalizing block numbers to 9 digits, we are set up for the next 377 years.
-  hash: String! @index(unique: true) # Block Hash as hex-string
-  timeStamp: Date! # Date of creation of this block
+  """
+  Block Hash as hex-string
+  """
+  hash: String! @index(unique: true)
+  """
+  Date of creation of this block
+  """
+  timeStamp: Date!
 }
 
 ## For Credentials:
 
 type Attestation @entity {
-  id: ID! # <Block number> + "-" + <ordinal number within block>
-  claimHash: String! @index # hash of the credential claims. Can be duplicated
-  cType: CType! @index # id of the CType used in this attestation. A.k.a.: "kilt:ctype:" + <CType hash>
-  issuer: Did! @index # DID of credential issuer and on-chain attester
-  payer: String! # account address
+  """
+  <Block number> + "-" + <ordinal number within block>
+  """
+  id: ID!
+  """
+  hash of the credential claims (not unique)
+  """
+  claimHash: String! @index
+  """
+  id of the CType used in this attestation. A.k.a.: "kilt:ctype:" + <CType hash>
+  """
+  cType: CType! @index
+  """
+  DID of credential issuer and on-chain attester
+  """
+  issuer: Did! @index
+  """
+  account address
+  """
+  payer: String!
   delegationID: String
   valid: Boolean! @index
   creationBlock: Block!
@@ -27,37 +51,75 @@ type Attestation @entity {
   removalBlock: Block
 }
 
+"""
+This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType.
+
+A CType is a Claim Type.
+It structures the content (claims) of a credential.
+"""
 type CType @entity {
-  # This is an Aggregation Entity allowing us to calculate all the attestations created, revoked and removed per CType
-  id: ID! # "kilt:ctype:" + <CType hash>
+  """
+  "kilt:ctype:" + <CType hash>
+  """
+  id: ID!
   registrationBlock: Block!
-  author: Did! @index # DID of the creator
-  definition: String! # cType Schema
+  """
+  DID of the creator
+  """
+  author: Did! @index
+  """
+  DID of the creator
+  """
+  definition: String!
   attestationsCreated: Int!
   attestationsRevoked: Int!
-  attestationsRemoved: Int! # either valid or revoked credentials can be removed.
-  validAttestations: Int! # number of credentials neither revoked nor removed.
+  """
+  either valid or revoked credentials can be removed.
+  """
+  attestationsRemoved: Int!
+  """
+  number of credentials neither revoked nor removed.
+  """
+  validAttestations: Int!
 }
 
 ## For DIDs:
 
 type Did @entity {
-  id: ID! # "did:kilt:" + <identifier (encoded as KILT address)>
-  payer: String! @index # owner account address
+  """
+  "did:kilt:" + <identifier (encoded as KILT address)>
+  """
+  id: ID!
+  """
+  owner account address
+  """
+  payer: String! @index
   creationBlock: Block!
   deletionBlock: Block
-  web3name: Web3Name # w3n:user , only the current one
-  active: Boolean! # whether it has been deactivated or not
+  """
+  Web3Name used as alias, only the current one
+  """
+  web3name: Web3Name
+  """
+  whether it has been deactivated or not
+  """
+  active: Boolean!
 }
 
 type Web3Name @entity {
-  id: ID! # "w3n:" + <user name>
+  """
+  "w3n:" + <user name>
+  """
+  id: ID!
   banned: Boolean!
   ownerships: [Ownership]! @derivedFrom(field: "name")
 }
 
 type Ownership @entity {
-  id: ID! # "#" + <ordinal number> + "_" + "w3n:" + <user name>
+  """
+  "#" + <ordinal number> + "_" + "w3n:" + <user name>
+  """
+  id: ID!
   name: Web3Name! @index
   bearer: Did! @index
   claimBlock: Block!
@@ -70,7 +132,10 @@ enum SanctionNature {
 }
 
 type Sanction @entity {
-  id: ID! # "§" + <ordinal number> + "_" + "w3n:" + <user name>
+  """
+  "§" + <ordinal number> + "_" + "w3n:" + <user name>
+  """
+  id: ID!
   nature: SanctionNature!
   name: Web3Name! @index
   enforcementBlock: Block!
@@ -79,30 +144,45 @@ type Sanction @entity {
 ## For AssetDIDs:
 
 type Chain @entity {
-  id: ID! # <chain-namespace> + ":" + <chain-reference> = caip-2-chain-id
+  """
+  <chain-namespace> + ":" + <chain-reference> = caip-2-chain-id
+  """
+  id: ID!
   namespace: String!
   reference: String!
 }
 
 type Asset @entity {
-  id: ID! # <asset-namespace> + ":" + <asset-reference> + [":" + <asset-id>]
+  """
+  <asset-namespace> + ":" + <asset-reference> + [":" + <asset-id>]
+  """
+  id: ID!
   namespace: String!
   reference: String!
   identifier: String
 }
 
 type AssetDID @entity {
-  id: ID! # "did:asset:" + <chain-namespace> + ":" + <chain-reference> + <asset-namespace> + ":" + <asset-reference> + [":" + <asset-id>]
+  """
+  "did:asset:" + <chain-namespace> + ":" + <chain-reference> + <asset-namespace> + ":" + <asset-reference> + [":" + <asset-id>]
+  """
+  id: ID!
   chain: Chain!
   asset: Asset!
 }
 
 type PublicCredential @entity {
-  id: ID! # <credential-hash>
+  """
+  <credential-hash>
+  """
+  id: ID!
   subject: AssetDID! @index
   cType: CType!
   issuer: Did! @index
-  claims: String! # content of the credential
+  """
+  content of the credential
+  """
+  claims: String!
   delegationID: String
   valid: Boolean!
   updates: [Update]! @derivedFrom(field: "credential")
@@ -111,13 +191,19 @@ type PublicCredential @entity {
 enum UpdateNature {
   creation
   revocation
-  restoration # un-revocation
+  """
+  un-revocation
+  """
+  restoration
   removal
 }
 
 # TODO: change symbol of Updates differentiate from Sanctions. Maybe to "+" or "*".
 type Update @entity {
-  id: ID! # "§" + <ordinal number> + "_" + <credential-hash>
+  """
+  "§" + <ordinal number> + "_" + <credential-hash>
+  """
+  id: ID!
   credential: PublicCredential!
   nature: UpdateNature!
   updateBlock: Block!
