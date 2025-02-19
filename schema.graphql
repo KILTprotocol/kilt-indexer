@@ -74,11 +74,11 @@ type CType @entity {
   attestationsCreated: Int!
   attestationsRevoked: Int!
   """
-  either valid or revoked credentials can be removed.
+  either valid or revoked credentials can be removed
   """
   attestationsRemoved: Int!
   """
-  number of credentials neither revoked nor removed.
+  number of credentials neither revoked nor removed
   """
   validAttestations: Int!
 }
