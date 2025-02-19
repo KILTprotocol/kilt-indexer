@@ -260,12 +260,6 @@ export async function handleAttestationDepositReclaimed(
   await handleCTypeAggregations(attestation, "REMOVED");
 }
 
-// TODO: Add a handler for the (future) Event emitted when the deposit owner is changed
-// related to:
-// #[pallet::call_index(4)]
-// #[pallet::weight(<T as pallet::Config>::WeightInfo::change_deposit_owner())]
-// pub fn change_deposit_owner(origin: OriginFor<T>, claim_hash: ClaimHashOf<T>) -> DispatchResult
-
 export async function handleAttestationDepositOwnerChanged(
   event: SubstrateEvent
 ): Promise<void> {
