@@ -37,6 +37,7 @@ export async function handlePublicCredentialStored(
   const blockNumber = await saveBlock(block);
   const assetDidUri = await saveAssetDid(subjectID as KiltAssetDidsV1AssetDid);
   const credentialHash = credentialID.toHex();
+  const payer = extrinsic!.extrinsic.signer.toString();
 
   const credential: CredentialFromChain = extractCredential(
     extrinsic,
@@ -56,6 +57,7 @@ export async function handlePublicCredentialStored(
     id: credentialHash,
     subjectId: assetDidUri,
     valid: true,
+    payer,
     cTypeId,
     claims: credential.claims,
     issuerId: credential.attesterDid,
@@ -277,5 +279,7 @@ export async function handleDepositOwnerChanged(
     `Can't find this Public Credential on the data base: ${publicCredential}.`
   );
 
-  // There is currently no record of who is the deposit owner.
+  publicCredential.payer = newOwner.toString();
+
+  await publicCredential.save();
 }

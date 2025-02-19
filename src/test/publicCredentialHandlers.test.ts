@@ -22,6 +22,7 @@ subqlTest(
         "kilt:ctype:0x3228451c231f002227358f90c31436ea6e302d53e3ae45903c49ebc45d6b9b19",
       claims: "0x7b22617765736f6d65223a203130307d",
       issuerId: "did:kilt:4siDmerNEBREZJsFoLM95x6cxEho73bCWKEDAXrKdou4a3mH",
+      payer: "4o9nSiQ8QvadqhVXNzpekzAK18BVyeLk4UZUKJyCXZei1THE",
       delegationID: undefined,
     }),
   ], // expected entities
@@ -42,6 +43,7 @@ subqlTest(
         "kilt:ctype:0x6f20af20bbae5b280fb4a4768963236730ad7e8213f36d6f3899871cb04c9ae6",
       claims: "0xa1646c696b65f5",
       issuerId: "did:kilt:4qp1t66kuBFMDBxAoJdYAfxPb1XEhMss9QV7gysNx5CUJtTB",
+      payer: "4o2ToLZh96XwFSfmY2j1fLQ6cHx4X5wCLNJ3ccuEvLaQWr5Q",
       delegationID: undefined,
     }),
     Update.create({
@@ -69,6 +71,8 @@ subqlTest(
         "kilt:ctype:0x3228451c231f002227358f90c31436ea6e302d53e3ae45903c49ebc45d6b9b19",
       claims: "0x7b22617765736f6d65223a203130307d",
       issuerId: "did:kilt:4siDmerNEBREZJsFoLM95x6cxEho73bCWKEDAXrKdou4a3mH",
+      payer: "4o9nSiQ8QvadqhVXNzpekzAK18BVyeLk4UZUKJyCXZei1THE",
+
       delegationID: undefined,
     }),
     Chain.create({
@@ -112,6 +116,7 @@ subqlTest(
         "kilt:ctype:0x6f20af20bbae5b280fb4a4768963236730ad7e8213f36d6f3899871cb04c9ae6",
       claims: "0xa1646c696b65f5",
       issuerId: "did:kilt:4spSZH48eW2czvqyNQoh9jNajRPrTUyJph1FZaYoFP23D7qd",
+      payer: "4rnBT8jRfs24JTdZTrxmECGgVpa8mdx5E3t5wHwBxc2V22gn",
       delegationID: undefined,
     }),
     Chain.create({

@@ -103,6 +103,7 @@ type PublicCredential @entity {
   subject: AssetDID! @index
   cType: CType!
   issuer: Did! @index
+  payer: String! @index # owner account address
   claims: String! # content of the credential
   delegationID: String
   valid: Boolean!
