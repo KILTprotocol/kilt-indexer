@@ -295,8 +295,6 @@ export async function handleDepositOwnerChanged(
   const web3Name = await Web3Name.get(w3n);
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
-  // There is currently no record of who is the deposit owner.
-
   // Find the bearing title (ownership) that has not been released yet
   // there should only be one in the data base
   const bearer = (
