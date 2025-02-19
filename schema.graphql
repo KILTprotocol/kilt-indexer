@@ -33,7 +33,7 @@ type Attestation @entity {
   """
   claimHash: String! @index
   """
-  id of the CType used in this attestation. A.k.a.: "kilt:ctype:" + <CType hash>
+  CType used to structure the claims being attested
   """
   cType: CType! @index
   """
