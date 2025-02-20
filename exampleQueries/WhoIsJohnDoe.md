@@ -11,6 +11,7 @@ query WhoIsJohnDoe {
         nodes {
           id
           bearerId
+          payer
           claimBlockId
           releaseBlockId
         }

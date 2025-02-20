@@ -10,6 +10,7 @@
           claims
           cTypeId
           issuerId
+          payer
           valid
           updates(orderBy: ID_ASC) {
             totalCount
