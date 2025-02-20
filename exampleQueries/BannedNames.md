@@ -12,6 +12,7 @@ query BannedNames {
         nodes {
           id
           bearerId
+          payer
           claimBlockId
           releaseBlockId
         }

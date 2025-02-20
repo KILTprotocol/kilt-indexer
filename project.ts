@@ -89,6 +89,14 @@ const project: SubstrateProject = {
           },
           {
             kind: SubstrateHandlerKind.Event,
+            handler: "handleAttestationDepositOwnerChanged",
+            filter: {
+              module: "attestation",
+              method: "DepositOwnerChanged",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
             handler: "handleCTypeCreated",
             filter: {
               module: "ctype",
@@ -109,6 +117,14 @@ const project: SubstrateProject = {
             filter: {
               module: "did",
               method: "DidDeleted",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDepositOwnerChanged",
+            filter: {
+              module: "did",
+              method: "DepositOwnerChanged",
             },
           },
           {
@@ -145,6 +161,14 @@ const project: SubstrateProject = {
           },
           {
             kind: SubstrateHandlerKind.Event,
+            handler: "handleDepositOwnerChanged",
+            filter: {
+              module: "web3Names",
+              method: "DepositOwnerChanged",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
             handler: "handlePublicCredentialStored",
             filter: {
               module: "publicCredentials",
@@ -173,6 +197,14 @@ const project: SubstrateProject = {
             filter: {
               module: "publicCredentials",
               method: "CredentialUnrevoked",
+            },
+          },
+          {
+            kind: SubstrateHandlerKind.Event,
+            handler: "handleDepositOwnerChanged",
+            filter: {
+              module: "publicCredentials",
+              method: "DepositOwnerChanged",
             },
           },
         ],

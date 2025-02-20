@@ -41,7 +41,7 @@ type Attestation @entity {
   """
   issuer: Did! @index
   """
-  account address
+  deposit owner’s account address
   """
   payer: String!
   delegationID: String
@@ -122,6 +122,10 @@ type Ownership @entity {
   id: ID!
   name: Web3Name! @index
   bearer: Did! @index
+  """
+  deposit owner’s account address
+  """
+  payer: String! @index
   claimBlock: Block!
   releaseBlock: Block
 }
