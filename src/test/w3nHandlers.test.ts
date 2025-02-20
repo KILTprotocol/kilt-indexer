@@ -21,6 +21,7 @@ subqlTest(
       id: "#1_w3n:ntn_x2",
       nameId: "w3n:ntn_x2",
       bearerId: "did:kilt:4tV2uXwJo2pHg4YS4dpmPJpMKryTK5KUauHoH18BjUBBadLr",
+      payer: "4oKx7RycScwUAcCPVSUBdU1GspTMZUVn4WuxsRtJ8FXZvWSw",
       claimBlockId: "001189457",
     }),
   ], // expected entities
@@ -46,6 +47,7 @@ subqlTest(
       id: "#1_w3n:ntn_x2",
       nameId: "w3n:ntn_x2",
       bearerId: "did:kilt:4tV2uXwJo2pHg4YS4dpmPJpMKryTK5KUauHoH18BjUBBadLr",
+      payer: "4oKx7RycScwUAcCPVSUBdU1GspTMZUVn4WuxsRtJ8FXZvWSw",
       claimBlockId: "001189457",
     }),
   ], // dependent entities
@@ -55,6 +57,7 @@ subqlTest(
       nameId: "w3n:ntn_x2",
       bearerId: "did:kilt:4tV2uXwJo2pHg4YS4dpmPJpMKryTK5KUauHoH18BjUBBadLr",
       claimBlockId: "001189457",
+      payer: "4oKx7RycScwUAcCPVSUBdU1GspTMZUVn4WuxsRtJ8FXZvWSw",
       releaseBlockId: "002775720",
     }),
     Did.create({
@@ -76,6 +79,7 @@ subqlTest(
       id: "#1_w3n:ntn_x2",
       nameId: "w3n:ntn_x2",
       bearerId: "did:kilt:4tV2uXwJo2pHg4YS4dpmPJpMKryTK5KUauHoH18BjUBBadLr",
+      payer: "4oKx7RycScwUAcCPVSUBdU1GspTMZUVn4WuxsRtJ8FXZvWSw",
       claimBlockId: "001189457",
       releaseBlockId: "002775720",
     }),
@@ -85,16 +89,17 @@ subqlTest(
       creationBlockId: "002775697",
       active: true,
     }),
-  ], // dependent entities
-  [
     Web3Name.create({
       id: "w3n:ntn_x2",
       banned: false,
     }),
+  ], // dependent entities
+  [
     Ownership.create({
       id: "#2_w3n:ntn_x2",
       nameId: "w3n:ntn_x2",
       bearerId: "did:kilt:4on8NUmPXDrQo5bvyx23hdWSiqgNbaCe3UZLXd5vJQnnqT22",
+      payer: "4nvZhWv71x8reD9gq7BUGYQQVvTiThnLpTTanyru9XckaeWa",
       claimBlockId: "002775722",
     }),
   ], // expected entities

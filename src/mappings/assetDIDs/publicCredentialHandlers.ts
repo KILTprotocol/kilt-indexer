@@ -37,6 +37,7 @@ export async function handlePublicCredentialStored(
   const blockNumber = await saveBlock(block);
   const assetDidUri = await saveAssetDid(subjectID as KiltAssetDidsV1AssetDid);
   const credentialHash = credentialID.toHex();
+  const payer = extrinsic!.extrinsic.signer.toString();
 
   const credential: CredentialFromChain = extractCredential(
     extrinsic,
@@ -56,6 +57,7 @@ export async function handlePublicCredentialStored(
     id: credentialHash,
     subjectId: assetDidUri,
     valid: true,
+    payer,
     cTypeId,
     claims: credential.claims,
     issuerId: credential.attesterDid,
@@ -241,4 +243,43 @@ export async function handlePublicCredentialUnrevoked(
   });
 
   await newUpdate.save();
+}
+
+export async function handleDepositOwnerChanged(
+  event: SubstrateEvent
+): Promise<void> {
+  // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  // \[id: CredentialIdOf, from: AccountIdOf, to: AccountIdOf\]
+  const {
+    block,
+    event: {
+      data: [credentialID, oldOwner, newOwner],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `A public credential changed it's deposit owner at block ${block.block.header.number}`
+  );
+
+  logger.trace(
+    `The whole DepositOwnerChanged event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const blockNumber = await saveBlock(block);
+  const credentialHash = credentialID.toHex();
+
+  const publicCredential = await PublicCredential.get(credentialHash);
+  assert(
+    publicCredential,
+    `Can't find this Public Credential on the data base: ${publicCredential}.`
+  );
+
+  publicCredential.payer = newOwner.toString();
+
+  await publicCredential.save();
 }

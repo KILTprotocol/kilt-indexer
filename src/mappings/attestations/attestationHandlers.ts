@@ -15,6 +15,7 @@ export async function handleAttestationCreated(
     event: {
       data: [attesterDID, claimHash, cTypeHash, delegationID],
     },
+    extrinsic,
   } = event;
 
   logger.info(`New attestation created at block ${block.block.header.number}`);
@@ -34,7 +35,7 @@ export async function handleAttestationCreated(
 
   const blockNumber = await saveBlock(block);
   const cTypeId = "kilt:ctype:" + cTypeHash.toHex();
-  const payer = event.extrinsic!.extrinsic.signer.toString();
+  const payer = extrinsic!.extrinsic.signer.toString();
   const issuerId = "did:kilt:" + attesterDID.toString();
 
   const issuerDID = await Did.get(issuerId);
@@ -61,26 +62,18 @@ export async function handleAttestationCreated(
   }
 
   // Make sure that any other attestations of same hash have been previously removed
-  const stillExistingAttestations = await Attestation.getByFields(
-    [
-      ["claimHash", "=", claimHash.toHex()],
-      ["removalBlockId", "=", undefined],
-    ],
-    { limit: 100 }
-  );
-
-  // Some extra logs for the debugging mode. Could be useful for chain development as well.
-  logger.trace(
-    `printing the Attestations with the same hash that have not been removed:`
-  );
-  stillExistingAttestations.forEach((ownership, index) => {
-    logger.trace(
-      `Index: ${index}, Attestation: ${JSON.stringify(ownership, null, 2)}`
-    );
-  });
+  const lastAttestation = (
+    await Attestation.getByFields(
+      [
+        ["claimHash", "=", claimHash.toHex()],
+        // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
+      ],
+      { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+    )
+  )[0];
 
   assert(
-    stillExistingAttestations.length == 0,
+    !lastAttestation || lastAttestation.removalBlockId,
     `Can't save attestation ${claimHash} because it is still registered as existing on chain state.`
   );
 
@@ -126,20 +119,20 @@ export async function handleAttestationRevoked(
   // But only one should be valid
 
   // Get the attestation that is still valid
-  const attestations = await Attestation.getByFields(
-    [
-      ["claimHash", "=", claimHash.toHex()],
-      ["valid", "=", true],
-    ],
-    { limit: 100 }
-  );
-  assert(
-    attestations.length < 2,
-    `Found more the one valid attestation with Claim hash: ${claimHash}.`
-  );
+  const attestation = (
+    await Attestation.getByFields(
+      [
+        ["claimHash", "=", claimHash.toHex()],
+        ["valid", "=", true],
+      ],
+      { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+    )
+  )[0];
 
-  const attestation = attestations[0];
-  assert(attestation, `Can't find attestation of Claim hash: ${claimHash}.`);
+  assert(
+    attestation,
+    `Can't find valid attestation of Claim hash: ${claimHash}.`
+  );
 
   attestation.revocationBlockId = await saveBlock(block);
   attestation.valid = false;
@@ -174,18 +167,17 @@ export async function handleAttestationRemoved(
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
   const attestations = await Attestation.getByFields(
-    [["claimHash", "=", claimHash.toHex()]],
-    { limit: 100 }
-  );
-  // TODO: change getter options to the ones below and delete assertion about matching array length
-  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
-
-  assert(
-    attestations.length < 100,
-    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
+    ],
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
   );
 
-  const attestation = attestations.find((atty) => atty.removalBlockId == null);
+  const attestation = attestations.find(
+    (atty) => atty.removalBlockId == undefined
+  );
+
   assert(
     attestation,
     `Can't find unremoved attestation of Claim hash: ${claimHash}.`
@@ -230,19 +222,20 @@ export async function handleAttestationDepositReclaimed(
   // Find the attestation of this claim hash that has not been removed yet.
   // There should only be one in the data base.
   const attestations = await Attestation.getByFields(
-    [["claimHash", "=", claimHash.toHex()]],
-    { limit: 100 }
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
+    ],
+    {
+      limit: 1,
+      orderBy: "creationBlockId",
+      orderDirection: "DESC",
+    }
   );
-  // TODO: change getter options to the ones below and delete assertion about matching array length
-  // { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" } // Only after using normalized block ID (currently a Pull Request)
 
-  assert(
-    attestations.length < 100,
-    "A very unlikely case happen. There are more than 100 attestations with the same claim hash. You need to write code to handle it."
+  const attestation = attestations.find(
+    (atty) => atty.removalBlockId == undefined
   );
-
-  const attestation = attestations.find((atty) => atty.removalBlockId == null);
-
   assert(
     attestation,
     `Can't find unremoved attestation of Claim hash: ${claimHash}.`
@@ -256,8 +249,50 @@ export async function handleAttestationDepositReclaimed(
   await handleCTypeAggregations(attestation, "REMOVED");
 }
 
-// TODO: Add a handler for the (future) Event emitted when the deposit owner is changed
-// related to:
-// #[pallet::call_index(4)]
-// #[pallet::weight(<T as pallet::Config>::WeightInfo::change_deposit_owner())]
-// pub fn change_deposit_owner(origin: OriginFor<T>, claim_hash: ClaimHashOf<T>) -> DispatchResult
+export async function handleAttestationDepositOwnerChanged(
+  event: SubstrateEvent
+): Promise<void> {
+  // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  // \[id: ClaimHashOf, from: AccountIdOf, to: AccountIdOf\]
+  const {
+    block,
+    event: {
+      data: [claimHash, oldOwner, newOwner],
+    },
+  } = event;
+
+  logger.info(
+    `Attestation-Deposit changed it's owner at block ${block.block.header.number}`
+  );
+
+  logger.trace(
+    `The whole AttestationDepositOwnerChanged event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  // Find the attestation of this claim hash that has not been removed yet.
+  // There should only be one in the data base.
+  const attestations = await Attestation.getByFields(
+    [
+      ["claimHash", "=", claimHash.toHex()],
+      // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
+    ],
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
+  );
+
+  const attestation = attestations.find(
+    (atty) => atty.removalBlockId == undefined
+  );
+
+  assert(
+    attestation,
+    `Can't find unremoved attestation of Claim hash: ${claimHash}.`
+  );
+
+  attestation.payer = newOwner.toString();
+
+  await attestation.save();
+}
