@@ -91,7 +91,7 @@ type Did @entity {
   """
   id: ID!
   """
-  owner account address
+  deposit owner’s account address
   """
   payer: String! @index
   creationBlock: Block!
@@ -183,6 +183,10 @@ type PublicCredential @entity {
   content of the credential
   """
   claims: String!
+  """
+  deposit owner’s account address
+  """
+  payer: String! @index
   delegationID: String
   valid: Boolean!
   updates: [Update]! @derivedFrom(field: "credential")
