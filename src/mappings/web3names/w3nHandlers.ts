@@ -55,18 +55,20 @@ export async function handleWeb3NameClaimed(
     });
   }
 
-  const unreleasedOwnership = (
-    await Ownership.getByFields(
-      [
-        ["nameId", "=", w3n],
-        // ["releaseBlockId", "=", undefined],  // unreliable out of unknown reasons
-      ],
-      { limit: 1, orderBy: "claimBlockId", orderDirection: "DESC" }
-    )
-  )[0];
+  const lastOwnership = await Ownership.getByFields(
+    [
+      ["nameId", "=", w3n],
+      // ["releaseBlockId", "=", undefined],  // unreliable out of unknown reasons
+    ],
+    { limit: 1, orderBy: "claimBlockId", orderDirection: "DESC" }
+  );
+
+  const unreleasedOwnership = lastOwnership.find(
+    (ownny) => ownny.releaseBlockId == undefined
+  );
 
   assert(
-    !unreleasedOwnership || unreleasedOwnership.releaseBlockId,
+    !unreleasedOwnership,
     `${w3n} can't be claimed because it is still being owned.`
   );
 
