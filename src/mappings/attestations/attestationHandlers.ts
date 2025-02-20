@@ -73,8 +73,7 @@ export async function handleAttestationCreated(
   )[0];
 
   assert(
-    typeof lastAttestation === "undefined" ||
-      lastAttestation.removalBlockId == undefined,
+    !lastAttestation || lastAttestation.removalBlockId,
     `Can't save attestation ${claimHash} because it is still registered as existing on chain state.`
   );
 
