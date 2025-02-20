@@ -384,3 +384,5 @@ subqlTest(
   ], // expected entities
   "handleAttestationDepositReclaimed" // handler name
 );
+
+// TODO: add test for attestation of a duplicated hash. So a re-attestation.
