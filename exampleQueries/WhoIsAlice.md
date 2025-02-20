@@ -15,6 +15,7 @@ query WhoIsAlice {
       ownershipsByBearerId {
         nodes {
           id
+          payer
           claimBlock {
             id
             timeStamp
