@@ -60,7 +60,10 @@ type Ownership @entity {
   id: ID! # "#" + <ordinal number> + "_" + "w3n:" + <user name>
   name: Web3Name! @index
   bearer: Did! @index
-  payer: String! @index # owner account address
+  """
+  owner account address
+  """
+  payer: String! @index
   claimBlock: Block!
   releaseBlock: Block
 }
@@ -103,7 +106,10 @@ type PublicCredential @entity {
   subject: AssetDID! @index
   cType: CType!
   issuer: Did! @index
-  payer: String! @index # owner account address
+  """
+  owner account address
+  """
+  payer: String! @index
   claims: String! # content of the credential
   delegationID: String
   valid: Boolean!
