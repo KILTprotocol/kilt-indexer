@@ -62,30 +62,20 @@ export async function handleAttestationCreated(
   }
 
   // Make sure that any other attestations of same hash have been previously removed
-  let stillExistingAttestations = await Attestation.getByFields(
+  const stillExistingAttestations = await Attestation.getByFields(
     [
       ["claimHash", "=", claimHash.toHex()],
       // ["removalBlockId", "=", undefined],  // unreliable out of unknown reasons
     ],
-    { limit: 100, orderBy: "creationBlockId", orderDirection: "DESC" }
+    { limit: 1, orderBy: "creationBlockId", orderDirection: "DESC" }
   );
 
-  stillExistingAttestations = stillExistingAttestations.filter(
+  const stillExistingAttestation = stillExistingAttestations.find(
     (atty) => atty.removalBlockId == undefined
   );
 
-  // Some extra logs for the debugging mode. Could be useful for chain development as well.
-  logger.trace(
-    `printing the Attestations with the same hash that have not been removed:`
-  );
-  stillExistingAttestations.forEach((ownership, index) => {
-    logger.trace(
-      `Index: ${index}, Attestation: ${JSON.stringify(ownership, null, 2)}`
-    );
-  });
-
   assert(
-    stillExistingAttestations.length == 0,
+    stillExistingAttestations,
     `Can't save attestation ${claimHash} because it is still registered as existing on chain state.`
   );
 

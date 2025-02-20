@@ -55,28 +55,20 @@ export async function handleWeb3NameClaimed(
     });
   }
 
-  let unreleasedOwnerships = await Ownership.getByFields(
+  const unreleasedOwnerships = await Ownership.getByFields(
     [
       ["nameId", "=", w3n],
       // ["releaseBlockId", "=", undefined],  // unreliable out of unknown reasons
     ],
-    { limit: 100, orderBy: "claimBlockId", orderDirection: "DESC" }
+    { limit: 1, orderBy: "claimBlockId", orderDirection: "DESC" }
   );
 
-  unreleasedOwnerships = unreleasedOwnerships.filter(
+  const unreleasedOwnership = unreleasedOwnerships.find(
     (ownny) => ownny.releaseBlockId == undefined
   );
 
-  // Some extra logs for the debugging mode. Could be useful for chain development as well.
-  logger.trace(`printing the unreleased Ownerships:`);
-  unreleasedOwnerships.forEach((ownership, index) => {
-    logger.trace(
-      `Index: ${index}, Ownership: ${JSON.stringify(ownership, null, 2)}`
-    );
-  });
-
   assert(
-    unreleasedOwnerships.length == 0,
+    unreleasedOwnership,
     `${w3n} can't be claimed because it is still being owned.`
   );
 
