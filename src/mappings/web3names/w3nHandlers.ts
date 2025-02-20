@@ -66,7 +66,8 @@ export async function handleWeb3NameClaimed(
   )[0];
 
   assert(
-    unreleasedOwnership.releaseBlockId == undefined,
+    unreleasedOwnership == undefined ||
+      unreleasedOwnership.releaseBlockId == undefined,
     `${w3n} can't be claimed because it is still being owned.`
   );
 
