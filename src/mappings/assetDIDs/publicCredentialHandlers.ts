@@ -73,7 +73,7 @@ export async function handlePublicCredentialStored(
   );
 
   const newUpdate = Update.create({
-    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     nature: UpdateNature.creation,
     updateBlockId: blockNumber,
@@ -132,7 +132,7 @@ export async function handlePublicCredentialRemoved(
   );
 
   const newUpdate = Update.create({
-    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     nature: UpdateNature.removal,
     updateBlockId: blockNumber,
@@ -184,7 +184,7 @@ export async function handlePublicCredentialRevoked(
   );
 
   const newUpdate = Update.create({
-    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     updateBlockId: blockNumber,
     nature: UpdateNature.revocation,
@@ -236,7 +236,7 @@ export async function handlePublicCredentialUnrevoked(
   );
 
   const newUpdate = Update.create({
-    id: `§${numberOfPreviousUpdates + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     updateBlockId: blockNumber,
     nature: UpdateNature.restoration,

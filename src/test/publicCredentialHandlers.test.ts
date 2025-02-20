@@ -47,7 +47,7 @@ subqlTest(
       delegationID: undefined,
     }),
     Update.create({
-      id: "§1_0x9d54d4a7ee436b862ea0479a9472ef11901f566691abdf52193e2ad77490fcb8",
+      id: "*1_0x9d54d4a7ee436b862ea0479a9472ef11901f566691abdf52193e2ad77490fcb8",
       credentialId:
         "0x9d54d4a7ee436b862ea0479a9472ef11901f566691abdf52193e2ad77490fcb8",
       nature: UpdateNature.creation,
@@ -92,7 +92,7 @@ subqlTest(
       assetId: "erc721:0xac5c7493036de60e63eb81c5e9a440b42f47ebf5:4217",
     }),
     Update.create({
-      id: "§1_0x8e723085fadccc58e959f984a46d7c1487c3eceb7d73bf76803223c9efafa660",
+      id: "*1_0x8e723085fadccc58e959f984a46d7c1487c3eceb7d73bf76803223c9efafa660",
       credentialId:
         "0x8e723085fadccc58e959f984a46d7c1487c3eceb7d73bf76803223c9efafa660",
       nature: UpdateNature.creation,
@@ -138,7 +138,7 @@ subqlTest(
         "att:kilt-public-credential-v1:0xfbf954420d182c38812521d5bd21d9b95e20dc1e046537fdc441780808994c86",
     }),
     Update.create({
-      id: "§1_0x0a7930eb76f0231b5fe286fb0174c37f5a8d33974ab407cf8a11e045c47665e3",
+      id: "*1_0x0a7930eb76f0231b5fe286fb0174c37f5a8d33974ab407cf8a11e045c47665e3",
       credentialId:
         "0x0a7930eb76f0231b5fe286fb0174c37f5a8d33974ab407cf8a11e045c47665e3",
       nature: UpdateNature.creation,
