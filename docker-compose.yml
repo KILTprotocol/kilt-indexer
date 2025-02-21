@@ -48,7 +48,7 @@ services:
       retries: 50
 
   graphql-engine:
-    image: onfinality/subql-query:v2.10.0
+    image: subquerynetwork/subql-query:v2.21.0
     ports:
       - 127.0.0.1:${GRAPHQL_HOST_PORT:-3000}:3000
     depends_on:
