@@ -10,14 +10,14 @@ subqlTest(
     Did.create({
       id: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       payer: "4qEmG7bexsWtG1LiPFj95GL38xGcNfBz83LYeErixgHB47PW",
-      creationBlockId: "000578009",
+      creationBlockId: 578009,
       active: true,
     }),
   ], // dependent entities
   [
     CType.create({
       id: "kilt:ctype:0x3291bb126e33b4862d421bfaa1d2f272e6cdfc4f96658988fbcffea8914bd9ac",
-      registrationBlockId: "000578015",
+      registrationBlockId: 578015,
       authorId: "did:kilt:4pnfkRn5UurBJTW92d9TaVLR2CqJdY4z5HPjrEbpGyBykare",
       definition:
         '{"$schema":"http://kilt-protocol.org/draft-01/ctype#","properties":{"Email":{"type":"string"}},"title":"Email","type":"object"}',

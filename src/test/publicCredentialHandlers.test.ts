@@ -51,7 +51,7 @@ subqlTest(
       credentialId:
         "0x9d54d4a7ee436b862ea0479a9472ef11901f566691abdf52193e2ad77490fcb8",
       nature: UpdateNature.creation,
-      updateBlockId: "003282040",
+      updateBlockId: 3282040,
     }),
   ], // expected entities
   "handlePublicCredentialStored" // handler name
@@ -96,7 +96,7 @@ subqlTest(
       credentialId:
         "0x8e723085fadccc58e959f984a46d7c1487c3eceb7d73bf76803223c9efafa660",
       nature: UpdateNature.creation,
-      updateBlockId: "003209405",
+      updateBlockId: 3209405,
     }),
   ], // expected entities
   "handlePublicCredentialStored" // handler name
@@ -142,7 +142,7 @@ subqlTest(
       credentialId:
         "0x0a7930eb76f0231b5fe286fb0174c37f5a8d33974ab407cf8a11e045c47665e3",
       nature: UpdateNature.creation,
-      updateBlockId: "003350575",
+      updateBlockId: 3350575,
     }),
   ], // expected entities
   "handlePublicCredentialStored" // handler name

@@ -9,7 +9,7 @@ import assert from "assert";
  * @returns Returns the Block-Number, also known as Block-ID. Type "string".
  */
 export async function saveBlock(block: SubstrateBlock): Promise<Block["id"]> {
-  const blockNumber = block.block.header.number.toString().padStart(9, "0");
+  const blockNumber = block.block.header.number.toNumber();
   const blockHash = block.block.hash.toHex();
   const issuanceDate = block.timestamp;
 

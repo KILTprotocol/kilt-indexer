@@ -24,7 +24,7 @@ subqlTest(
 //   [], // It does not dependent on any entities
 //   [
 //     Block.create({
-//       id: "1060210",
+//       id: 1060210,
 //       hash: "0xf1b38640bd696909769f4a502384892a31b509f9906dcbe7f34f6e02ae3361f8",
 //       timeStamp: new Date("2022-02-22T16:56:00.229"),
 //     }),
