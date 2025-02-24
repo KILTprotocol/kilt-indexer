@@ -1,11 +1,11 @@
 {
   "name": "kilt-indexer",
-  "version": "0.0.3",
+  "version": "0.1.3",
   "description": "Indexing KILT's blockchain data, mostly related to Identity.",
   "main": "dist/index.js",
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "yarn@1.22.22",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "codegen": "subql codegen",
@@ -34,10 +34,10 @@
     "@kiltprotocol/augment-api": "^1.11405.1",
     "@kiltprotocol/type-definitions": "1.11500.0-rc.2",
     "@kiltprotocol/types": "^0.100.0",
-    "@subql/cli": "^5.3.0",
-    "@subql/node": "^5.2.9",
-    "@subql/testing": "^2.2.2",
-    "@subql/types": "^3.11.3",
+    "@subql/cli": "^5.6.0",
+    "@subql/node": "^5.8.0",
+    "@subql/testing": "^2.2.3",
+    "@subql/types": "^3.12.0",
     "@types/jsonabc": "^2.3.3",
     "@types/node": "^20.14.11",
     "ts-node": "^10.9.2",
