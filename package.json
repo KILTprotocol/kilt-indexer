@@ -1,11 +1,11 @@
 {
   "name": "kilt-indexer",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Indexing KILT's blockchain data, mostly related to Identity.",
   "main": "dist/index.js",
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "yarn@1.22.22",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "codegen": "subql codegen",

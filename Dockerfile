@@ -1,4 +1,4 @@
-FROM subquerynetwork/subql-node-substrate:v4.0.1 AS base
+FROM subquerynetwork/subql-node-substrate:v5.8.0 AS base
 
 # change user to root to have permission to install dependencies
 USER root
