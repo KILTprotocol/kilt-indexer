@@ -9,7 +9,7 @@ import { START_BLOCK, CRAWL_PEREGRINE, RPC_ENDPOINTS } from "./configuration";
 // Can expand the Datasource processor types via the generic param
 const project: SubstrateProject = {
   specVersion: "1.0.0",
-  version: "0.0.2",
+  version: "1.0.0",
   name: CRAWL_PEREGRINE ? "kilt-peregrine-indexer" : "kilt-spiritnet-indexer",
   description:
     "This projects registers and aggregates all identity related events from the KILT network.",
