@@ -13,8 +13,7 @@
     "start:docker": "docker compose pull && docker compose up --remove-orphans",
     "dev": "subql codegen && subql build && docker compose pull && docker compose up --build --remove-orphans",
     "prepack": "rm -rf dist && npm run build",
-    "test": "dotenv -- cross-env-shell echo echoing $POSTGRES_HOST_PORT && subql build && TZ=UTC DB_PORT=$POSTGRES_HOST_PORT subql-node test",
-    "my-script": "dotenv -e .env -- echo MY_ENV_VAR=$MY_ENV_VAR && echo ANOTHER_VAR=$ANOTHER_VAR",
+    "test": "subql build && TZ=UTC DB_PORT=$POSTGRES_HOST_PORT subql-node test",
     "slash": "yarn ts-node src/slash.ts",
     "contained:test": "subql codegen && subql build && docker compose pull && SUB_COMMAND=test docker compose up --build --remove-orphans"
   },
@@ -41,9 +40,6 @@
     "@subql/types": "^3.12.0",
     "@types/jsonabc": "^2.3.3",
     "@types/node": "^20.14.11",
-    "cross-env": "^7.0.3",
-    "dotenv-cli": "^8.0.0",
-    "env-cmd": "^10.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   },
