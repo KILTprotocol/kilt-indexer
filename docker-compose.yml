@@ -16,7 +16,7 @@ services:
       retries: 5
 
   subquery-node:
-    image: subquerynetwork/subql-node-substrate:v4.0.1
+    image: subquerynetwork/subql-node-substrate:v5.8.0
     depends_on:
       "postgres":
         condition: service_healthy
@@ -28,15 +28,12 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
     volumes:
-      - ./:/app
-    networks:
-      - default
-      - private-peregrine-rpc-node-net
+      - ./:/kilt_indexer
     command:
       - ${SUB_COMMAND:-} # set SUB_COMMAND env variable to "test" to run tests
-      - -f=/app
+      - -f=/kilt_indexer
       - --targetHeight=${CUTOFF_HEIGHT:-} # SUB_COMMAND needs to be set to "reindex" to have an effect
-      - --db-schema=app
+      - --db-schema=kilt_indexer
       - --workers=4
       - --batch-size=30
       - --unfinalized-blocks=false
@@ -48,7 +45,7 @@ services:
       retries: 50
 
   graphql-engine:
-    image: onfinality/subql-query:v2.10.0
+    image: subquerynetwork/subql-query:v2.21.0
     ports:
       - 127.0.0.1:${GRAPHQL_HOST_PORT:-3000}:3000
     depends_on:
@@ -64,11 +61,6 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
     command:
-      - --name=app
+      - --name=kilt_indexer
       - --playground
       - --indexer=http://subquery-node:3000
-
-networks:
-  private-peregrine-rpc-node-net:
-    external: ${PRIVATE_NODE_ENABLE:-false}
-    name: ${PRIVATE_NODE_NET_NAME:-nonet}

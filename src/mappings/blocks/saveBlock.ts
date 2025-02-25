@@ -9,9 +9,11 @@ import assert from "assert";
  * @returns Returns the Block-Number, also known as Block-ID. Type "string".
  */
 export async function saveBlock(block: SubstrateBlock): Promise<Block["id"]> {
-  const blockNumber = block.block.header.number.toString();
+  const blockNumber = block.block.header.number.toString().padStart(9, "0");
   const blockHash = block.block.hash.toHex();
   const issuanceDate = block.timestamp;
+
+  assert(issuanceDate, `Block #${blockNumber} is missing its time stamp.`);
 
   const exists = await Block.get(blockNumber);
   // Existence check not really necessary if we trust the chain

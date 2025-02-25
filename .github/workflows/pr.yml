@@ -8,11 +8,31 @@ jobs:
   pr:
     name: pr
     runs-on: ubuntu-latest
-    environment: production
+    environment: test
+    services:
+      postgres:
+        image: postgres:16-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       RPC_ENDPOINTS: ${{ vars.RPC_ENDPOINTS }}
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: localhost
+      DB_PORT: 5432
+      TZ: "UTC"
     steps:
       - uses: actions/checkout@v4
+      - name: Enable btree btree_gist on postgres database
+        run: psql "postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT/$DB_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS btree_gist;"
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
@@ -24,5 +44,5 @@ jobs:
         run: yarn codegen
       - name: Build
         run: yarn build
-      # - name: Run tests with Subquery Node
-      #   run: yarn subql-node test -f ${{ github.workspace }}
+      - name: Run tests with Subquery Node
+        run: yarn subql-node test -f ${{ github.workspace }}

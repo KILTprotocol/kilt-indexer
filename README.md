@@ -41,10 +41,14 @@ After [cloning the repository](https://docs.github.com/en/repositories/creating-
 
 ### Environment Variables
 
-**You do not need to define any environment variables to run this project.**
+**You only need to define one environment variable to run this project, namely `RPC_ENDPOINTS`**
 
-There are default values for all of the environment variables.
-By default the production **KILT Blockchain, _Spiritnet_,** will be indexed.
+By default, it will be assumed that the production **KILT Blockchain, _Spiritnet_,** will be indexed.
+
+Please, assign a _Spiritnet_ endpoint node to `RPC_ENDPOINTS`.
+You can find some of them on [our documentation](https://docs.kilt.io/docs/develop/chain/deployments).
+
+There are default values for all other the environment variables.
 You can use other values by assigning them inside an `.env`-file.
 
 In the root directory of this repository, is an `.env.example`-file that lists how to name environment variables and what is their use.
@@ -164,281 +168,87 @@ fragment DidNames on Did {
 
 ### Query examples:
 
-1. **Find Attestation by its claim hash:**
+There is a small collection of query examples for you to get started.
+You can find it in the [exampleQueries folder](exampleQueries).
 
-   - _without using fragments:_
+Most of the examples take advantage of the _fragments_, but they are optional.
+Here are two variants of the same query to show how they work.
 
-   ```
-   query {
-     attestations(
-       filter: {
-         claimHash: {
-           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
-         }
-       }
-     ) {
-       totalCount
-       nodes {
-         id
-         claimHash
-         cTypeId
-         issuerId
-         payer
-         delegationID
-         valid
-         creationBlock {
-           id
-           hash
-           timeStamp
-         }
-       }
-     }
-   }
+- **Find Attestation by its claim hash:**
 
-   ```
+  1.  _without using fragments:_
 
-   - _taking advantage of fragments:_
-
-   ```
-   query {
-     attestations(
-       filter: {
-         claimHash: {
-           equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
-         }
-       }
-     ) {
-       totalCount
-       nodes {
-         ...wholeAttestation
-       }
-     }
-   }
-   ```
-
-2. **Find all revoked attestations:**
-
-   ```
-   query {
-     attestations(filter: { revocationBlockId: { isNull: false } }) {
-       totalCount
-       nodes {
-         ...wholeAttestation
-       }
-     }
-   }
-   ```
-
-3. **Find how many attestations were made on a block:**
-
-   ```
-   query {
-     blocks(filter: { id: { equalTo: "3396407" } }) {
-       # Queries can have comments!
-       nodes {
-         id
-         timeStamp
-         hash
-         attestationsByCreationBlockId {
-           totalCount
-           nodes {
-             id
-             cTypeId
-             claimHash
-             issuerId
-           }
-         }
-       }
-     }
-   }
-   ```
-
-4. **Find all cTypes that have been used at least once:**
-
-   ```
-   query {
-     cTypes(
-       filter: { attestations: { some: { id: { isNull: false } } } }
-       orderBy: ATTESTATIONS_COUNT_DESC
-     ) {
-       totalCount
-       nodes {
-         id
-         author {
-        ...DidNames
+  ```
+  query {
+    attestations(
+      filter: {
+        claimHash: {
+          equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+        }
       }
-         registrationBlock {
-           ...wholeBlock
-         }
-         attestationsCreated
-         attestationsRevoked
-         attestationsRemoved
-         validAttestations
-         attestations(orderBy: ID_ASC) {
-           totalCount
-           nodes {
-             ...wholeAttestation
-           }
-         }
-       }
-     }
-   }
-   ```
-
-5. **Find all cTypes created during the second million blocks:**
-
-   ```
-   query {
-     cTypes(
-       filter: {
-         registrationBlockId: {
-           greaterThanOrEqualTo: "1000000"
-           lessThanOrEqualTo: "2000000"
-         }
-       }
-     ) {
-       totalCount
-       nodes {
-         id
-         author {
-        ...DidNames
-      }
-         registrationBlock {
-           ...wholeBlock
-         }
-         attestationsCreated
-         validAttestations
-       }
-     }
-   }
-   ```
-
-6. **Find all attestation revoked during October 2023:**
-
-   ```
-   query {
-     attestations(
-       filter: {
-         revocationBlock: {
-           timeStamp: { greaterThan: "2023-9-30", lessThan: "2023-11-1" }
-         }
-       }
-       orderBy: ID_ASC
-     ) {
-       totalCount
-       nodes {
-         ...wholeAttestation
-       }
-     }
-   }
-   ```
-
-7. **Find DID bearer of w3n:alice and since when:**
-
-   ```
-   query {
-     dids(filter: { web3NameId: { equalTo: "w3n:alice" } }) {
-       nodes {
-         id
-         payer
-         creationBlock {
-           id
-           timeStamp
-         }
-         deletionBlockId
-         web3NameId
-         ownershipsByBearerId {
-           nodes {
-             id
-             claimBlock {
-               id
-               timeStamp
-             }
-             releaseBlockId
-           }
-         }
-       }
-     }
-   }
-
-   ```
-
-8. **Find registered data about banned web3names:** (It has never happened on KILT Spiritnet)
-
-   ```
-   query {
-     web3Names(filter: { banned: { equalTo: true } }) {
-       totalCount
-       nodes {
-         id
-         banned
-         ownerships {
-           totalCount
-           nodes {
-             id
-             bearerId
-             claimBlockId
-             releaseBlockId
-           }
-         }
-
-         sanctionsByNameId {
-           totalCount
-           nodes {
-             id
-             nameId
-             nature
-             enforcementBlockId
-           }
-         }
-       }
-     }
-   }
-   ```
-
-9. **Find out who has ever owned w3n:john_doe and when:**
-
-   ```
-   query {
-    web3Names(filter: { id: { equalTo: "w3n:john_doe" } }) {
+    ) {
+      totalCount
       nodes {
         id
-        banned
-        ownerships(orderBy: ID_ASC) {
-          totalCount
-          nodes {
-            id
-            bearerId
-            claimBlockId
-            releaseBlockId
-          }
-        }
-      }
-    }
-   }
-   ```
-
-10. **Get all Public Credentials and its corresponding Updates:**
-    ```
-    query {
-      publicCredentials {
-        totalCount
-        nodes {
+        claimHash
+        cTypeId
+        issuerId
+        payer
+        delegationID
+        valid
+        creationBlock {
           id
-          subjectId
-          claims
-          cTypeId
-          issuerId
-          valid
-          updates(orderBy: ID_ASC) {
-            totalCount
-            nodes {
-              id
-              nature
-              updateBlockId
-            }
-          }
+          hash
+          timeStamp
         }
       }
     }
-    ```
+  }
+  ```
+
+  2.  _taking advantage of fragments:_
+
+  ```
+  query {
+    attestations(
+      filter: {
+        claimHash: {
+          equalTo: "0x7554dc0b69be9bd6a266c865a951cae6a168c98b8047120dd8904ad54df5bb08"
+        }
+      }
+    ) {
+      totalCount
+      nodes {
+        ...wholeAttestation
+      }
+    }
+  }
+  ```
+
+## Testing
+
+This project leverages [the SubQuery Testing Framework](https://academy.subquery.network/indexer/build/testing.html#the-subquery-testing-framework) to ensure that the data processing logic works as expected and to help catch errors early in the development process.
+
+One or more test cases are written for every `handler` and all tests are re-run during every pull request.
+This checks that the data coming from the blockchain is being processed and saved as expected.
+The tests are written with information coming from the KILT production blockchain _Spiritnet_ to ensure perpetuity.
+
+### Run the tests
+
+The easier, but slower version to run the tests is via: `yarn contained:test`.
+
+The recommended and (after setup) faster option is by running `yarn test`, but it has a couple requirements that can be fulfilled just by following these steps:
+
+1. **Install all packages** by running:
+   `yarn install`
+2. Start the **postgres data base container**.
+   Sadly, the tests can only interact with the _postgres_ container if it is available on port **`5432`**
+   The easiest way to set it up, is to run fist the project via `yarn dev` and after a while stop the unnecessary _subquery-node_ and _graphql-engine_ containers.
+3. **Run** the _subquery-node_ container in test mode, by running `yarn test`.
+
+### Writing test cases
+
+Please write new test cases inside the `src/test` directory.
+Please, try to group the tests in files similarly as the `src/mappings` does it; that is based on _Entities_.
+
+For documentation about [writing the tests cases please refer to the official SubQuery documentation](https://academy.subquery.network/indexer/build/testing.html#writing-test-cases).

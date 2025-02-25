@@ -59,3 +59,36 @@ export async function handleDidDeleted(event: SubstrateEvent): Promise<void> {
 
   await did.save();
 }
+
+export async function handleDepositOwnerChanged(
+  event: SubstrateEvent
+): Promise<void> {
+  // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  // \[id: DIDidentifier, from: AccountIdOf, to: AccountIdOf\]
+  const {
+    block,
+    event: {
+      data: [identifier, oldOwner, newOwner],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(`A DID changed it's owner at block ${block.block.header.number}`);
+
+  logger.trace(
+    `The whole DepositOwnerChanged event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const id = "did:kilt:" + identifier.toString();
+
+  const did = await Did.get(id);
+  assert(did, `Can't find this DID on the data base: ${id}.`);
+
+  did.payer = newOwner.toString();
+
+  await did.save();
+}

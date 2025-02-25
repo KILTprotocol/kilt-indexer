@@ -9,6 +9,7 @@ import {
 import assert from "assert";
 
 import { saveBlock } from "../blocks/saveBlock";
+import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
 export async function handleWeb3NameClaimed(
   event: SubstrateEvent
@@ -37,6 +38,7 @@ export async function handleWeb3NameClaimed(
   const blockNumber = await saveBlock(block);
   const w3n = "w3n:" + name.toHuman();
   const owner = "did:kilt:" + ownerDID.toString();
+  const payer = extrinsic!.extrinsic.signer.toString();
 
   const did = await Did.get(owner);
   assert(did, `Can't find this DID on the data base: ${owner}.`);
@@ -52,13 +54,33 @@ export async function handleWeb3NameClaimed(
       banned: false,
     });
   }
+
+  const unreleasedOwnership = (
+    await Ownership.getByFields(
+      [
+        ["nameId", "=", w3n],
+        // ["releaseBlockId", "=", undefined],  // unreliable out of unknown reasons
+      ],
+      { limit: 1, orderBy: "claimBlockId", orderDirection: "DESC" }
+    )
+  )[0];
+
+  assert(
+    !unreleasedOwnership || unreleasedOwnership.releaseBlockId,
+    `${w3n} can't be claimed because it is still being owned.`
+  );
+
   // craft bearers ordinal index:
-  const previousBearers = (await Ownership.getByNameId(w3n)) || [];
+  const numberOfPreviousBearers = await countEntitiesByFields<Ownership>(
+    "Ownership",
+    [["nameId", "=", w3n]]
+  );
 
   const bearingData = Ownership.create({
-    id: `#${previousBearers.length + 1}_${w3n}`,
+    id: `#${numberOfPreviousBearers + 1}_${w3n}`,
     nameId: w3n,
     bearerId: owner,
+    payer,
     claimBlockId: blockNumber,
   });
 
@@ -104,18 +126,21 @@ export async function handleWeb3NameReleased(
   const web3Name = await Web3Name.get(w3n);
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
-  const allBearers = (await Ownership.getByNameId(w3n)) || [];
+  // Find the bearing title (ownership) that has not been released yet
+  // there should only be one in the data base
+  const lastBearer = (
+    await Ownership.getByNameId(w3n, {
+      limit: 1,
+      orderBy: "claimBlockId",
+      orderDirection: "DESC",
+    })
+  )[0];
 
-  // Find the bearing title that has not been released yet
-  const bearer = allBearers.find((teddy) => !teddy.releaseBlockId);
+  assert(lastBearer, `Can't find the bearer of ${w3n} on the data base.`);
 
-  assert(bearer, `Can't find the bearer of ${w3n} on the data base.`);
+  lastBearer.releaseBlockId = blockNumber;
 
-  bearer.releaseBlockId = blockNumber;
-
-  await bearer.save();
-
-  await web3Name.save();
+  await lastBearer.save();
 }
 
 export async function handleWeb3NameBanned(
@@ -156,10 +181,13 @@ export async function handleWeb3NameBanned(
     });
   }
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
+  const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
+    "Sanction",
+    [["nameId", "=", w3n]]
+  );
 
   const newSanction = Sanction.create({
-    id: `§${previousSanctions.length + 1}_${w3n}`,
+    id: `§${numberOfPreviousSanctions + 1}_${w3n}`,
     nameId: w3n,
     nature: SanctionNature.prohibition,
     enforcementBlockId: blockNumber,
@@ -171,7 +199,7 @@ export async function handleWeb3NameBanned(
 
   await web3Name.save();
 
-  // If a did owned this web3Name at the moment of the ban, a Web3NameReleased event would be release.
+  // If a did owned this web3Name at the moment of the ban, a Web3NameReleased event would be emitted.
   // So, no extra logic for the dids inside of this handler is needed.
 }
 
@@ -207,10 +235,13 @@ export async function handleWeb3NameUnbanned(
   assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
 
   // craft sanction ordinal index:
-  const previousSanctions = (await Sanction.getByNameId(w3n)) || [];
+  const numberOfPreviousSanctions = await countEntitiesByFields<Sanction>(
+    "Sanction",
+    [["nameId", "=", w3n]]
+  );
 
   const newSanction = Sanction.create({
-    id: `§${previousSanctions.length + 1}_${w3n}`,
+    id: `§${numberOfPreviousSanctions + 1}_${w3n}`,
     nameId: w3n,
     nature: SanctionNature.permission,
     enforcementBlockId: blockNumber,
@@ -221,4 +252,52 @@ export async function handleWeb3NameUnbanned(
   web3Name.banned = false;
 
   await web3Name.save();
+}
+
+export async function handleDepositOwnerChanged(
+  event: SubstrateEvent
+): Promise<void> {
+  // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  // \[id: Web3NameOf, from: AccountIdOf, to: AccountIdOf\]
+  const {
+    block,
+    event: {
+      data: [name, oldOwner, newOwner],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `A web3name changed it's deposit owner at block ${block.block.header.number}`
+  );
+
+  logger.trace(
+    `The whole DepositOwnerChanged event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const w3n = "w3n:" + name.toHuman();
+
+  // Entity:
+  const web3Name = await Web3Name.get(w3n);
+  assert(web3Name, `Can't find this web3Name on the data base: ${w3n}.`);
+
+  // Find the bearing title (ownership) that has not been released yet
+  // there should only be one in the data base
+  const bearer = (
+    await Ownership.getByNameId(w3n, {
+      limit: 1,
+      orderBy: "claimBlockId",
+      orderDirection: "DESC",
+    })
+  )[0];
+
+  assert(bearer, `Can't find the bearer of ${w3n} on the data base.`);
+
+  bearer.payer = newOwner.toString();
+
+  await bearer.save();
 }

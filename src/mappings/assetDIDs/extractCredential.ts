@@ -1,4 +1,4 @@
-import type { AssetDidUri, DidUri, HexString } from "@kiltprotocol/types";
+import type { AssetDid, Did, HexString } from "@kiltprotocol/types";
 import { PublicCredentialsCredentialsCredential } from "@kiltprotocol/augment-api";
 import type { Vec } from "@polkadot/types";
 import { Codec } from "@polkadot/types-codec/types";
@@ -10,13 +10,13 @@ import assert from "assert";
 
 interface CredentialOnChain {
   ctypeHash: HexString;
-  subject: AssetDidUri; // assetDID-URI
+  subject: AssetDid; // assetDID-URI
   claims: HexString; // CBOR serialized claims
   authorization: string | null;
 }
 
 export interface CredentialFromChain extends CredentialOnChain {
-  attesterDid: DidUri;
+  attesterDid: Did;
 }
 
 const relevantCalls = {
@@ -440,11 +440,11 @@ function validateCredentialAgainstHash(
 
   logger.trace("The resulting Credential ID is: " + hashedCredential);
 
-  const attesterDid = ("did:kilt:" + attesterDidAccount) as DidUri;
+  const attesterDid = ("did:kilt:" + attesterDidAccount) as Did;
 
   const readableCredential: CredentialFromChain = {
     ctypeHash: credential.ctypeHash.toHex(),
-    subject: credential.subject.toUtf8() as AssetDidUri,
+    subject: credential.subject.toUtf8() as AssetDid,
     claims: credential.claims.toHex(),
     authorization: credential.authorization.unwrapOr(null)?.toHex() ?? null,
     attesterDid,

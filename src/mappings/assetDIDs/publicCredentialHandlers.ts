@@ -8,6 +8,7 @@ import {
 } from "./extractCredential";
 import { saveAssetDid } from "./saveAssetDid";
 import { KiltAssetDidsV1AssetDid } from "@kiltprotocol/augment-api";
+import { countEntitiesByFields } from "../utils/countEntitiesByFields";
 
 export async function handlePublicCredentialStored(
   event: SubstrateEvent
@@ -36,6 +37,7 @@ export async function handlePublicCredentialStored(
   const blockNumber = await saveBlock(block);
   const assetDidUri = await saveAssetDid(subjectID as KiltAssetDidsV1AssetDid);
   const credentialHash = credentialID.toHex();
+  const payer = extrinsic!.extrinsic.signer.toString();
 
   const credential: CredentialFromChain = extractCredential(
     extrinsic,
@@ -55,6 +57,7 @@ export async function handlePublicCredentialStored(
     id: credentialHash,
     subjectId: assetDidUri,
     valid: true,
+    payer,
     cTypeId,
     claims: credential.claims,
     issuerId: credential.attesterDid,
@@ -64,11 +67,13 @@ export async function handlePublicCredentialStored(
   await newPublicCredential.save();
 
   // Add a record of when did the creation took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     nature: UpdateNature.creation,
     updateBlockId: blockNumber,
@@ -121,11 +126,13 @@ export async function handlePublicCredentialRemoved(
   await publicCredential.save();
 
   // Add a record of when did the removal took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     nature: UpdateNature.removal,
     updateBlockId: blockNumber,
@@ -171,11 +178,13 @@ export async function handlePublicCredentialRevoked(
   await publicCredential.save();
 
   // Add a record of when did the revocation took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     updateBlockId: blockNumber,
     nature: UpdateNature.revocation,
@@ -221,15 +230,56 @@ export async function handlePublicCredentialUnrevoked(
   await publicCredential.save();
 
   // Add a record of when did the restoration (un-revocation) took place
-  const previousUpdates =
-    (await Update.getByCredentialId(credentialHash)) || [];
+  const numberOfPreviousUpdates = await countEntitiesByFields<Update>(
+    "Update",
+    [["credentialId", "=", credentialHash]]
+  );
 
   const newUpdate = Update.create({
-    id: `§${previousUpdates.length + 1}_${credentialHash}`,
+    id: `*${numberOfPreviousUpdates + 1}_${credentialHash}`,
     credentialId: credentialHash,
     updateBlockId: blockNumber,
     nature: UpdateNature.restoration,
   });
 
   await newUpdate.save();
+}
+
+export async function handleDepositOwnerChanged(
+  event: SubstrateEvent
+): Promise<void> {
+  // The balance that is reserved by the current deposit owner will be freed and balance of the new deposit owner will get reserved.
+  // \[id: CredentialIdOf, from: AccountIdOf, to: AccountIdOf\]
+  const {
+    block,
+    event: {
+      data: [credentialID, oldOwner, newOwner],
+    },
+    extrinsic,
+  } = event;
+
+  logger.info(
+    `A public credential changed it's deposit owner at block ${block.block.header.number}`
+  );
+
+  logger.trace(
+    `The whole DepositOwnerChanged event: ${JSON.stringify(
+      event.toHuman(),
+      null,
+      2
+    )}`
+  );
+
+  const blockNumber = await saveBlock(block);
+  const credentialHash = credentialID.toHex();
+
+  const publicCredential = await PublicCredential.get(credentialHash);
+  assert(
+    publicCredential,
+    `Can't find this Public Credential on the data base: ${publicCredential}.`
+  );
+
+  publicCredential.payer = newOwner.toString();
+
+  await publicCredential.save();
 }

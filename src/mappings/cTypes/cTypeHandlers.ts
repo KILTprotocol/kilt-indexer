@@ -44,30 +44,31 @@ export async function handleCTypeCreated(event: SubstrateEvent): Promise<void> {
 }
 
 export async function handleCTypeAggregations(
-  cTypeId: string,
+  attestation: Attestation,
   action: "CREATED" | "REVOKED" | "REMOVED"
 ): Promise<void> {
+  const { cTypeId } = attestation;
   const aggregation = await CType.get(cTypeId);
   assert(aggregation, `Can't find this cType on the data base: ${cTypeId}.`);
-
-  const attestationsOfThisCType =
-    (await Attestation.getByCTypeId(cTypeId)) || [];
-
-  aggregation.validAttestations = attestationsOfThisCType.filter(
-    (atty) => atty.valid
-  ).length;
 
   switch (action) {
     case "CREATED":
       aggregation.attestationsCreated++;
+      aggregation.validAttestations++;
 
       break;
     case "REVOKED":
       aggregation.attestationsRevoked++;
+      aggregation.validAttestations--;
 
       break;
     case "REMOVED":
       aggregation.attestationsRemoved++;
+
+      if (attestation.revocationBlockId == undefined) {
+
+        aggregation.validAttestations--;
+      }
 
       break;
   }
