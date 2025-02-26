@@ -29,9 +29,6 @@ services:
       DB_PORT: 5432
     volumes:
       - ./:/kilt_indexer
-    networks:
-      - default
-      - private-peregrine-rpc-node-net
     command:
       - ${SUB_COMMAND:-} # set SUB_COMMAND env variable to "test" to run tests
       - -f=/kilt_indexer
@@ -67,8 +64,3 @@ services:
       - --name=kilt_indexer
       - --playground
       - --indexer=http://subquery-node:3000
-
-networks:
-  private-peregrine-rpc-node-net:
-    external: ${PRIVATE_NODE_ENABLE:-false}
-    name: ${PRIVATE_NODE_NET_NAME:-nonet}
