@@ -10,7 +10,7 @@ subqlTest(
       id: 312677,
       hash: "0x76389b4bf519b14df346755133906e8b7e29587cbde7f729b47d9ad7f94979af",
       timeStamp: new Date("2021-10-28T14:30:24.37"),
-    }),
+    }) as any,
   ], // Expected entities
   "handleDidCreated" // handler name that triggers it
 );
@@ -48,7 +48,7 @@ subqlTest(
       id: 1038495,
       hash: "0xcf259c39be26fc12b5015094c15f887f5e04723bc70cf2add223398fa7ae4cd5",
       timeStamp: new Date("2022-02-17T10:52:00.211"),
-    }),
+    }) as any,
     Did.create({
       id: "did:kilt:4sddCVdkFajMKtG5unJmquP5Fcrw4A5bfbEkrCEQvkCp7iCx",
       payer: "4tAV8xD2id6EC5V7CaHAiix3mAFzvkCHKa26BykAxaAhGu4y",
