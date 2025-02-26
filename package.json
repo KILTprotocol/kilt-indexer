@@ -13,7 +13,7 @@
     "start:docker": "docker compose pull && docker compose up --remove-orphans",
     "dev": "subql codegen && subql build && docker compose pull && docker compose up --build --remove-orphans",
     "prepack": "rm -rf dist && npm run build",
-    "test": "subql build && env-cmd -f ./src/testEnvLoader.js -- subql-node test",
+    "test": "subql build && env-cmd -f ./src/loadTestEnv.js -- subql-node test",
     "slash": "yarn ts-node src/slash.ts",
     "contained:test": "subql codegen && subql build && docker compose pull && SUB_COMMAND=test docker compose up --build --remove-orphans"
   },
