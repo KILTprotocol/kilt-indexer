@@ -9,7 +9,7 @@ module.exports = new Promise((resolve) => {
   };
 
   console.log(
-    `Passing this environment variables fot the tests: ${JSON.stringify(
+    `Passing this environment variables for the tests: ${JSON.stringify(
       testEnv
     )}`
   );
