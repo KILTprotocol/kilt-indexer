@@ -54,4 +54,4 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
 
         with:
-          args: rollout restart deployment subquery-node -n indexer
+          args: rollout restart statefulsets subquery-node -n indexer
